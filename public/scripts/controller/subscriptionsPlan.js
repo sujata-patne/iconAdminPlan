@@ -4,7 +4,7 @@
 var site_base_path = '';
 //var site_base_path = 'http://dailymagic.in';
 myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress) {
-        $scope.ContentTypes = [
+    $scope.ContentTypes = [
         {cd_id:1, cd_name:'Wallpaper'},
         {cd_id:2, cd_name:'Audio'},
         {cd_id:3, cd_name:'Video'},
@@ -61,6 +61,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress) {
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function(isValid) {
+
         if (isValid) {
             alert('our form is amazing');
         }

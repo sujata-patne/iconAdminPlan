@@ -53,16 +53,16 @@
                                     <th>Action</th>
                                 </tr>
                                 </thead>
-                                <tbody data-ng-repeat="operators in OperatorsList">
+                                <tbody data-ng-repeat="plan in planList | filter:PlanName">
                                     <tr>
-                                        <td style="width: 5%">{{operators.id}}</td>
-                                        <td style="width: 30%">{{operators.name}}</td>
-                                        <td style="width: 15%">{{operators.amt}}</td>
-                                        <td style="width: 10%"></td>
+                                        <td style="width: 5%">{{plan.cd_id}}</td>
+                                        <td style="width: 30%">{{plan.plan}}</td>
+                                        <td style="width: 15%">{{getContentName(plan.content_id)}}</td>
+                                        <td style="width: 10%">{{setDate(plan.created_on)}}</td>
                                         <td style="width: 7%">
                                             <div class="row">
-                                                <div class="col-md-6"><a href="#/masterlist-edit/{{filter.cd_id}}" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
-                                                <div class="col-md-6"><a href="" data-ng-click="DeleteMasterList(filter.cd_id)"><i class="glyphicon glyphicon-remove" title="Delete"></i></a></div>
+                                                <div class="col-md-6"><a href="" data-ng-click="edit(filter.cd_id)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
+                                                <div class="col-md-6"><a href="" data-ng-click="delete(filter.cd_id)"><i class="glyphicon glyphicon-remove" title="Delete"></i></a></div>
                                             </div>
                                         </td>
                                     </tr>

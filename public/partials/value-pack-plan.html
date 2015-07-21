@@ -5,7 +5,7 @@
                 <h2 class="content-header-title">Value Pack Plan</h2>
             </div>
             <!-- /.content-header -->
-            <form class="form-horizontal" role="form" name="valuePackForm" data-ng-submit="SaveUserDetails()">
+            <form class="form-horizontal" role="form" name="valuePackForm" data-ng-submit="submitForm(valuePackForm.$valid)" novalidate>
                 <div class="row">
                     <div class="col-md-6">
                         <span class="col-sm-offset-3 col-sm-9" data-ng-show="connectionError" style="color:red;">
@@ -18,9 +18,11 @@
                         <div class="form-group">
                             <label for="planname" class="col-sm-3 control-label"><span class="asterisk">*</span>Plan Name</label>
                             <div class="col-sm-9">
-                                <input type="text" name="u_fullname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" required>
-                                <input type="hidden" name="u_id" class="form-control" data-ng-model="ld_Id" required>
-                                <span data-ng-show="NameValidation" class="WarningMsg">Please Insert Plan Name</span>
+                                <input type="text" name="planname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" required>
+                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="ld_Id">
+                                <span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.planname.$touched">
+                                    <span ng-show="valuePackForm.planname.$error.required" >Plan Name is required.</span>
+                                </span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -39,12 +41,12 @@
                             <label for="contentType" class="col-sm-3 control-label"><span class="asterisk">*</span>Content Type</label>
                             <div class="col-sm-9">
                                 <span class="ui-select">
-                                     <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-change="ContentTypeChange()" required>
-                                         <option value="">-- Select Content Type --</option>
-                                     </select>
+                                    <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-change="ContentTypeChange()" required>
+                                        <option value="">-- Select Content Type --</option>
+                                    </select>
                                 </span>
-                                <span data-ng-show="ContentTypeValidationVisible" style="color: #f00;">
-                                       Please Select Content Type.
+                                <span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.contentType.$touched">
+                                    <span ng-show="valuePackForm.contentType.$error.required" >Please Select Content Type.</span>
                                 </span>
                             </div>
                         </div>
@@ -56,8 +58,8 @@
                                          <option value="">-- Select JetPay Event --</option>
                                      </select>
                                 </span>
-                                <span style="color:red" ng-show="aLaCartForm.$submitted">
-                                    <span ng-show="aLaCartForm.jetPayEventId.$error.required" class="help-inline">Please Select JetPay EventId.</span>
+                                <span style="color:red" ng-show="valuePackForm.$submitted">
+                                    <span ng-show="valuePackForm.jetPayEventId.$error.required" >Please Select JetPay EventId.</span>
                                 </span>
                             </div>
                         </div>
@@ -73,21 +75,32 @@
                                         <div class="form-group">
                                             <label for="setDownloadLimit" class="col-sm-6 control-label"><span class="asterisk">*</span>Set Download Limit</label>
                                             <div class="col-sm-6">
-                                                <input type="text" class="form-control" id="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" data-ng-disabled="setDownloadLimitDisabled" required>
+                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" required>
+                                                <span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.setDownloadLimit.$touched">
+                                                    <span ng-show="valuePackForm.setDownloadLimit.$error.required" >Insert download limit.</span>
+                                                    <span ng-show="valuePackForm.setDownloadLimit.$error.pattern" >Insert valid download limit.</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="setDurationLimit" class="col-sm-6 control-label"><span class="asterisk">*</span>Set Duration Limit</label>
                                             <div class="col-sm-6">
-                                                <input type="text" class="form-control" id="setDurationLimit" placeholder="Set Duration Limit" data-ng-model="setDurationLimit" data-ng-disabled="setDurationLimitDisabled" required>
+                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="setDurationLimit" placeholder="Set Duration Limit" data-ng-model="setDurationLimit" required>
+                                                <span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.setDurationLimit.$touched">
+                                                    <span ng-show="valuePackForm.setDurationLimit.$error.required" >Insert Duration limit.</span>
+                                                    <span ng-show="valuePackForm.setDurationLimit.$error.pattern" >Insert valid Duration limit.</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="durationOptions" class="col-sm-6 control-label"><span class="asterisk">*</span>Duration In </label>
                                             <div class="col-sm-6">
-                                                <select name="durationOptions" class="form-control" data-ng-model="SelectedDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
+                                                <select name="durationOptions"class="form-control" data-ng-model="SelectedDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
                                                     <option value="">-- Select Duration --</option>
                                                 </select>
+                                                <span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.durationOptions.$touched">
+                                                    <span ng-show="valuePackForm.durationOptions.$error.required" >Select Time/Days.</span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

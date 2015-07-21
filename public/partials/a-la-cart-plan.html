@@ -20,7 +20,7 @@
                                 <input type="text" name="planname" class="form-control"  placeholder="Plan Name" data-ng-model="PlanName" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="ld_Id">
                                 <span style="color:red" ng-show="aLaCartForm.$submitted || aLaCartForm.planname.$touched">
-                                    <span ng-show="aLaCartForm.planname.$error.required" class="help-inline">Plan Name is required.</span>
+                                    <span ng-show="aLaCartForm.planname.$error.required" >Plan Name is required.</span>
                                 </span>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
                                      </select>
                                 </span>
                                 <span style="color:red" ng-show="aLaCartForm.$submitted || aLaCartForm.contentType.$touched">
-                                    <span ng-show="aLaCartForm.contentType.$error.required" class="help-inline">Please Select Content Type.</span>
+                                    <span ng-show="aLaCartForm.contentType.$error.required" >Please Select Content Type.</span>
                                 </span>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                                      </select>
                                 </span>
                                 <span style="color:red" ng-show="aLaCartForm.$submitted">
-                                    <span ng-show="aLaCartForm.jetPayEventId.$error.required" class="help-inline">Please Select JetPay EventId.</span>
+                                    <span ng-show="aLaCartForm.jetPayEventId.$error.required" >Please Select JetPay EventId.</span>
                                 </span>
                             </div>
                         </div>

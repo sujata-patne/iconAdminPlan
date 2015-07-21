@@ -67,41 +67,40 @@
                 <div class="col-md-6">
                     <div class="table-responsive">
                         <div id="user-exportable">
-                        <table id="user-signups" class="table table-striped table-bordered table-checkable">
-                            <thead>
-                            <tr>
-                                <th>Sr</th>
-                                <th>Full Name</th>
-                                <th>User Name</th>
-                                <th>Role</th>
-                                <th>Vendors</th>
-                                <th>Action</th>
-                            </tr>
-                            </thead>
-                            <tbody data-ng-repeat="user in UserList">
-                            <tr>
-                                <td>{{ user.ld_id }}</td>
-                                <td>{{ user.ld_display_name }}</td>
-                                <td>{{ user.ld_user_name }}</td>
-                                <td>{{ user.ld_role }}</td>
-                                <td>{{ user.Vendors }}</td>
-                                <!--if role = Super Admin-->
-                                <td class="text-center" data-ng-if="user.ld_role == 'Super Admin'"><i class="fa fa-eye"></i></td>
-                                <!--if role != Super Admin-->
-                                <td data-ng-if="user.ld_role != 'Super Admin'">
-                                    <table width="100%">
-                                        <tr>
-                                            <td width="50%"><a ng-click="addEditUsers(user.ld_id)" ><i class="fa fa-edit"></i></a></td>
-                                            <td data-ng-if="user.ld_active == 1" width="50%" class="text-right"><a href="" ng-click="BlockUser(user.ld_id)"><i class="fa fa-ban text-right" style="color: red;"></i></a></td>
-                                            <td data-ng-if="user.ld_active == 0" width="50%" class="text-right"><a href="" ng-click="UnBlockUser(user.ld_id)"><i class="fa fa-ban text-right" style="color: green;"></i></a></td>
-                                        </tr>
-
-                                    </table>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                            </div>
+                            <table id="user-signups" class="table table-striped table-bordered table-checkable">
+                                <thead>
+                                <tr>
+                                    <th>Sr</th>
+                                    <th>Full Name</th>
+                                    <th>User Name</th>
+                                    <th>Role</th>
+                                    <th>Vendors</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody data-ng-repeat="user in UserList">
+                                    <tr>
+                                        <td>{{ user.ld_id }}</td>
+                                        <td>{{ user.ld_display_name }}</td>
+                                        <td>{{ user.ld_user_name }}</td>
+                                        <td>{{ user.ld_role }}</td>
+                                        <td>{{ user.Vendors }}</td>
+                                        <!--if role = Super Admin-->
+                                        <td class="text-center" data-ng-if="user.ld_role == 'Super Admin'"><i class="fa fa-eye"></i></td>
+                                        <!--if role != Super Admin-->
+                                        <td data-ng-if="user.ld_role != 'Super Admin'">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="50%"><a ng-click="addEditUsers(user.ld_id)" ><i class="fa fa-edit"></i></a></td>
+                                                    <td data-ng-if="user.ld_active == 1" width="50%" class="text-right"><a href="" ng-click="BlockUser(user.ld_id)"><i class="fa fa-ban text-right" style="color: red;"></i></a></td>
+                                                    <td data-ng-if="user.ld_active == 0" width="50%" class="text-right"><a href="" ng-click="UnBlockUser(user.ld_id)"><i class="fa fa-ban text-right" style="color: green;"></i></a></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="col-xs-12">
                         <div class="col-xs-12 col-sm-4">

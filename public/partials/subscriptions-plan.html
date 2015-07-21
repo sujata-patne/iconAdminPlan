@@ -20,7 +20,7 @@
                                 <input type="text" name="planname" class="form-control" placeholder="Plan Name" data-ng-model="PlanName" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="ld_Id" >
                                 <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.planname.$touched">
-                                    <span ng-show="subscriptionForm.planname.$error.required" class="help-inline">Plan Name is required.</span>
+                                    <span ng-show="subscriptionForm.planname.$error.required" >Plan Name is required.</span>
                                 </span>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                         <div class="form-group">
                             <label for="description" class="col-sm-3 control-label">Description</label>
                             <div class="col-sm-9">
-                                <textarea name="u_caption" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="3" ></textarea>
+                                <textarea name="u_caption" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="2" ></textarea>
                             </div>
                         </div>
                         <div class="form-group">
@@ -45,7 +45,7 @@
                                     </select>
                                 </span>
                                 <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.contentType.$touched">
-                                    <span ng-show="subscriptionForm.contentType.$error.required" class="help-inline">Please Select Content Type.</span>
+                                    <span ng-show="subscriptionForm.contentType.$error.required" >Please Select Content Type.</span>
                                 </span>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                                      </select>
                                 </span>
                                 <span style="color:red" ng-show="subscriptionForm.$submitted">
-                                    <span ng-show="subscriptionForm.jetPayEventId.$error.required" class="help-inline">Please Select JetPay EventId.</span>
+                                    <span ng-show="subscriptionForm.jetPayEventId.$error.required" >Please Select JetPay EventId.</span>
                                 </span>
                             </div>
                         </div>
@@ -70,39 +70,42 @@
                             <div class="portlet-content">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <label for="offerForDays" class="col-sm-6 control-label"><span class="asterisk">*</span>Try & Buy(TB) Offer for Days</label>
+                                        <label for="offerForDays" class="col-sm-6 control-label">Try & Buy(TB) Offer for Days</label>
                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control" name="offerForDays" placeholder="Try & Buy offer for Days" data-ng-model="offerForDays" data-ng-disabled="offerForDaysDisabled" required>
+                                            <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="offerForDays" placeholder="Try & Buy offer for Days" data-ng-model="offerForDays" data-ng-disabled="offerForDaysDisabled" >
                                             <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.offerForDays.$touched">
-                                                <span ng-show="subscriptionForm.offerForDays.$error.required" class="help-inline">Please Insert TB Offer for days.</span>
+                                                <span ng-show="subscriptionForm.offerForDays.$error.pattern">Insert valid TB Offer for days.</span>
                                             </span>
                                         </div>
                                         <hr />
-                                        <h5>Content Allowed to Consume</h5>
+                                        <h5><em>Content Allowed to Consume</em></h5>
                                         <div class="form-group">
-                                            <label for="numContentOffer" class="col-sm-6 control-label"><span class="asterisk">*</span>In Try & Buy(TB) Offer Days</label>
+                                            <label for="numContentOffer" class="col-sm-6 control-label">In Try & Buy(TB) Offer Days</label>
                                             <div class="col-sm-6">
-                                                <input type="text" class="form-control" name="numContentOffer" placeholder="No.of Contents In TB Offer Days" data-ng-model="numContentOffer" data-ng-disabled="numContentOfferDisabled" required>
+                                                <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="numContentOffer" placeholder="No.of Contents In TB Offer Days" data-ng-model="numContentOffer" data-ng-disabled="numContentOfferDisabled">
                                                 <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.numContentOffer.$touched">
-                                                    <span ng-show="subscriptionForm.numContentOffer.$error.required" class="help-inline">Please Insert limit in TB Offer days.</span>
+                                                    <span ng-show="subscriptionForm.numContentOffer.$error.pattern" >Insert valid limit in TB Offer days.</span>
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="limitSingleDay" class="col-sm-6 control-label"><span class="asterisk">*</span>For Single Day</label>
+                                            <label for="limitSingleDay" class="col-sm-6 control-label">For Single Day</label>
                                             <div class="col-sm-6">
-                                                <input type="text" class="form-control" name="limitSingleDay" placeholder="Limit For Single Day" data-ng-model="limitSingleDay" data-ng-disabled="limitSingleDayDisabled" required>
+                                                <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="limitSingleDay" placeholder="Limit For Single Day" data-ng-model="limitSingleDay" data-ng-disabled="limitSingleDayDisabled">
                                                 <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.limitSingleDay.$touched">
-                                                    <span ng-show="subscriptionForm.limitSingleDay.$error.required" class="help-inline">Please Insert download limit for Single Day.</span>
+                                                    <span ng-show="subscriptionForm.limitSingleDay.$error.pattern" >Insert download limit for Single Day.</span>
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="fullSubDuration" class="col-sm-6 control-label"><span class="asterisk">*</span>For Full Subscription Duration</label>
                                             <div class="col-sm-6">
-                                                <input type="text" class="form-control" name="fullSubDuration" placeholder="For Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" required>
+                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="fullSubDuration" placeholder="For Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" required>
                                                 <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.fullSubDuration.$touched">
-                                                    <span ng-show="subscriptionForm.fullSubDuration.$error.required" class="help-inline">Please Insert download limit for Full Subscription Duration.</span>
+                                                    <span ng-show="subscriptionForm.fullSubDuration.$error.required" >Insert download limit for Full Subscription.</span>
+                                                    <span ng-show="subscriptionForm.fullSubDuration.$error.pattern" >Insert valid download limit for Full Subscription.</span>
+                                                    <span ng-show="fullSubDuration < limitSingleDay" >Value must be greater than greater than Single Day
+limit.</span>
                                                 </span>
                                             </div>
                                         </div>
