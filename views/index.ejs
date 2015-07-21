@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Plan</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oswald:400,300,700">
+
+
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="assets/css/ui-lightness/jquery-ui-1.9.2.custom.min.css"/>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- App CSS -->
+    <link type="text/css" rel="stylesheet" href="assets/css/target-admin.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/custom.css"/>
+</head>
+<body data-ng-app="myApp">
+    <div class="navbar home-navebar">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand navbar-brand-image" href="#/"> <img src="./assets/img/logo.png" alt="Site Logo"> </a>
+            </div>
+            <!-- /.navbar-header -->
+            <div class="navbar-collapse collapse">
+            </div>
+            <!--/.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.navbar -->
+    <div class="mainbar">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-image" href="#/"> <img src="./assets/img/logo.png" alt="Site Logo" class="logo"> </a>
+            <button type="button" class="btn mainbar-toggle" data-toggle="collapse" data-target=".mainbar-collapse"> <i class="fa fa-bars"></i> </button>
+            <div class="mainbar-collapse collapse">
+                <ul class="nav navbar-nav mainbar-nav">
+                    <!--<li class="removeActiveClass" id="dashboard"> <a ui-sref="dashboard"> <i class="fa fa-dashboard"></i> Dashboard </a> </li>-->
+                    <% for(var i in Pages) { %>
+                    <% if(Pages[i].submenuflag == 0){ %>
+                    <li class="removeActiveClass" id="<%= Pages[i].id %>"> <a ui-sref="<%= Pages[i].href %>"> <i class="<%= Pages[i].class %>"></i><%= Pages[i].pagename %></a> </li>
+                    <% } else { %>
+                    <li class="removeActiveClass dropdown" id="<%= Pages[i].id %>"> <a ui-sref="<%= Pages[i].href %>" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"> <i class="<%= Pages[i].class %>"></i><%= Pages[i].pagename %> <span class="caret"></span> </a>
+                        <ul class="dropdown-menu">
+                            <% for(var j in Pages[i].sub) { %>
+                            <li class="removeSubactiveClass" id="<%= Pages[i].sub[j].id %>"> <a ui-sref="<%= Pages[i].sub[j].subhref %>"> <i class="<%= Pages[i].sub[j].subclass %>"></i><%= Pages[i].sub[j].subpagename %></a> </li>
+                            <% } %>
+                        </ul>
+                    </li>
+                    <% } %>
+                    <% } %>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+            <ul class="navbar-right">
+                <li class="text-right"> Welcome <%= username %>  [<a href="./accountlogin" style="padding:0px; margin:0px; display:inline;">Logout</a>]<br />
+                    <%= userrole %> </li>
+            </ul>
+        </div>
+        <!-- /.container -->
+    </div>
+    <!-- /.mainbar -->
+    <div data-ui-view></div>
+</body>
+<script src="assets/scripts/angularjs/angular.js" ></script>
+<script src="assets/scripts/ngProgress.min.js" ></script>
+<script src="assets/scripts/jquery/dist/jquery.js" ></script>
+<script src="assets/scripts/angular-bootstrap/ui-bootstrap-tpls.js" ></script>
+<script src="assets/scripts/angular-ui-router/release/angular-ui-router.js" ></script>
+<!-- App JS -->
+<script src="assets/scripts/target-admin.js"></script>
+<!-- Plugin JS -->
+<script src="scripts/app.js"></script>
+<script src="scripts/controller/dashboard.js"></script>
+<script src="scripts/controller/users.js"></script>
+<script src="scripts/controller/oneTimePlan.js"></script>
+<script src="scripts/controller/subscriptionsPlan.js"></script>
+<script src="scripts/controller/valuePackPlan.js"></script>
+<script src="scripts/controller/planList.js"></script>
+<script src="scripts/services/users.service.js"></script>
+</html>

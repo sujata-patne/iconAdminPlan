@@ -1,0 +1,125 @@
+<div class="container">
+    <div class="content">
+        <div class="content-container">
+            <div class="content-header">
+                <h2 class="content-header-title">Add / Edit Users</h2>
+            </div>
+            <!-- /.content-header -->
+            <div class="row">
+                <div class="col-md-6">
+                    <span class="col-sm-offset-3 col-sm-9" data-ng-show="connectionError" style="color:red;">
+                                        {{error}}
+                    </span>
+                    <span class="col-sm-offset-3 col-sm-9" data-ng-show="SaveUserData" style="color:green;">
+                                        Record inserted successfully.
+                    </span>
+                    <form class="form-horizontal" role="form" name="userform" data-ng-submit="SaveUserDetails()">
+                        <div class="form-group">
+                            <label for="fullname" class="col-sm-3 control-label">Full Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="u_fullname" class="form-control" id="" placeholder="Full Name" data-ng-model="FullName" required>
+                                <input type="hidden" name="u_id" class="form-control" id="" data-ng-model="ld_Id" required>
+
+                                <span data-ng-show="NameValidation" class="WarningMsg">Please Insert Full Name</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="username" class="col-sm-3 control-label">User Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="u_username" class="form-control" id="exampleInputEmail1" placeholder="User Name" data-ng-model="UserName" required>
+                                <span data-ng-show="UserNameValidation" class="WarningMsg">Please Insert User Name</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailid" class="col-sm-3 control-label">Email Id</label>
+                            <div class="col-sm-9">
+                                <input type="email" name="u_emailid" class="form-control" id="Text1" placeholder="Email" data-ng-model="EmailId" required>
+                                <span data-ng-show="EmailValidation" class="WarningMsg">Please Insert Email Id</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile" class="col-sm-3 control-label">Mobile No</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="u_mobileno" class="form-control" id="Text2" placeholder="Mobile no" maxlength="10" minlength="10" data-ng-model="MobileNo" data-ng-pattern="/^\d{10}$/" required>
+                                <span data-ng-show="MobileValidation && userform.u_mobileno.$invalid" class="WarningMsg">Please Enter Valid Mobile No.</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="role" class="col-sm-3 control-label">Role</label>
+                            <div class="col-sm-9">
+                                <span class="ui-select">
+                                    <select id="select-input" name="u_role" class="form-control ng-pristine ng-valid" data-ng-model="SelectedUserRole" data-ng-options="item.cd_name as item.cd_name for item in UserRole" required>
+                                    </select>
+                                </span>
+                                <span data-ng-show="RoleValidationVisible" style="color: #f00;">
+                                       Please Select Role First.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-9">
+                                <button type="submit" class="btn btn-primary btn-w-md">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="table-responsive">
+                        <div id="user-exportable">
+                        <table id="user-signups" class="table table-striped table-bordered table-checkable">
+                            <thead>
+                            <tr>
+                                <th>Sr</th>
+                                <th>Full Name</th>
+                                <th>User Name</th>
+                                <th>Role</th>
+                                <th>Vendors</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody data-ng-repeat="user in UserList">
+                            <tr>
+                                <td>{{ user.ld_id }}</td>
+                                <td>{{ user.ld_display_name }}</td>
+                                <td>{{ user.ld_user_name }}</td>
+                                <td>{{ user.ld_role }}</td>
+                                <td>{{ user.Vendors }}</td>
+                                <!--if role = Super Admin-->
+                                <td class="text-center" data-ng-if="user.ld_role == 'Super Admin'"><i class="fa fa-eye"></i></td>
+                                <!--if role != Super Admin-->
+                                <td data-ng-if="user.ld_role != 'Super Admin'">
+                                    <table width="100%">
+                                        <tr>
+                                            <td width="50%"><a ng-click="addEditUsers(user.ld_id)" ><i class="fa fa-edit"></i></a></td>
+                                            <td data-ng-if="user.ld_active == 1" width="50%" class="text-right"><a href="" ng-click="BlockUser(user.ld_id)"><i class="fa fa-ban text-right" style="color: red;"></i></a></td>
+                                            <td data-ng-if="user.ld_active == 0" width="50%" class="text-right"><a href="" ng-click="UnBlockUser(user.ld_id)"><i class="fa fa-ban text-right" style="color: green;"></i></a></td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                            </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="col-xs-12 col-sm-4">
+                            <button type="button" class="btn btn-primary btn-w-xs" data-ng-disabled="usercurrentPage == 0" data-ng-click="usercurrentPage=usercurrentPage-1">Previous</button>
+                        </div>
+                        <div class="col-xs-12 col-sm-4">
+                            <!--<button type="button" class="btn btn-primary btn-w-xs" data-ng-click="exportUserData('')">Download in excel</button>-->
+                            <button type="button" class="btn btn-primary btn-w-xs" data-ng-click="exportUserData('#user-signups')">Download in excel</button>
+                        </div>
+                        <div class="col-xs-12 col-sm-4 text-right">
+                            <button type="button" class="btn btn-primary btn-w-xs" data-ng-disabled="usercurrentPage >= UserList.length/userpageSize - 1" data-ng-click="usercurrentPage=usercurrentPage+1">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- /.content-container -->
+    </div>
+    <!-- /.content -->
+</div>
