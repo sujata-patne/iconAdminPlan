@@ -7,30 +7,28 @@ var config = require('../config')();
 
 var mysql = require('mysql');
 
-var pool  = mysql.createPool({
-    host: config.db_host,
-    user: config.db_user,
-    password: config.db_pass,
-    database: config.db_name
+//var pool  = mysql.createPool({
+//    host: config.db_host,
+//    user: config.db_user,
+//    password: config.db_pass,
+//    database: config.db_name
+//});
+
+var poolCluster = mysql.createPoolCluster();
+
+// add configurations
+poolCluster.add('PLAN',{
+    host: config.db_host_ikon,
+    user: config.db_user_ikon,
+    password: config.db_pass_ikon,
+    database: config.db_name_ikon
+}); // anonymous group
+//console.log(config);
+poolCluster.add('MASTER', {
+    host: config.db_host_central,
+    user: config.db_user_central,
+    password: config.db_pass_central,
+    database: config.db_name_central
 });
 
-exports.pool = pool;
-//console.log(config.db_host)
-//console.log(config.db_user)
-//console.log(config.db_name)
-//module.exports = function(){
-//    var connection = mysql.createConnection({
-//        host: config.db_host,
-//        user: config.db_user,
-//        password: config.db_pass,
-//        database: config.db_name
-//    });
-//
-//    connection.connect(function (err) {
-//        if(!err) {
-//            console.log("Database is connected ... \n\n");
-//        } else {
-//            console.log("Error connecting database ... \n\n");
-//        }
-//    });
-//}
+exports.pool = poolCluster;

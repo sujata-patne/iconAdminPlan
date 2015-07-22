@@ -10,7 +10,7 @@ exports.pages = function(req,res,next){
 
     var pagesjson = [
         //{ 'pagename': 'Dashboard', 'href': 'dashboard','id':'dashboard', 'class': 'fa fa-dashboard', 'submenuflag': '0', 'sub': [] },
-       // { 'pagename': 'Add/Edit User', 'href': 'users','id':'addedituser', 'class': 'fa fa-user', 'submenuflag': '0', 'sub': [] },
+        { 'pagename': 'Add/Edit User', 'href': 'users','id':'addedituser', 'class': 'fa fa-user', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart','id':'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions','id':'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Value Pack Plan', 'href': 'value-pack','id':'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
@@ -40,12 +40,13 @@ exports.login = function (req, res, next) {
 
 exports.authenticate = function(req, res, next){
     try {
-        mysql.getConnection(function(err, connection){
+        mysql.getConnection('MASTER',function(err, connection){
         var query = connection.query('SELECT * FROM login_detail where BINARY ld_user_id= ? and BINARY ld_user_pwd = ? ', [req.body.username, req.body.password], function (err, row, fields) {
             if (err) {
                 res.render('account-login', { error: 'Error in database connection.' });
             }
             else {
+                //console.log(row[0]);
                 if (row.length > 0) {
                     if (row[0].ld_active == 1) {
                         var session = req.session;
@@ -79,7 +80,7 @@ function getPages(role) {
 
     if (role == "Super Admin") {
         var pagesjson = [
-           // { 'pagename': 'Add/Edit User', 'href': 'users','id':'addedituser', 'class': 'fa fa-user', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Add/Edit User', 'href': 'users','id':'addedituser', 'class': 'fa fa-user', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart','id':'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions','id':'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack','id':'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
@@ -301,13 +302,12 @@ exports.viewForgotPassword = function (req, res, next) {
 
 exports.forgotPassword = function(req,res,next){
     try {
-        mysql.getConnection(function(err, connection) {
-            var query = connection.query('SELECT * FROM login_detail where ld_user_id= ? and ld_email_id = ?', [req.body.userid, req.body.emailid], function (err, row, fields) {
+        mysql.getConnection('MASTER',function(err, connection){
+            var query = connection.query('SELECT * FROM login_detail where BINARY ld_user_id= ? and BINARY ld_email_id = ? ', [req.body.userid, req.body.emailid], function (err, row, fields) {
                 if (err) {
                     res.render('account-forgot', { error: 'Error in database connection.', msg: '' });
                 }
                 else {
-                    console.log(row[0].ld_user_pwd);
                     if (row.length > 0) {
 
                         var smtpTransport = nodemailer.createTransport({
@@ -339,13 +339,12 @@ exports.forgotPassword = function(req,res,next){
                     }
                 }
             });
-
-            });
-        }
-        catch (err) {
-            connection.end();
-            res.render('account-forgot', { error: 'Error in database connection.' });
-        }
+        });
+    }
+    catch (err) {
+        connection.end();
+        res.render('account-forgot', { error: 'Error in database connection.' });
+    }
 }
 
 exports.viewChangePassword = function (req, res, next) {
@@ -359,7 +358,7 @@ exports.changePassword = function (req, res) {
         if (req.session) {
             if (req.session.UserName) {
                 var session = req.session;
-                mysql.getConnection(function(err, connection) {
+                mysql.getConnection('MASTER',function(err, connection) {
                     if (req.body.oldpassword == session.Password) {
                         var query = connection.query('UPDATE login_detail SET ld_user_pwd=?, ld_modified_on=? WHERE ld_id=?', [req.body.newpassword, new Date(), session.UserId], function (err, result) {
                             if (err) {

@@ -1,7 +1,7 @@
 /**
  * Created by sujata.patne on 7/7/2015.
  */
-var env = require('./env123.json');
+var env = require('./env.json');
 
 module.exports = function() {
     var node_env = 'development';

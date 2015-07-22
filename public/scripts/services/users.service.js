@@ -10,8 +10,13 @@ myApp.service('Users', ['$http', function ($http) {
         });
     }
 
-    service.editUser = function(success){
-        $http.get(service.baseRestUrl + '/users').success(function (items) {
+    service.updateUser = function(data,success){
+        $http.post(service.baseRestUrl + '/updateUsers', data).success(function (items) {
+            success(items);
+        });
+    }
+    service.saveUser = function(data,success){
+        $http.post(service.baseRestUrl + '/saveUsers', data).success(function (items) {
             success(items);
         });
     }
