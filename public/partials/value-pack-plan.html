@@ -11,15 +11,15 @@
                         <span class="col-sm-offset-3 col-sm-9" data-ng-show="connectionError" style="color:red;">
                                             {{error}}
                         </span>
-                        <span class="col-sm-offset-3 col-sm-9" data-ng-show="SaveUserData" style="color:green;">
-                                            Record inserted successfully.
+                        <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color:green;">
+                                            {{success}}
                         </span>
-
                         <div class="form-group">
                             <label for="planname" class="col-sm-3 control-label"><span class="asterisk">*</span>Plan Name</label>
                             <div class="col-sm-9">
                                 <input type="text" name="planname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="ld_Id">
+                                <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.planname.$touched">
                                     <span ng-show="valuePackForm.planname.$error.required" >Plan Name is required.</span>
                                 </span>
@@ -37,19 +37,19 @@
                                 <textarea name="u_caption" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="3" ></textarea>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="contentType" class="col-sm-3 control-label"><span class="asterisk">*</span>Content Type</label>
-                            <div class="col-sm-9">
-                                <span class="ui-select">
-                                    <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-change="ContentTypeChange()" required>
-                                        <option value="">-- Select Content Type --</option>
-                                    </select>
-                                </span>
-                                <span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.contentType.$touched">
-                                    <span ng-show="valuePackForm.contentType.$error.required" >Please Select Content Type.</span>
-                                </span>
-                            </div>
-                        </div>
+                        <!--<div class="form-group">-->
+                            <!--<label for="contentType" class="col-sm-3 control-label"><span class="asterisk">*</span>Content Type</label>-->
+                            <!--<div class="col-sm-9">-->
+                                <!--<span class="ui-select">-->
+                                    <!--<select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-change="ContentTypeChange()" required>-->
+                                        <!--<option value="">&#45;&#45; Select Content Type &#45;&#45;</option>-->
+                                    <!--</select>-->
+                                <!--</span>-->
+                                <!--<span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.contentType.$touched">-->
+                                    <!--<span ng-show="valuePackForm.contentType.$error.required" >Please Select Content Type.</span>-->
+                                <!--</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
                         <div class="form-group">
                             <label for="jetPayEventId" class="col-sm-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
                             <div class="col-sm-9">

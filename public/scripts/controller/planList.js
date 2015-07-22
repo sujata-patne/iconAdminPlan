@@ -4,6 +4,10 @@
 var site_base_path = '';
 //var site_base_path = 'http://dailymagic.in';
 myApp.controller('planListCtrl', function ($scope, $http, ngProgress) {
+    $scope.IsDisable = true;
+    $scope.listcurrentPage = 0;
+    $scope.listpageSize = 10;
+
     $scope.OperatorsList = [
         {id:1, name:'Vodafone', amt:10, disclaimer:'Click to download this content @ Rs.10/-'},
         {id:2, name:'BSNL', amt:20, disclaimer:'Click to download this content @ Rs.20/-'},
@@ -15,14 +19,18 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress) {
         {cd_id:1, cd_name:'Wallpaper'},
         {cd_id:2, cd_name:'Audio'},
         {cd_id:3, cd_name:'Video'},
-        {cd_id:4, cd_name:'Games'}
+        {cd_id:4, cd_name:'Games'},
+        {cd_id:5, cd_name:'Subscription'},
+        {cd_id:6, cd_name:'Value Pack'}
     ];
 
     $scope.planList = [
-        {cd_id:1, plan: "Wallpaper@10",content_id:1,created_on:"2015-07-15"},
-        {cd_id:2, plan: "Video@10",content_id:2,created_on:"2015-07-11"},
-        {cd_id:3, plan: "Audio@10",content_id:3,created_on:"2015-07-21"},
-        {cd_id:4, plan: "Games@10",content_id:4,created_on:"2015-07-25"}
+        {cd_id:1, plan: "Wallpaper@10",content_id:1,created_on:"2015-07-15",end_on:"2015-07-25",cd_is_active:1},
+        {cd_id:2, plan: "Video@10",content_id:2,created_on:"2015-07-11",end_on:"2015-07-25",cd_is_active:0},
+        {cd_id:3, plan: "Audio@10",content_id:3,created_on:"2015-07-21",end_on:"2015-07-25",cd_is_active:0},
+        {cd_id:4, plan: "Games@10",content_id:4,created_on:"2015-07-25",end_on:"2015-07-25",cd_is_active:1},
+        {cd_id:5, plan: "Subscription",content_id:5,created_on:"2015-07-05",end_on:"2015-07-25",cd_is_active:1},
+        {cd_id:6, plan: "Value Pack",content_id:6,created_on:"2015-07-07",end_on:"2015-07-25",cd_is_active:1}
     ];
     $scope.getContentName = function(id) {
         var type = '';
@@ -33,7 +41,32 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress) {
         });
         return (type) ? type : '';
     }
+    $scope.BlockColor = function (id) {
+        for (var i in $scope.planList) {
+            if ($scope.planList[i].cd_id == id) {
+                if (Datewithouttime($scope.planList[i].end_on) < Datewithouttime(new Date())) {
+                    return "darkorange";
+                }
+                else {
+                    if ($scope.planList[i].cd_is_active == 1) {
+                        return "green";
+                    }
+                    else {
+                        return "red";
+                    }
+                }
+            }
+        }
+    }
 
+    function Datewithouttime(val) {
+        var d = new Date(val);
+        var dt = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        var selectdate = year + '-' + Pad("0", month, 2) + '-' + Pad("0", dt, 2);
+        return new Date(selectdate);
+    }
     $scope.setDate = function(val) {
         var d = new Date(val);
         var date = d.getDate();

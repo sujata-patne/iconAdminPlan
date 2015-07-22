@@ -4,6 +4,7 @@
 var site_base_path = '';
 //var site_base_path = 'http://dailymagic.in';
 myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress) {
+    $scope.contentType = 'Value Pack';
     $scope.ContentTypes = [
         {cd_id:1, cd_name:'Wallpaper'},
         {cd_id:2, cd_name:'Audio'},

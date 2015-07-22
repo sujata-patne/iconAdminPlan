@@ -53,7 +53,7 @@
                                     <th>Action</th>
                                 </tr>
                                 </thead>
-                                <tbody data-ng-repeat="plan in planList | filter:PlanName">
+                                <tbody data-ng-repeat="plan in planList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize | filter:PlanName">
                                     <tr>
                                         <td style="width: 5%">{{plan.cd_id}}</td>
                                         <td style="width: 30%">{{plan.plan}}</td>
@@ -61,8 +61,12 @@
                                         <td style="width: 10%">{{setDate(plan.created_on)}}</td>
                                         <td style="width: 7%">
                                             <div class="row">
-                                                <div class="col-md-6"><a href="" data-ng-click="edit(filter.cd_id)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
-                                                <div class="col-md-6"><a href="" data-ng-click="delete(filter.cd_id)"><i class="glyphicon glyphicon-remove" title="Delete"></i></a></div>
+                                                <div class="col-md-4"><a href="" data-ng-click="edit(filter.cd_id)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
+                                                <div class="col-md-4"><a href="" data-ng-click="delete(filter.cd_id)"><i class="glyphicon glyphicon-remove" title="Delete"></i></a></div>
+
+                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.cd_is_active == 1" width="40%" class="text-right"><a href="" title="{{vendor.title}}" data-ng-click="BlockVendor(plan.cd_id)"><i class="fa fa-ban text-right" data-ng-class="BlockColor(vendor.vd_id)"></i></a></div>
+                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.cd_is_active == 0" width="40%" class="text-right"><a href="" title="{{vendor.title}}" data-ng-click="UnBlockVendor(plan.cd_id)"><i class="fa fa-ban text-right" data-ng-class="BlockColor(vendor.vd_id)"></i></a></div>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -75,13 +79,13 @@
             <div class="row">
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-4">
-                        <button type="button" class="btn btn-primary btn-w-xs" title="Previous" data-ng-disabled="vendorcurrentPage == 0" data-ng-click="vendorcurrentPage=vendorcurrentPage-1">Previous</button>
+                        <button type="button" class="btn btn-primary btn-w-xs" title="Previous" data-ng-disabled="listcurrentPage == 0" data-ng-click="listcurrentPage=listcurrentPage-1">Previous</button>
                     </div>
                     <div class="col-xs-12 col-sm-4">
-                        <button type="button" class="btn btn-primary btn-w-xs" title="Download" data-ng-click="exportMasterListData('#MasterListTable')">Download in excel</button>
+                        <button type="button" class="btn btn-primary btn-w-xs" title="Download" data-ng-click="exportListData()">Download in excel</button>
                     </div>
                     <div class="col-xs-12 col-sm-4 text-right">
-                        <button type="button" class="btn btn-primary btn-w-xs" title="Next" data-ng-disabled="vendorcurrentPage >= chunkedFilterData.length/vendorpageSize - 1" data-ng-click="vendorcurrentPage=vendorcurrentPage+1">Next</button>
+                        <button type="button" class="btn btn-primary btn-w-xs" title="Next" data-ng-disabled="listcurrentPage >= planList.length/listpageSize - 1" data-ng-click="listcurrentPage=listcurrentPage+1">Next</button>
                     </div>
                 </div>
             </div>

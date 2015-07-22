@@ -114,102 +114,104 @@ function getPages(role) {
 
 exports.GetDashBoardData = function(req, res) {
     try {
-        mysql.getConnection(function(err, connection) {
+        mysql.getConnection('PLAN',function(err, connection_ikon) {
             if (req.session) {
                 if (req.session.UserName) {
-                    if (req.session.UserRole == "Content Mgr.") {
-                        var query = connection.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id IN (1,2)', function (err, FileStatus) {
+                    if (req.session.UserRole == "Content Mgr."){
+                        var query = connection_ikon.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id IN (1,2)', function (err, FileStatus) {
                             if (err) {
                                 console.log(err.message);
-                                connection.release();
+                                connection_ikon.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                var query = connection.query('select * from (select * from vendor_detail where vd_is_active =1) vd inner join (select * from vendor_profile)vp on (vd.vd_id =vp.vp_vendor_id) inner join (select * from login_user_vendor)uv on (vd.vd_id =uv.uv_vd_id and uv_ld_id =?)', [req.session.UserId], function (err, Vendors) {
-                                    if (err) {
-                                        console.log(err.message);
-                                        connection.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                    else {
-                                        if (Vendors.length > 0) {
-                                            var VendorArray = [];
-                                            for (var i in Vendors) {
-                                                VendorArray.push(Vendors[i].vd_id);
-                                            }
-                                            var query = connection.query('SELECT * FROM content_metadata WHERE cm_property_id is null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ')', function (err, Property) {
-                                                if (err) {
-                                                    connection.release();
-                                                    res.status(500).json(err.message);
-                                                }
-                                                else {
-                                                    var PropertyArray = [];
-                                                    for (var i in Property) {
-                                                        PropertyArray.push(Property[i].cm_id);
-                                                    }
-                                                    if (PropertyArray.length > 0) {
-                                                        var query = connection.query('SELECT cm_state,count(*) as count FROM content_metadata WHERE cm_property_id is not null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ') and cm_property_id in(' + PropertyArray.toString() + ') group by cm_state', function (err, StatusFiles) {
-                                                            if (err) {
-                                                                console.log(err.message);
-                                                                connection.release();
-                                                                res.status(500).json(err.message);
-                                                            }
-                                                            else {
-                                                                var query = connection.query('SELECT * FROM (SELECT cm_vendor, cm_content_type, COUNT( * ) as count FROM  `content_metadata` WHERE  `cm_property_id` IS NOT NULL and cm_is_active=1 and cm_vendor in(' + VendorArray.toString() + ') AND cm_state =4 GROUP BY  `cm_vendor` ,  `cm_content_type`)cm LEFT OUTER JOIN (SELECT vd_id,vd_name FROM vendor_detail where vd_is_active =1)vendor ON ( cm.cm_vendor = vendor.vd_id )', function (err, VendorFiles) {
-                                                                    if (err) {
-                                                                        console.log(err.message);
-                                                                        connection.release();
-                                                                        res.status(500).json(err.message);
-                                                                    }
-                                                                    else {
-                                                                        connection.release();
-                                                                        res.send({
-                                                                            FileStatus: FileStatus,
-                                                                            StatusFiles: StatusFiles,
-                                                                            VendorFiles: VendorFiles,
-                                                                            Vendors: Vendors
-                                                                        });
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
-                                                    }
-                                                    else {
-                                                        res.send({
-                                                            FileStatus: FileStatus,
-                                                            StatusFiles: [],
-                                                            VendorFiles: [],
-                                                            Vendors: Vendors
-                                                        });
-                                                    }
-                                                }
-                                            });
+                                mysql.getConnection('MASTER', function (err, connection_central) {
+                                    var query = connection_central.query('select * from (select * from vendor_detail where vd_is_active =1) vd inner join (select * from vendor_profile)vp on (vd.vd_id =vp.vp_vendor_id) inner join (select * from login_user_vendor)uv on (vd.vd_id =uv.uv_vd_id and uv_ld_id =?)', [req.session.UserId], function (err, Vendors) {
+                                        if (err) {
+                                            console.log(err.message);
+                                            connection_central.release();
+                                            res.status(500).json(err.message);
                                         }
                                         else {
-                                            res.send({
-                                                FileStatus: FileStatus,
-                                                StatusFiles: [],
-                                                VendorFiles: [],
-                                                Vendors: []
-                                            });
+                                            if (Vendors.length > 0) {
+                                                var VendorArray = [];
+                                                for (var i in Vendors) {
+                                                    VendorArray.push(Vendors[i].vd_id);
+                                                }
+                                                var query = connection_ikon.query('SELECT * FROM content_metadata WHERE cm_property_id is null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ')', function (err, Property) {
+                                                    if (err) {
+                                                        connection_ikon.release();
+                                                        res.status(500).json(err.message);
+                                                    }
+                                                    else {
+                                                        var PropertyArray = [];
+                                                        for (var i in Property) {
+                                                            PropertyArray.push(Property[i].cm_id);
+                                                        }
+                                                        if (PropertyArray.length > 0) {
+                                                            var query = connection_ikon.query('SELECT cm_state,count(*) as count FROM content_metadata WHERE cm_property_id is not null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ') and cm_property_id in(' + PropertyArray.toString() + ') group by cm_state', function (err, StatusFiles) {
+                                                                if (err) {
+                                                                    console.log(err.message);
+                                                                    connection_ikon.release();
+                                                                    res.status(500).json(err.message);
+                                                                }
+                                                                else {
+                                                                    var query = connection_ikon.query('SELECT * FROM (SELECT cm_vendor, cm_content_type, COUNT( * ) as count FROM  `content_metadata` WHERE  `cm_property_id` IS NOT NULL and cm_is_active=1 and cm_vendor in(' + VendorArray.toString() + ') AND cm_state =4 GROUP BY  `cm_vendor` ,  `cm_content_type`)cm LEFT OUTER JOIN (SELECT vd_id,vd_name FROM vendor_detail where vd_is_active =1)vendor ON ( cm.cm_vendor = vendor.vd_id )', function (err, VendorFiles) {
+                                                                        if (err) {
+                                                                            console.log(err.message);
+                                                                            connection_ikon.release();
+                                                                            res.status(500).json(err.message);
+                                                                        }
+                                                                        else {
+                                                                            connection_ikon.release();
+                                                                            res.send({
+                                                                                FileStatus: FileStatus,
+                                                                                StatusFiles: StatusFiles,
+                                                                                VendorFiles: VendorFiles,
+                                                                                Vendors: Vendors
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                }
+                                                            });
+                                                        }
+                                                        else {
+                                                            res.send({
+                                                                FileStatus: FileStatus,
+                                                                StatusFiles: [],
+                                                                VendorFiles: [],
+                                                                Vendors: Vendors
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            else {
+                                                res.send({
+                                                    FileStatus: FileStatus,
+                                                    StatusFiles: [],
+                                                    VendorFiles: [],
+                                                    Vendors: []
+                                                });
+                                            }
                                         }
-                                    }
+                                    });
                                 });
                             }
                         });
                     }
                     else {
-                        var query = connection.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id IN (1,2)', function (err, FileStatus) {
+                        var query = connection_ikon.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id IN (1,2)', function (err, FileStatus) {
                             if (err) {
                                 console.log(err.message);
-                                connection.release();
+                                connection_ikon.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                var query = connection.query('SELECT * FROM  vendor_detail where vd_is_active =1', function (err, Vendors) {
+                                var query = connection_central.query('SELECT * FROM  vendor_detail where vd_is_active =1', function (err, Vendors) {
                                     if (err) {
                                         console.log(err.message);
-                                        connection.release();
+                                        connection_central.release();
                                         res.status(500).json(err.message);
                                     }
                                     else {
@@ -218,9 +220,9 @@ exports.GetDashBoardData = function(req, res) {
                                             for (var i in Vendors) {
                                                 VendorArray.push(Vendors[i].vd_id);
                                             }
-                                            var query = connection.query('SELECT * FROM content_metadata WHERE cm_property_id is null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ')', function (err, Property) {
+                                            var query = connection_ikon.query('SELECT * FROM content_metadata WHERE cm_property_id is null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ')', function (err, Property) {
                                                 if (err) {
-                                                    connection.release();
+                                                    connection_ikon.release();
                                                     res.status(500).json(err.message);
                                                 }
                                                 else {
@@ -229,21 +231,21 @@ exports.GetDashBoardData = function(req, res) {
                                                         PropertyArray.push(Property[i].cm_id);
                                                     }
                                                     if (PropertyArray.length > 0) {
-                                                        var query = connection.query('SELECT cm_state,count(*) as count FROM content_metadata WHERE cm_property_id is not null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ') and cm_property_id in(' + PropertyArray.toString() + ') group by cm_state', function (err, StatusFiles) {
+                                                        var query = connection_ikon.query('SELECT cm_state,count(*) as count FROM content_metadata WHERE cm_property_id is not null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ') and cm_property_id in(' + PropertyArray.toString() + ') group by cm_state', function (err, StatusFiles) {
                                                             if (err) {
                                                                 console.log(err.message);
-                                                                connection.release();
+                                                                connection_ikon.release();
                                                                 res.status(500).json(err.message);
                                                             }
                                                             else {
-                                                                var query = connection.query('SELECT * FROM (SELECT cm_vendor, cm_content_type, COUNT( * ) as count FROM  `content_metadata` WHERE  `cm_property_id` IS NOT NULL and cm_is_active=1 and cm_vendor in(' + VendorArray.toString() + ') AND cm_state =4 GROUP BY  `cm_vendor` ,  `cm_content_type`)cm LEFT OUTER JOIN (SELECT vd_id,vd_name FROM vendor_detail where vd_is_active =1)vendor ON ( cm.cm_vendor = vendor.vd_id )', function (err, VendorFiles) {
+                                                                var query = connection_ikon.query('SELECT * FROM (SELECT cm_vendor, cm_content_type, COUNT( * ) as count FROM  `content_metadata` WHERE  `cm_property_id` IS NOT NULL and cm_is_active=1 and cm_vendor in(' + VendorArray.toString() + ') AND cm_state =4 GROUP BY  `cm_vendor` ,  `cm_content_type`)cm LEFT OUTER JOIN (SELECT vd_id,vd_name FROM vendor_detail where vd_is_active =1)vendor ON ( cm.cm_vendor = vendor.vd_id )', function (err, VendorFiles) {
                                                                     if (err) {
                                                                         console.log(err.message);
-                                                                        connection.release();
+                                                                        connection_ikon.release();
                                                                         res.status(500).json(err.message);
                                                                     }
                                                                     else {
-                                                                        connection.release();
+                                                                        connection_ikon.release();
                                                                         res.send({
                                                                             FileStatus: FileStatus,
                                                                             StatusFiles: StatusFiles,

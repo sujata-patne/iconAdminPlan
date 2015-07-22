@@ -4,12 +4,7 @@
 var site_base_path = '';
 //var site_base_path = 'http://dailymagic.in';
 myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress) {
-    $scope.ContentTypes = [
-        {cd_id:1, cd_name:'Wallpaper'},
-        {cd_id:2, cd_name:'Audio'},
-        {cd_id:3, cd_name:'Video'},
-        {cd_id:4, cd_name:'Games'},
-    ];
+    $scope.contentType = 'Subscription';
     $scope.JetPayEvent = [
         {cd_id:1, cd_name:'Wallpaper@10'},
         {cd_id:2, cd_name:'Video@20'},
