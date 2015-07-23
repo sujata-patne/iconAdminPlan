@@ -5,15 +5,6 @@
 var mysql = require('mysql');
 var config = require('../config')();
 
-var mysql = require('mysql');
-
-//var pool  = mysql.createPool({
-//    host: config.db_host,
-//    user: config.db_user,
-//    password: config.db_pass,
-//    database: config.db_name
-//});
-
 var poolCluster = mysql.createPoolCluster();
 
 // add configurations
@@ -22,9 +13,14 @@ poolCluster.add('PLAN',{
     user: config.db_user_ikon,
     password: config.db_pass_ikon,
     database: config.db_name_ikon
-}); // anonymous group
-//console.log(config);
-poolCluster.add('MASTER', {
+});
+poolCluster.add('CMS', {
+    host: config.db_host_ikon_cms,
+    user: config.db_user_ikon_cms,
+    password: config.db_pass_ikon_cms,
+    database: config.db_name_ikon_cms
+});
+poolCluster.add('CENTRAL', {
     host: config.db_host_central,
     user: config.db_user_central,
     password: config.db_pass_central,

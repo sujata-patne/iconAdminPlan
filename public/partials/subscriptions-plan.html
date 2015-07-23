@@ -71,21 +71,23 @@
                             <div class="portlet-content">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <label for="offerForDays" class="col-sm-6 control-label">Try & Buy(TB) Offer for Days</label>
-                                        <div class="col-sm-6">
-                                            <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="offerForDays" placeholder="Try & Buy offer for Days" data-ng-model="offerForDays" data-ng-disabled="offerForDaysDisabled" >
-                                            <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.offerForDays.$touched">
-                                                <span ng-show="subscriptionForm.offerForDays.$error.pattern">Insert valid TB Offer for days.</span>
-                                            </span>
+                                        <div class="form-group">
+                                            <label for="offerForDays" class="col-sm-6 control-label">Try & Buy(TB) Offer for Days</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="offerForDays" placeholder="Try & Buy offer for Days" data-ng-model="offerForDays" data-ng-disabled="offerForDaysDisabled" >
+                                                <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.offerForDays.$touched">
+                                                    <span ng-show="subscriptionForm.offerForDays.$error.pattern">Insert valid limit for TB Offer days.</span>
+                                                </span>
+                                            </div>
                                         </div>
                                         <hr />
                                         <h5><em>Content Allowed to Consume</em></h5>
                                         <div class="form-group">
                                             <label for="numContentOffer" class="col-sm-6 control-label">In Try & Buy(TB) Offer Days</label>
                                             <div class="col-sm-6">
-                                                <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="numContentOffer" placeholder="No.of Contents In TB Offer Days" data-ng-model="numContentOffer" data-ng-disabled="numContentOfferDisabled">
+                                                <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="numContentOffer" placeholder="Limit for TB offer per day" data-ng-model="numContentOffer" data-ng-disabled="numContentOfferDisabled">
                                                 <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.numContentOffer.$touched">
-                                                    <span ng-show="subscriptionForm.numContentOffer.$error.pattern" >Insert valid limit in TB Offer days.</span>
+                                                    <span ng-show="subscriptionForm.numContentOffer.$error.pattern" >Insert valid limit for TB Offer per day.</span>
                                                 </span>
                                             </div>
                                         </div>
@@ -101,12 +103,11 @@
                                         <div class="form-group">
                                             <label for="fullSubDuration" class="col-sm-6 control-label"><span class="asterisk">*</span>For Full Subscription Duration</label>
                                             <div class="col-sm-6">
-                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="fullSubDuration" placeholder="For Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" required>
+                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="fullSubDuration" placeholder="Limit for Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" required>
                                                 <span style="color:red" ng-show="subscriptionForm.$submitted || subscriptionForm.fullSubDuration.$touched">
-                                                    <span ng-show="subscriptionForm.fullSubDuration.$error.required" >Insert download limit for Full Subscription.</span>
-                                                    <span ng-show="subscriptionForm.fullSubDuration.$error.pattern" >Insert valid download limit for Full Subscription.</span>
-                                                    <span ng-show="fullSubDuration < limitSingleDay" >Value must be greater than greater than Single Day
-limit.</span>
+                                                    <span ng-show="subscriptionForm.fullSubDuration.$error.required" >Insert limit for Full Subscription.</span>
+                                                    <span ng-show="subscriptionForm.fullSubDuration.$error.pattern" >Insert valid limit for Full Subscription.</span>
+                                                    <span ng-show="fullSubDuration < limitSingleDay" >Value must be greater than For Single Day limit.</span>
                                                 </span>
                                             </div>
                                         </div>

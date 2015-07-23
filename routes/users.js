@@ -9,6 +9,7 @@ module.exports = function(app) {
 
     app.route('/saveUsers')
         .post(users.addEditUsers);
+
     app.route('/updateUsers')
         .post(users.updateUsers);
 }

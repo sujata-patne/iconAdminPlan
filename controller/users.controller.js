@@ -7,19 +7,19 @@ exports.getUserData = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('PLAN',function(err, connection_ikon) {
-                    var query = connection_ikon.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 18', function (err, Roledata) {
+                mysql.getConnection('CMS',function(err, connection_ikon_cms) {
+                    var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 18', function (err, Roledata) {
                         // Neat!
                         if (err) {
-                            connection_ikon.release();
+                            connection_ikon_cms.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            mysql.getConnection('MASTER', function (err, connection_central) {
+                            mysql.getConnection('CENTRAL', function (err, connection_central) {
                                 var query = connection_central.query('SELECT vd_id, vd_name, vd_display_name FROM vendor_detail', function (err, VendorResult) {
                                     // Neat!
                                     if (err) {
-                                        connection_ikon.release();
+                                        connection_ikon_cms.release();
                                         connection_central.release();
                                         res.status(500).json(err.message);
                                     }
@@ -27,7 +27,7 @@ exports.getUserData = function (req, res, next) {
                                         var query = connection_central.query('SELECT * FROM  login_detail', function (err, UserDetail) {
                                             // Neat!
                                             if (err) {
-                                                connection_ikon.release();
+                                                connection_ikon_cms.release();
                                                 connection_central.release();
                                                 res.status(500).json(err.message);
                                             }
@@ -35,12 +35,12 @@ exports.getUserData = function (req, res, next) {
                                                 var query = connection_central.query('select * from(select * from login_user_vendor)lv inner join (select vd_id,vd_name from vendor_detail where vd_is_active =1 )v on(v.vd_id = lv.uv_vd_id) inner join (select ld_id from login_detail )l on(l.ld_id = lv.uv_ld_id) ', function (err, UserVendors) {
                                                     // Neat!
                                                     if (err) {
-                                                        connection_ikon.release();
+                                                        connection_ikon_cms.release();
                                                         connection_central.release();
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
-                                                        connection_ikon.release();
+                                                        connection_ikon_cms.release();
                                                         connection_central.release();
                                                         res.send({
                                                             UserRole: Roledata,
@@ -69,7 +69,7 @@ exports.getUserData = function (req, res, next) {
         }
     }
     catch (err) {
-        connection_ikon.release();
+        connection_ikon_cms.release();
         connection_central.release();
         res.status(500).json(err.message);
     }
@@ -79,19 +79,19 @@ exports.getEditUserData = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('PLAN',function(err, connection_ikon) {
-                    var query = connection_ikon.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 18', function (err, Roledata) {
+                mysql.getConnection('CMS',function(err, connection_ikon_cms) {
+                    var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 18', function (err, Roledata) {
                         // Neat!
                         if (err) {
-                            connection_ikon.release();
+                            connection_ikon_cms.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            mysql.getConnection('MASTER', function (err, connection_central) {
+                            mysql.getConnection('CENTRAL', function (err, connection_central) {
                                 var query = connection_central.query('SELECT vd_id, vd_name, vd_display_name FROM vendor_detail', function (err, VendorResult) {
                                     // Neat!
                                     if (err) {
-                                        connection_ikon.release();
+                                        connection_ikon_cms.release();
                                         connection_central.release();
                                         res.status(500).json(err.message);
                                     }
@@ -99,7 +99,7 @@ exports.getEditUserData = function (req, res, next) {
                                         var query = connection_central.query('SELECT * FROM  login_detail where ld_id = ?', [req.body.ld_id], function (err, UserDetail) {
                                             // Neat!
                                             if (err) {
-                                                connection_ikon.release();
+                                                connection_ikon_cms.release();
                                                 connection_central.release();
                                                 res.status(500).json(err.message);
                                             }
@@ -107,12 +107,12 @@ exports.getEditUserData = function (req, res, next) {
                                                 var query = connection_central.query('SELECT login_user_vendor.uv_id,login_user_vendor.uv_ld_id,login_user_vendor.uv_vd_id,vendor_detail.vd_display_name	,vendor_detail.vd_name FROM login_user_vendor,vendor_detail,login_detail where vendor_detail.vd_is_active =1 and vendor_detail.vd_id =login_user_vendor.uv_vd_id and login_user_vendor.uv_ld_id =? ', [req.body.ld_id], function (err, UserVendors) {
                                                     // Neat!
                                                     if (err) {
-                                                        connection_ikon.release();
+                                                        connection_ikon_cms.release();
                                                         connection_central.release();
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
-                                                        connection_ikon.release();
+                                                        connection_ikon_cms.release();
                                                         connection_central.release();
                                                         res.send({
                                                             UserRole: Roledata,
@@ -141,7 +141,7 @@ exports.getEditUserData = function (req, res, next) {
         }
     }
     catch (err) {
-        connection_ikon.release();
+        connection_ikon_cms.release();
         connection_central.release();
         res.status(500).json(err.message);
     }
@@ -151,7 +151,7 @@ exports.addEditUsers = function (req, res) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('MASTER', function (err, connection_central) {
+                mysql.getConnection('CENTRAL', function (err, connection_central) {
                     var Ld_id = 1;
                     var query = connection_central.query('SELECT * FROM login_detail where LOWER(ld_user_id) = ?', [req.body.UserName.toString().toLowerCase()], function (err, result) {
                         if (err) {
@@ -320,7 +320,7 @@ exports.updateUsers = function (req, res) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('MASTER', function (err, connection_central) {
+                mysql.getConnection('CENTRAL', function (err, connection_central) {
                     var flag = true;
                     var query = connection_central.query('SELECT * FROM login_detail where LOWER(ld_user_id) = ?', [req.body.UserName.toString().toLowerCase()], function (err, result) {
                         if (err) {
@@ -440,7 +440,7 @@ exports.blockUser = function (req, res) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('MASTER', function (err, connection_central) {
+                mysql.getConnection('CENTRAL', function (err, connection_central) {
                     var query = connection_central.query('UPDATE login_detail SET ld_active= ? where ld_id= ?',
                         [0, req.body.ld_Id], function (err, result) {
                             // Neat!
@@ -473,7 +473,7 @@ exports.unBlockUser = function (req, res) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('MASTER', function (err, connection_central) {
+                mysql.getConnection('CENTRAL', function (err, connection_central) {
                     var query = connection_central.query('UPDATE login_detail SET ld_active= ? where ld_id= ?',
                         [1, req.body.ld_Id], function (err, result) {
                             // Neat!
