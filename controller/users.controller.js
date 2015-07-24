@@ -8,7 +8,7 @@ exports.getUserData = function (req, res, next) {
         if (req.session) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS',function(err, connection_ikon_cms) {
-                    var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 18', function (err, Roledata) {
+                    var query = connection_ikon_cms.query('SELECT * FROM catalogue_detail WHERE  cd_cm_id = 18', function (err, Roledata) {
                         // Neat!
                         if (err) {
                             connection_ikon_cms.release();
@@ -17,7 +17,6 @@ exports.getUserData = function (req, res, next) {
                         else {
                             mysql.getConnection('CENTRAL', function (err, connection_central) {
                                 var query = connection_central.query('SELECT vd_id, vd_name, vd_display_name FROM vendor_detail', function (err, VendorResult) {
-                                    // Neat!
                                     if (err) {
                                         connection_ikon_cms.release();
                                         connection_central.release();
