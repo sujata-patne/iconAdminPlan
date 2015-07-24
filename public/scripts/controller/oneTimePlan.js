@@ -78,10 +78,12 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, ngProgress, AlaCart
 //    url: '/edit-a-la-cart/:id'
 //})
 myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, ngProgress, AlaCarts) {
-    
+
     $('.removeActiveClass').removeClass('active');
     $('#a-la-cart').addClass('active');
+    $scope.PlanId = "";
     $scope.ContentTypes = [];
+    $scope.PlanData = [];
     $scope.AllJetPayEvents = [];
     $scope.JetPayEvent = [];
     $scope.AllOperatorDetails = [];
@@ -93,11 +95,23 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    AlaCarts.GetEditAlacartData({ planid: $stateParams.id },function (Alacarts) {
+    AlaCarts.GetEditAlacartData({ planid: $stateParams.id }, function (Alacarts) {
         console.log(Alacarts)
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetail);
+        $scope.PlanData = angular.copy(Alacarts.PlanData);
+        $scope.PlanData.forEach(function (value) {
+            $scope.PlanId = value.sap_id;
+            $scope.PlanName = value.sap_plan_name;
+            $scope.Caption = value.sap_caption;
+            $scope.Description = value.sap_description;
+            $scope.SelectedContentType = value.sap_content_type;
+            $scope.SelectedEventId = value.sap_jed_id;
+            $scope.ContentTypeChange();
+            $scope.displayOperators();
+        });
+
     });
 
     $scope.ContentTypeChange = function () {
@@ -126,6 +140,7 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
     $scope.submitForm = function (isValid) {
         if (isValid) {
             var Alacart = {
+                alacartplanid: $stateParams.id,
                 PlanName: $scope.PlanName,
                 Caption: $scope.Caption,
                 Description: $scope.Description,
@@ -133,7 +148,7 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
                 JetId: $scope.SelectedEventId,
                 OperatorDetails: $scope.OpeartorDetails
             };
-            AlaCarts.AddAlacart(Alacart, function (data) {
+            AlaCarts.EditAlacart(Alacart, function (data) {
                 if (data.success) {
                     $scope.success = data.message;
                     $scope.successvisible = true;

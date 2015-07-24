@@ -15,6 +15,18 @@ myApp.service('AlaCarts', ['$http', function ($http) {
             success(items);
         });
     }
+	
+	service.GetEditAlacartData = function(data,success){
+        $http.post(service.baseRestUrl + '/editalacartdata', data).success(function (items) {
+            success(items);
+        });
+    }
+	
+	service.EditAlacart = function(data,success){
+        $http.post(service.baseRestUrl + '/editalacart', data).success(function (items) {
+            success(items);
+        });
+    }
     
 
     return service;
