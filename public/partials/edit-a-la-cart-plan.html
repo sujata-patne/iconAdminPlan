@@ -1,0 +1,102 @@
+<div class="container">
+    <div class="content">
+        <div class="content-container">
+            <div class="content-header">
+                <h2 class="content-header-title">A-La-Cart Plan</h2>
+            </div>
+            <!-- /.content-header -->
+            <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
+            </span>
+            <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color: green;">{{success}}
+            </span>
+            <form method="post" class="form-horizontal" role="form" name="aLaCartForm" data-ng-submit="submitForm(aLaCartForm.$valid)" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"><span class="asterisk">*</span>Plan Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="planname" class="form-control" placeholder="Plan Name" data-ng-model="PlanName" required>
+                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="ld_Id">
+                                <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.planname.$touched">
+                                    <span ng-show="aLaCartForm.planname.$error.required">Plan Name is required.</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="caption" class="col-sm-3 control-label">Caption</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="u_caption" class="form-control" id="" placeholder="Caption" data-ng-model="Caption">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="col-sm-3 control-label">Description</label>
+                            <div class="col-sm-9">
+                                <textarea name="u_caption" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contentType" class="col-sm-3 control-label"><span class="asterisk">*</span>Content Type</label>
+                            <div class="col-sm-9">
+                                <span class="ui-select">
+                                    <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-change="ContentTypeChange()" required>
+                                        <option value="">-- Select Content Type --</option>
+                                    </select>
+                                </span>
+                                <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.contentType.$touched">
+                                    <span ng-show="aLaCartForm.contentType.$error.required">Please Select Content Type.</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jetPayEventId" class="col-sm-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
+                            <div class="col-sm-9">
+                                <span class="ui-select">
+                                    <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.jed_id as item.jed_event for item in JetPayEvent" data-ng-change="displayOperators()" required>
+                                        <option value="">-- Select JetPay Event --</option>
+                                    </select>
+                                </span>
+                                <span style="color: red" ng-show="aLaCartForm.$submitted">
+                                    <span ng-show="aLaCartForm.jetPayEventId.$error.required">Please Select JetPay EventId.</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group table-responsive">
+                            <table id="eventOperators" class="table table-striped table-bordered table-checkable">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.No.</th>
+                                        <th>Operator</th>
+                                        <th>Amount</th>
+                                        <th>Disclaimer Text</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OpeartorDetails">
+                                        <td>{{$index+1}}</td>
+                                        <td>{{operators.opd_partner_name}}</td>
+                                        <td>{{operators.opd_amount}}</td>
+                                        <td>
+                                            <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.opd_name"></td>
+                                    </tr>
+                                    <tr data-ng-hide="SelectedEventId">
+                                        <td colspan="4">Only For selected JetPay Event Id.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="col-sm-offset-5 col-sm-7" data-ng-if="IsDisable != true">
+                            <button type="submit" class="btn btn-primary btn-w-md" title="Save">Submit</button>
+                            <button type="reset" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

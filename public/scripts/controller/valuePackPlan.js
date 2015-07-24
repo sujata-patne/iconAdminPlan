@@ -4,6 +4,9 @@
 var site_base_path = '';
 //var site_base_path = 'http://dailymagic.in';
 myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress) {
+  
+    $('.removeActiveClass').removeClass('active');
+    $('#value-pack').addClass('active');
     $scope.contentType = 'Value Pack';
     $scope.ContentTypes = [
         {cd_id:1, cd_name:'Wallpaper'},

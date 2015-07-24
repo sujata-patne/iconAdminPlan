@@ -9,10 +9,10 @@ var poolCluster = mysql.createPoolCluster();
 
 // add configurations
 poolCluster.add('PLAN',{
-    host: config.db_host_ikon,
-    user: config.db_user_ikon,
-    password: config.db_pass_ikon,
-    database: config.db_name_ikon
+    host: config.db_host_ikon_plan,
+    user: config.db_user_ikon_plan,
+    password: config.db_pass_ikon_plan,
+    database: config.db_name_ikon_plan
 });
 poolCluster.add('CMS', {
     host: config.db_host_ikon_cms,

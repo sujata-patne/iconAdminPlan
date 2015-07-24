@@ -7,7 +7,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     $scope.base_url = site_base_path;
     $('.removeActiveClass').removeClass('active');
     $('.removeSubactiveClass').removeClass('active');
-    $('#addedituser').addClass('active');
+    $('#changepassword').addClass('active');
 
     $scope.Permission = true;
     $scope.IsDisable = true;
