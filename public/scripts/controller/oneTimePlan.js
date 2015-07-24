@@ -77,7 +77,8 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, ngProgress, AlaCart
 //    controller: 'editOneTimePlanCtrl',
 //    url: '/edit-a-la-cart/:id'
 //})
-myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $routeParams, ngProgress, AlaCarts) {
+myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, ngProgress, AlaCarts) {
+    
     $('.removeActiveClass').removeClass('active');
     $('#a-la-cart').addClass('active');
     $scope.ContentTypes = [];
@@ -92,7 +93,7 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $routeParams, n
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    AlaCarts.GetAlacartData(function (Alacarts) {
+    AlaCarts.GetEditAlacartData({ planid: $stateParams.id },function (Alacarts) {
         console.log(Alacarts)
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);

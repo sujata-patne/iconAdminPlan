@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 /**
  * Created by sujata.patne on 13-07-2015.
  */
