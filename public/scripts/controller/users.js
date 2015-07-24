@@ -27,33 +27,32 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    //$scope.editable = false;
-    //
-    //$scope.FullName = "";
-    //$scope.UserName = "";
-    //$scope.EmailId = "";
-    //$scope.MobileNo = "";
-    //$scope.SelectedVendorList = [];
-    //$scope.Id = "";
-    //
-    //$scope.NameValidation = false;
-    //$scope.UserNameValidation = false;
-    //$scope.EmailValidation = false;
-    //$scope.MobileValidation = false;
-    //$scope.RoleValidationVisible = false;
-    //$scope.VendorValidation = false;
-    //
-    //if ($scope.Permission == true) {
-    //    $scope.IsDisable = false;
-    //}
-    //else {
-    //    $scope.IsDisable = true;
-    //}
+    $scope.editable = false;
+
+    $scope.FullName = "";
+    $scope.UserName = "";
+    $scope.EmailId = "";
+    $scope.MobileNo = "";
+    $scope.SelectedVendorList = [];
+    $scope.Id = "";
+
+    $scope.NameValidation = false;
+    $scope.UserNameValidation = false;
+    $scope.EmailValidation = false;
+    $scope.MobileValidation = false;
+    $scope.RoleValidationVisible = false;
+    $scope.VendorValidation = false;
+
+    if ($scope.Permission == true) {
+        $scope.IsDisable = false;
+    }
+    else {
+        $scope.IsDisable = true;
+    }
 
     Users.getUsers(function (users) {
         $scope.UserList = angular.copy(users.UserData);
         $scope.UserRole = angular.copy(users.UserRole);
-        console.log($scope.UserList);
     });
     var data = {
         FullName: $scope.FullName,
@@ -212,6 +211,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
         $scope.connectionError = false;
         $scope.SaveUserData = false;
         $scope.error = "";
+        $scope.success = '';
         if ($scope.OldPassword != "") {
             if ($scope.NewPassword != "") {
                 if ($scope.ConfirmPassword != "") {
@@ -227,7 +227,8 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                                 $scope.OldPassword = "";
                                 $scope.NewPassword = "";
                                 $scope.ConfirmPassword = "";
-                                $scope.SaveUserData = true;
+                                $scope.successvisible = true;
+                                $scope.success = "Password Changed Successfully"
                             }
                             if (data.Result == "OldpasswordError") {
                                 $scope.OldPasswordValidation = true;
