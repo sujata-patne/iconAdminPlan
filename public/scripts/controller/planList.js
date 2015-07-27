@@ -3,37 +3,18 @@
  */
 var site_base_path = '';
 //var site_base_path = 'http://dailymagic.in';
-myApp.controller('planListCtrl', function ($scope, $http, ngProgress) {
+myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, $window) {
     $('.removeActiveClass').removeClass('active');
     $('#plan-list').addClass('active');
     $scope.IsDisable = true;
     $scope.listcurrentPage = 0;
-    $scope.listpageSize = 10;
+    $scope.listpageSize = 25;
+    $scope.AllPlanList = [];
+    $scope.PlanName = "";
+    $scope.planList = [];
+    ngProgress.color('yellowgreen');
+    ngProgress.height('3px');
 
-    $scope.OperatorsList = [
-        { id: 1, name: 'Vodafone', amt: 10, disclaimer: 'Click to download this content @ Rs.10/-' },
-        { id: 2, name: 'BSNL', amt: 20, disclaimer: 'Click to download this content @ Rs.20/-' },
-        { id: 3, name: 'MTS', amt: 30, disclaimer: 'Click to download this content @ Rs.30/-' },
-        { id: 4, name: 'Uninor', amt: 40, disclaimer: 'Click to download this content @ Rs.40/-' },
-        { id: 5, name: 'Airtel', amt: 50, disclaimer: 'Click to download this content @ Rs.50/-' }
-    ];
-    $scope.ContentTypes = [
-        { cd_id: 1, cd_name: 'Wallpaper' },
-        { cd_id: 2, cd_name: 'Audio' },
-        { cd_id: 3, cd_name: 'Video' },
-        { cd_id: 4, cd_name: 'Games' },
-        { cd_id: 5, cd_name: 'Subscription' },
-        { cd_id: 6, cd_name: 'Value Pack' }
-    ];
-
-    $scope.planList = [
-        { cd_id: 1, plan: "Wallpaper@10", content_id: 1, created_on: "2015-07-15", end_on: "2015-07-25", cd_is_active: 1 },
-        { cd_id: 2, plan: "Video@10", content_id: 2, created_on: "2015-07-11", end_on: "2015-07-25", cd_is_active: 0 },
-        { cd_id: 3, plan: "Audio@10", content_id: 3, created_on: "2015-07-21", end_on: "2015-07-25", cd_is_active: 0 },
-        { cd_id: 4, plan: "Games@10", content_id: 4, created_on: "2015-07-25", end_on: "2015-07-25", cd_is_active: 1 },
-        { cd_id: 5, plan: "Subscription", content_id: 5, created_on: "2015-07-05", end_on: "2015-07-25", cd_is_active: 1 },
-        { cd_id: 6, plan: "Value Pack", content_id: 6, created_on: "2015-07-07", end_on: "2015-07-25", cd_is_active: 1 }
-    ];
     $scope.getContentName = function (id) {
         var type = '';
         $scope.ContentTypes.forEach(function (data) {
@@ -43,32 +24,137 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress) {
         });
         return (type) ? type : '';
     }
-    $scope.BlockColor = function (id) {
-        for (var i in $scope.planList) {
-            if ($scope.planList[i].cd_id == id) {
-                if (Datewithouttime($scope.planList[i].end_on) < Datewithouttime(new Date())) {
-                    return "darkorange";
+
+    $scope.BlockPlan = function (id, contenttype) {
+        $scope.AllPlanList.forEach(function (value) {
+            if (value.planid == id && value.contenttype == contenttype) {
+                var active = 1;
+                if (value.active == 1) {
+                    active = 0;
                 }
-                else {
-                    if ($scope.planList[i].cd_is_active == 1) {
-                        return "green";
+                if (confirm("Are you want to sure " + (active == 0 ? 'block' : 'unblock') + ' plan ?')) {
+                    var plan = {
+                        ContentType: value.contenttype,
+                        active: active,
+                        PlanId: value.planid,
+                        Status: active == 0 ? 'blocked' : 'unblocked'
                     }
-                    else {
-                        return "red";
-                    }
+                    ngProgress.start();
+                    PlanList.BlockUnBlockPlan(plan, function (data) {
+                        if (data.success) {
+                            value.active = active;
+                            $scope.success = data.message;
+                            $scope.successvisible = true;
+                        }
+                        else {
+                            $scope.error = data.message;
+                            $scope.errorvisible = true;
+                        }
+                        ngProgress.complete();
+                    });
                 }
             }
+        });
+    }
+
+    $scope.EditPlan = function (id, contenttype) {
+        if (contenttype == "Subscription") {
+            $window.location.href = "/#/edit-subscription/" + id;
+        }
+        else if (contenttype == "Value Pack") {
+            $window.location.href = "/#/edit-value-pack/" + id;
+        }
+        else {
+            $window.location.href = "/#/edit-a-la-cart/" + id;
         }
     }
 
-    function Datewithouttime(val) {
-        var d = new Date(val);
-        var dt = d.getDate();
-        var month = d.getMonth() + 1;
-        var year = d.getFullYear();
-        var selectdate = year + '-' + Pad("0", month, 2) + '-' + Pad("0", dt, 2);
-        return new Date(selectdate);
+    $scope.DeletePlan = function (id, contenttype) {
+        if (confirm('Are you want to sure delete plan ?')) {
+            var plan = {
+                ContentType: contenttype,
+                PlanId: id,
+            }
+            ngProgress.start();
+            PlanList.DeletePlan(plan, function (data) {
+                if (data.success) {
+                    $scope.success = data.message;
+                    $scope.successvisible = true;
+                    var Plans = [];
+                    $scope.AllPlanList.forEach(function (value) {
+                        if (value.planid == id && value.contenttype == contenttype) {
+                        }
+                        else {
+                            Plans.push(value);
+                        }
+                    });
+                    $scope.AllPlanList = Plans;
+                    $scope.FilterContent();
+                }
+                else {
+                    $scope.error = data.message;
+                    $scope.errorvisible = true;
+
+                }
+                ngProgress.complete();
+            });
+        }
+
     }
+
+    $scope.FilterContent = function () {
+        var plans = [];
+        $scope.AllPlanList.forEach(function (value) {
+            if ($scope.SelectedContentType && $scope.SelectedContentType != null) {
+                if ($scope.PlanName) {
+                    if ((value.planname.indexOf($scope.PlanName) > -1) && value.contentid == $scope.SelectedContentType) {
+                        plans.push(value);
+                    }
+                }
+                else {
+                    if (value.contentid == $scope.SelectedContentType) {
+                        plans.push(value);
+                    }
+                }
+            }
+            else {
+                if ($scope.PlanName) {
+                    if (value.planname.indexOf($scope.PlanName) > -1) {
+                        plans.push(value);
+                    }
+                }
+                else {
+                    plans.push(value);
+                }
+            }
+        });
+        $scope.planList = plans;
+    }
+
+    PlanList.GetPlanList(function (PlanList) {
+        $scope.ContentTypes = angular.copy(PlanList.ContentTypes);
+        $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Subscription", cd_id: "Subscription", cd_name: "Subscription" });
+        $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Value Pack", cd_id: "Value Pack", cd_name: "Value Pack" });
+        PlanList.Alacarts.forEach(function (value) {
+            $scope.AllPlanList.push({ planid: value.sap_id, planname: value.sap_plan_name, created_on: $scope.setDate(value.sap_created_on), active: value.sap_is_active, contenttype: $scope.getContentName(value.sap_content_type), contentid: value.sap_content_type });
+        });
+        PlanList.Subscriptions.forEach(function (value) {
+            $scope.AllPlanList.push({ planid: value.ssp_id, planname: value.ssp_plan_name, created_on: $scope.setDate(value.ssp_created_on), active: value.ssp_is_active, contenttype: 'Subscription', contentid: 'Subscription' });
+        });
+        PlanList.ValuePacks.forEach(function (value) {
+            $scope.AllPlanList.push({ planid: value.svp_id, planname: value.svp_plan_name, created_on: $scope.setDate(value.svp_created_on), active: value.svp_is_active, contenttype: "Value Pack", contentid: "Value Pack" });
+        });
+        $scope.planList = $scope.AllPlanList;
+    });
+
+    $scope.ExportPlan = function () {
+        PlanList.ExportPlan({ PlanList: $scope.planList }, function (data) {
+            var blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8" });
+            console.log(blob);
+            window.saveAs(blob, 'PlanList.xlsx');
+        });
+    }
+
     $scope.setDate = function (val) {
         var d = new Date(val);
         var date = d.getDate();

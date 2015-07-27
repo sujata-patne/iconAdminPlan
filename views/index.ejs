@@ -54,7 +54,7 @@
             </div>
             <!-- /.navbar-collapse -->
             <ul class="navbar-right">
-                <li class="text-right"> Welcome <%= username %>  [<a href="./accountlogin" style="padding:0px; margin:0px; display:inline;">Logout</a>]<br />
+                <li class="text-right"> Welcome <%= username %>  [<a href="./logout" style="padding:0px; margin:0px; display:inline;">Logout</a>]<br />
                     <%= userrole %> </li>
             </ul>
         </div>
@@ -70,6 +70,7 @@
 <script src="assets/scripts/angular-ui-router/release/angular-ui-router.js" ></script>
 <!-- App JS -->
 <script src="assets/scripts/target-admin.js"></script>
+<script src="bower_components/filesaver/FileSaver.js"></script>
 <!-- Plugin JS -->
 <script src="scripts/app.js"></script>
 <script src="scripts/controller/dashboard.js"></script>
@@ -80,4 +81,7 @@
 <script src="scripts/controller/planList.js"></script>
 <script src="scripts/services/users.service.js"></script>
 <script src="scripts/services/alacart.service.js"></script>
+<script src="scripts/services/subscription.service.js"></script>
+<script src="scripts/services/valuepack.service.js"></script>
+<script src="scripts/services/planlist.service.js"></script>
 </html>
