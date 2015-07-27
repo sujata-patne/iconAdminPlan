@@ -250,7 +250,7 @@ exports.editalacart = function (req, res, next) {
                                 EditALacart();
                             }
                             function EditALacart() {
-                                var query = connection_ikon_plan.query('UPDATE site_alacart_plan SET sap_plan_name =?,sap_caption =?,sap_description=?, sap_jed_id=?,sap_content_type=? where sap_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.ContentType, req.body.alacartplanid], function (err, result) {
+                                var query = connection_ikon_plan.query('UPDATE site_alacart_plan SET sap_plan_name =?,sap_caption =?,sap_description=?, sap_jed_id=?,sap_content_type=?  sap_modified_on=?,sap_modified_by =? where sap_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.ContentType, new Date(), req.session.UserName, req.body.alacartplanid], function (err, result) {
                                     if (err) {
                                         connection_ikon_plan.release();
                                         res.status(500).json(err.message);

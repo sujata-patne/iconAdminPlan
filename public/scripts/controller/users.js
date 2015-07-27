@@ -17,7 +17,10 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     $scope.UserRole = [];
     $scope.SelectedUserRole = 0;
     $scope.UserList = [];
-    $scope.SaveUserData = false;
+    $scope.successvisible = false;
+    $scope.success = false;
+    $scope.errorvisible = false;
+    $scope.error = false;
 
     $scope.usercurrentPage = 0;
     $scope.userpageSize = 5;
@@ -28,33 +31,9 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    //$scope.editable = false;
-    //
-    //$scope.FullName = "";
-    //$scope.UserName = "";
-    //$scope.EmailId = "";
-    //$scope.MobileNo = "";
-    //$scope.SelectedVendorList = [];
-    //$scope.Id = "";
-    //
-    //$scope.NameValidation = false;
-    //$scope.UserNameValidation = false;
-    //$scope.EmailValidation = false;
-    //$scope.MobileValidation = false;
-    //$scope.RoleValidationVisible = false;
-    //$scope.VendorValidation = false;
-    //
-    //if ($scope.Permission == true) {
-    //    $scope.IsDisable = false;
-    //}
-    //else {
-    //    $scope.IsDisable = true;
-    //}
-
     Users.getUsers(function (users) {
         $scope.UserList = angular.copy(users.UserData);
         $scope.UserRole = angular.copy(users.UserRole);
-        console.log($scope.UserList);
     });
     var data = {
         FullName: $scope.FullName,
@@ -65,10 +44,10 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
         ld_Id: $scope.userID
     }
 
-    $scope.addEditUsers = function(id){
+    $scope.addEditUsers = function (id) {
         $scope.error = "";
         $scope.success = "";
-        Users.addEditUsers({ld_id:id},function (user) {
+        Users.addEditUsers({ ld_id: id }, function (user) {
             if (user.RoleUser === "Super Admin") {
                 $scope.UserRole = angular.copy(user.UserRole);
                 $scope.FullName = user.UserData[0].ld_display_name;
@@ -101,7 +80,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                 if ($scope.EmailId != "" && validateEmail($scope.EmailId)) {
                     if (!isNaN($scope.MobileNo) && $scope.MobileNo != "" && $scope.MobileNo.toString().length == 10) {
                         if ($scope.SelectedUserRole != 0) {
-                            if($scope.ld_Id === undefined){
+                            if ($scope.ld_Id === undefined) {
                                 ngProgress.start();
                                 var datas = {
                                     FullName: $scope.FullName,
@@ -110,7 +89,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                                     MobileNo: $scope.MobileNo,
                                     Role: $scope.SelectedUserRole
                                 }
-                                Users.saveUser(datas, function(data){
+                                Users.saveUser(datas, function (data) {
                                     if (data.Result == "AddEditUsers") {
                                         Users.getUsers(function (users) {
                                             $scope.UserList = angular.copy(users.UserData);
@@ -140,7 +119,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                                     }
                                     ngProgress.complete();
                                 })
-                            }else{
+                            } else {
                                 ngProgress.start();
                                 var datas = {
                                     ld_Id: $scope.ld_Id,
@@ -150,7 +129,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                                     MobileNo: $scope.MobileNo,
                                     Role: $scope.SelectedUserRole
                                 }
-                                Users.updateUser(datas,function (data) {
+                                Users.updateUser(datas, function (data) {
                                     if (data.Result == "UsersUpdated") {
                                         $scope.successvisible = true;
                                         Users.getUsers(function (users) {
@@ -204,45 +183,42 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     $scope.ConfirmPassword = "";
     $scope.ConfirmPasswordValidation = false;
     $scope.OldPasswordValidation = false;
-    $scope.connectionError = false;
-    $scope.SaveUserData = false;
 
     $scope.SaveChangedPassword = function () {
-        $scope.ConfirmPasswordValidation = false;
-        $scope.OldPasswordValidation = false;
-        $scope.connectionError = false;
-        $scope.SaveUserData = false;
-        $scope.error = "";
-        if ($scope.OldPassword != "") {
-            if ($scope.NewPassword != "") {
-                if ($scope.ConfirmPassword != "") {
-                    if ($scope.NewPassword == $scope.ConfirmPassword) {
-                        ngProgress.start();
-                        var datas = {
-                            "oldpassword": $scope.OldPassword,
-                            "newpassword": $scope.NewPassword
-                        };
-                        Users.changePassword(datas, function(data) {
-                            ngProgress.complete();
-                            if (data.Result == "Success") {
-                                $scope.OldPassword = "";
-                                $scope.NewPassword = "";
-                                $scope.ConfirmPassword = "";
-                                $scope.SaveUserData = true;
-                            }
-                            if (data.Result == "OldpasswordError") {
-                                $scope.OldPasswordValidation = true;
-                            }
-                        });
-                    }
-                    else {
-                        $scope.ConfirmPasswordValidation = true;
-                    }
+        $scope.successvisible = false;
+        $scope.errorvisible = false;
+        if ($scope.NewPassword == $scope.ConfirmPassword) {
+            ngProgress.start();
+            var datas = {
+                "oldpassword": $scope.OldPassword,
+                "newpassword": $scope.NewPassword
+            };
+            Users.changePassword(datas, function (data) {
+                console.log(data);
+                ngProgress.complete();
+                if (data.success) {
+                    $scope.OldPassword = "";
+                    $scope.NewPassword = "";
+                    $scope.ConfirmPassword = "";
+                    $scope.success = data.message;
+                    $scope.successvisible = true;
                 }
-            }
+                else {
+                    $scope.error = data.message;
+                    $scope.errorvisible = true;
+                }
+            });
+        }
+        else {
+            $scope.error = "Confirm Password does not match.";
+            $scope.errorvisible = true;
         }
     };
 
+    $scope.Resetclick = function () {
+        $scope.successvisible = false;
+        $scope.errorvisible = false;
+    };
 });
 
 myApp.filter('startFrom', function () {

@@ -3,76 +3,157 @@
  */
 var site_base_path = '';
 //var site_base_path = 'http://dailymagic.in';
-myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress) {
-  
+myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, Valuepacks) {
+
     $('.removeActiveClass').removeClass('active');
     $('#value-pack').addClass('active');
     $scope.contentType = 'Value Pack';
-    $scope.ContentTypes = [
-        {cd_id:1, cd_name:'Wallpaper'},
-        {cd_id:2, cd_name:'Audio'},
-        {cd_id:3, cd_name:'Video'},
-        {cd_id:4, cd_name:'Games'},
-    ];
-    $scope.JetPayEvent = [
-        {cd_id:1, cd_name:'Wallpaper@10'},
-        {cd_id:2, cd_name:'Video@20'},
-        {cd_id:3, cd_name:'Audio@10'},
-        {cd_id:4, cd_name:'Game@30'},
-    ];
-    $scope.operators = [
-        {event_id:1, data: [
-            {id:1, name:'Vodafone', amt:10, disclaimer:'Click to download this content @ Rs.10/-'},
-            {id:2, name:'BSNL', amt:20, disclaimer:'Click to download this content @ Rs.20/-'},
-            {id:3, name:'MTS', amt:30, disclaimer:'Click to download this content @ Rs.30/-'},
-            {id:4, name:'Uninor', amt:40, disclaimer:'Click to download this content @ Rs.40/-'},
-            {id:5, name:'Airtel', amt:50, disclaimer:'Click to download this content @ Rs.50/-'}
-        ]},
-        {event_id:2, data: [
-            {id:1, name:'Vodafone', amt:8, disclaimer:'Click to download this content @ Rs.8/-'},
-            {id:2, name:'BSNL', amt:20, disclaimer:'Click to download this content @ Rs.20/-'},
-            {id:3, name:'MTS', amt:30, disclaimer:'Click to download this content @ Rs.30/-'},
-            {id:4, name:'Uninor', amt:40, disclaimer:'Click to download this content @ Rs.40/-'},
-            {id:5, name:'Airtel', amt:50, disclaimer:'Click to download this content @ Rs.50/-'}
-        ]},
-        {event_id:3, data: [
-            {id:1, name:'Vodafone', amt:11, disclaimer:'Click to download this content @ Rs.11/-'},
-            {id:2, name:'BSNL', amt:20, disclaimer:'Click to download this content @ Rs.20/-'},
-            {id:3, name:'MTS', amt:30, disclaimer:'Click to download this content @ Rs.30/-'},
-            {id:4, name:'Uninor', amt:40, disclaimer:'Click to download this content @ Rs.40/-'},
-            {id:5, name:'Airtel', amt:50, disclaimer:'Click to download this content @ Rs.50/-'}
-        ]},
-        {event_id:4, data: [
-            {id:1, name:'Vodafone', amt:9, disclaimer:'Click to download this content @ Rs.9/-'},
-            {id:2, name:'BSNL', amt:20, disclaimer:'Click to download this content @ Rs.20/-'},
-            {id:3, name:'MTS', amt:30, disclaimer:'Click to download this content @ Rs.30/-'},
-            {id:4, name:'Uninor', amt:40, disclaimer:'Click to download this content @ Rs.40/-'},
-            {id:5, name:'Airtel', amt:50, disclaimer:'Click to download this content @ Rs.50/-'}
-        ]}
-    ];
+    $scope.AllJetPayEvents = [];
+    $scope.AllOperatorDetails = [];
+    $scope.OperatorDetails = [];
+    $scope.success = "";
+    $scope.successvisible = false;
+    $scope.error = "";
+    $scope.errorvisible = false;
+    ngProgress.color('yellowgreen');
+    ngProgress.height('3px');
 
-    $scope.displayOperators = function(){
-        $scope.operators.forEach(function(value){
-            if($scope.SelectedEventId == value.event_id ){
-                $scope.OperatorsList = value.data
+    Valuepacks.GetValuepackData(function (valuepacks) {
+        console.log(valuepacks);
+        $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
+        $scope.AllOperatorDetails = angular.copy(valuepacks.OpeartorDetail);
+    });
+
+    $scope.displayOperators = function () {
+        $scope.OperatorDetails = [];
+        $scope.AllOperatorDetails.forEach(function (value) {
+            if ($scope.SelectedEventId == value.opd_jed_id) {
+                $scope.OperatorDetails.push(value);
             }
         })
     }
-    $scope.resetForm = function(){
+
+    $scope.resetForm = function () {
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';
     }
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
-    $scope.submitForm = function(isValid) {
-
+    $scope.submitForm = function (isValid) {
+        $scope.successvisible = false;
+        $scope.errorvisible == false;
         if (isValid) {
-            alert('our form is amazing');
+            var valuepack = {
+                PlanName: $scope.PlanName,
+                Caption: $scope.Caption,
+                Description: $scope.Description,
+                JetId: $scope.SelectedEventId,
+                DowmloadLimit: $scope.setDownloadLimit,
+                DurationLimit: $scope.setDurationLimit,
+                DurationIn: $scope.SelectedDurationIn,
+                OperatorDetails: $scope.OperatorDetails
+            }
+            ngProgress.start();
+            Valuepacks.AddValuepack(valuepack, function (data) {
+                if (data.success) {
+                    $scope.success = data.message;
+                    $scope.successvisible = true;
+                }
+                else {
+                    $scope.error = data.message;
+                    $scope.errorvisible = true;
+                }
+                ngProgress.complete();
+            });
         }
     };
 
     $scope.durationOptions = [
-        {cd_id:1, cd_name:'Hours'},
-        {cd_id:2, cd_name:'Days'},
+        { cd_id: 'Hours', cd_name: 'Hours' },
+        { cd_id: 'Days', cd_name: 'Days' },
+    ]
+});
+
+myApp.controller('editvaluePackPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Valuepacks) {
+
+    $('.removeActiveClass').removeClass('active');
+    $('#value-pack').addClass('active');
+    $scope.contentType = 'Value Pack';
+    $scope.AllJetPayEvents = [];
+    $scope.AllOperatorDetails = [];
+    $scope.OperatorDetails = [];
+    $scope.success = "";
+    $scope.successvisible = false;
+    $scope.error = "";
+    $scope.errorvisible = false;
+    ngProgress.color('yellowgreen');
+    ngProgress.height('3px');
+
+    Valuepacks.GetEditValuepackData({ planid: $stateParams.id }, function (valuepacks) {
+        $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
+        $scope.AllOperatorDetails = angular.copy(valuepacks.OpeartorDetail);
+        $scope.PlanData = angular.copy(valuepacks.PlanData);
+        console.log(valuepacks);
+        $scope.PlanData.forEach(function (value) {
+            $scope.PlanId = value.svp_id;
+            $scope.PlanName = value.svp_plan_name;
+            $scope.Caption = value.svp_caption;
+            $scope.Description = value.svp_description;
+            $scope.SelectedEventId = value.svp_jed_id;
+            $scope.setDownloadLimit = value.svp_download_limit;
+            $scope.setDurationLimit = value.svp_duration_limit;
+            $scope.SelectedDurationIn = value.svp_durration_type;
+            $scope.displayOperators();
+        });
+    });
+
+    $scope.displayOperators = function () {
+        $scope.OperatorDetails = [];
+        $scope.AllOperatorDetails.forEach(function (value) {
+            if ($scope.SelectedEventId == value.opd_jed_id) {
+                $scope.OperatorDetails.push(value);
+            }
+        })
+    }
+
+    $scope.resetForm = function () {
+        $scope.SelectedEventId = '';
+        $scope.OperatorsList = '';
+    }
+
+    /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
+    $scope.submitForm = function (isValid) {
+        $scope.successvisible = false;
+        $scope.errorvisible == false;
+        if (isValid) {
+            var valuepack = {
+                valuepackplanId: $scope.PlanId,
+                PlanName: $scope.PlanName,
+                Caption: $scope.Caption,
+                Description: $scope.Description,
+                JetId: $scope.SelectedEventId,
+                DowmloadLimit: $scope.setDownloadLimit,
+                DurationLimit: $scope.setDurationLimit,
+                DurationIn: $scope.SelectedDurationIn,
+                OperatorDetails: $scope.OperatorDetails
+            }
+            ngProgress.start();
+            Valuepacks.EditValuepack(valuepack, function (data) {
+                if (data.success) {
+                    $scope.success = data.message;
+                    $scope.successvisible = true;
+                }
+                else {
+                    $scope.error = data.message;
+                    $scope.errorvisible = true;
+                }
+                ngProgress.complete();
+            });
+        }
+    };
+
+    $scope.durationOptions = [
+        { cd_id: 'Hours', cd_name: 'Hours' },
+        { cd_id: 'Days', cd_name: 'Days' },
     ]
 });

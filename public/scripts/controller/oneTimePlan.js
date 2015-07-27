@@ -19,7 +19,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, ngProgress, AlaCart
     ngProgress.height('3px');
 
     AlaCarts.GetAlacartData(function (Alacarts) {
-        console.log(Alacarts)
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetail);
@@ -34,21 +33,25 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, ngProgress, AlaCart
         })
     }
 
+
     $scope.displayOperators = function () {
-        $scope.OpeartorDetails = [];
+        $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
             if ($scope.SelectedEventId == value.opd_jed_id) {
-                $scope.OpeartorDetails.push(value);
+                $scope.OperatorDetails.push(value);
             }
         })
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
-        $scope.OperatorsList = '';
+        $scope.OpeartorDetail = [];
+
     }
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
+        $scope.successvisible = false;
+        $scope.errorvisible == false;
         if (isValid) {
             var Alacart = {
                 PlanName: $scope.PlanName,
@@ -56,8 +59,9 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, ngProgress, AlaCart
                 Description: $scope.Description,
                 ContentType: $scope.SelectedContentType,
                 JetId: $scope.SelectedEventId,
-                OperatorDetails: $scope.OpeartorDetails
+                OperatorDetails: $scope.OperatorDetails
             };
+            ngProgress.start();
             AlaCarts.AddAlacart(Alacart, function (data) {
                 if (data.success) {
                     $scope.success = data.message;
@@ -67,16 +71,12 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, ngProgress, AlaCart
                     $scope.error = data.message;
                     $scope.errorvisible = true;
                 }
+                ngProgress.complete();
             });
         }
     };
 });
 
-//.state('edit-a-la-cart',{
-//    templateUrl: 'partials/edit-a-la-cart-plan.html',
-//    controller: 'editOneTimePlanCtrl',
-//    url: '/edit-a-la-cart/:id'
-//})
 myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, ngProgress, AlaCarts) {
 
     $('.removeActiveClass').removeClass('active');
@@ -96,7 +96,7 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
     ngProgress.height('3px');
 
     AlaCarts.GetEditAlacartData({ planid: $stateParams.id }, function (Alacarts) {
-        console.log(Alacarts)
+
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetail);
@@ -124,10 +124,10 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
     }
 
     $scope.displayOperators = function () {
-        $scope.OpeartorDetails = [];
+        $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
             if ($scope.SelectedEventId == value.opd_jed_id) {
-                $scope.OpeartorDetails.push(value);
+                $scope.OperatorDetails.push(value);
             }
         })
     }
@@ -138,6 +138,8 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
+        $scope.successvisible = false;
+        $scope.errorvisible == false;
         if (isValid) {
             var Alacart = {
                 alacartplanid: $stateParams.id,
@@ -146,8 +148,9 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
                 Description: $scope.Description,
                 ContentType: $scope.SelectedContentType,
                 JetId: $scope.SelectedEventId,
-                OperatorDetails: $scope.OpeartorDetails
+                OperatorDetails: $scope.OperatorDetails
             };
+            ngProgress.start();
             AlaCarts.EditAlacart(Alacart, function (data) {
                 if (data.success) {
                     $scope.success = data.message;
@@ -157,6 +160,7 @@ myApp.controller('editOneTimePlanCtrl', function ($scope, $http, $stateParams, n
                     $scope.error = data.message;
                     $scope.errorvisible = true;
                 }
+                ngProgress.complete();
             });
         }
     };

@@ -34,8 +34,38 @@ exports.pages = function (req, res, next) {
 }
 
 exports.login = function (req, res, next) {
-    req.session = null;
-    res.render('account-login', { error: '' });
+    if (req.session) {
+        if (req.session.UserName) {
+            res.redirect("/#/plan-list");
+        }
+        else {
+            res.render('account-login', { error: '' });
+        }
+    }
+    else {
+        res.render('account-login', { error: '' });
+    }
+}
+
+exports.logout = function (req, res, next) {
+    try {
+        if (req.session) {
+            if (req.session.UserName) {
+                req.session = null;
+                res.redirect('/accountlogin');
+            }
+            else {
+                res.redirect('/accountlogin');
+            }
+        }
+        else {
+            res.redirect('/accountlogin');
+        }
+    }
+    catch (error) {
+        connection_central.end();
+        res.render('account-login', { error: error.message });
+    }
 }
 
 exports.authenticate = function (req, res, next) {
@@ -357,7 +387,6 @@ exports.viewChangePassword = function (req, res, next) {
 }
 
 exports.changePassword = function (req, res) {
-    console.log(req.body.newpassword)
     try {
         if (req.session) {
             if (req.session.UserName) {
@@ -372,13 +401,13 @@ exports.changePassword = function (req, res) {
                             else {
                                 connection_central.release();
                                 session.Password = req.body.newpassword;
-                                res.send({ Result: 'Success' });
+                                res.send({ success: true, message: 'Password updated successfully.' });
                             }
                         });
                     }
                     else {
                         connection_central.release();
-                        res.send({ Result: 'OldpasswordError' });
+                        res.send({ success: false, message: 'Old Password does not match.' });
                     }
                 })
             }

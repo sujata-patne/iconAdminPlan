@@ -10,7 +10,6 @@
                     <form class="form-horizontal" role="form" name="userform" data-ng-submit="SaveUserDetails()">
                         <div class="row">
                             <div class="col-xs-12 col-sm-4">
-
                             </div>
                         </div>
                         <div class="row">
@@ -26,14 +25,16 @@
                                 <div class="form-group">
                                     <label for="contentType" class="col-sm-6 control-label">Content Type</label>
                                     <div class="col-sm-6">
-                                         <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes">
-                                             <option value="">-- Select Content Type --</option>
-                                         </select>
+                                        <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes">
+                                            <option value="">-- Select Content Type --</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-2">
-                                <div class="form-group"><button type="button" class="btn btn-primary btn-w-xs" title="Search" data-ng-click="FilterContent()">Search</button></div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary btn-w-xs" title="Search" data-ng-click="FilterContent()">Search</button>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -43,30 +44,34 @@
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <div id="user-exportable">
+                            <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
+                            </span>
+                            <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color: green;">{{success}}
+                            </span>
                             <table id="user-signups" class="table table-striped table-bordered table-checkable">
                                 <thead>
-                                <tr>
-                                    <th>Plan Id</th>
-                                    <th>Plan Name</th>
-                                    <th>Content Type</th>
-                                    <th>Created On</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody data-ng-repeat="plan in planList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize | filter:PlanName">
                                     <tr>
-                                        <td style="width: 5%">{{plan.cd_id}}</td>
-                                        <td style="width: 30%">{{plan.plan}}</td>
-                                        <td style="width: 15%">{{getContentName(plan.content_id)}}</td>
-                                        <td style="width: 10%">{{setDate(plan.created_on)}}</td>
+                                        <th>Sr No.</th>
+                                        <th>Plan Id</th>
+                                        <th>Plan Name</th>
+                                        <th>Content Type</th>
+                                        <th>Created On</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-ng-repeat="plan in planList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
+                                    <tr>
+                                        <td style="width: 5%">{{$index+1}}</td>
+                                        <td style="width: 5%">{{plan.planid}}</td>
+                                        <td style="width: 30%">{{plan.planname}}</td>
+                                        <td style="width: 15%">{{plan.contenttype}}</td>
+                                        <td style="width: 10%">{{plan.created_on}}</td>
                                         <td style="width: 7%">
                                             <div class="row">
-                                                <div class="col-md-4"><a href="" data-ng-click="edit(filter.cd_id)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
-                                                <div class="col-md-4"><a href="" data-ng-click="delete(filter.cd_id)"><i class="glyphicon glyphicon-remove" title="Delete"></i></a></div>
-
-                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.cd_is_active == 1" width="40%" class="text-right"><a href="" title="{{vendor.title}}" data-ng-click="BlockVendor(plan.cd_id)"><i class="fa fa-ban text-right" data-ng-class="BlockColor(vendor.vd_id)"></i></a></div>
-                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.cd_is_active == 0" width="40%" class="text-right"><a href="" title="{{vendor.title}}" data-ng-click="UnBlockVendor(plan.cd_id)"><i class="fa fa-ban text-right" data-ng-class="BlockColor(vendor.vd_id)"></i></a></div>
-
+                                                <div class="col-md-4"><a href="" data-ng-click="EditPlan(plan.planid,plan.contenttype)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
+                                                <div class="col-md-4"><a href="" data-ng-click="DeletePlan(plan.planid,plan.contenttype)"><i class="glyphicon glyphicon-remove" title="Delete"></i></a></div>
+                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.active == 1" width="40%" class="text-right"><a href="" title="UnBlock" data-ng-click="BlockPlan(plan.planid,plan.contenttype)"><i class="fa fa-ban text-right red" style="color: green;"></i></a></div>
+                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.active == 0" width="40%" class="text-right"><a href="" title="Block" data-ng-click="BlockPlan(plan.planid,plan.contenttype)"><i class="fa fa-ban text-right green" style="color: red;"></i></a></div>
                                             </div>
                                         </td>
                                     </tr>
@@ -82,7 +87,7 @@
                         <button type="button" class="btn btn-primary btn-w-xs" title="Previous" data-ng-disabled="listcurrentPage == 0" data-ng-click="listcurrentPage=listcurrentPage-1">Previous</button>
                     </div>
                     <div class="col-xs-12 col-sm-4">
-                        <button type="button" class="btn btn-primary btn-w-xs" title="Download" data-ng-click="exportListData()">Download in excel</button>
+                        <button type="button" class="btn btn-primary btn-w-xs" title="Download" data-ng-click="ExportPlan()">Download in excel</button>
                     </div>
                     <div class="col-xs-12 col-sm-4 text-right">
                         <button type="button" class="btn btn-primary btn-w-xs" title="Next" data-ng-disabled="listcurrentPage >= planList.length/listpageSize - 1" data-ng-click="listcurrentPage=listcurrentPage+1">Next</button>
