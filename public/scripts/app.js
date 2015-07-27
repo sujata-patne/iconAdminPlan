@@ -21,6 +21,11 @@ myApp.config(function($stateProvider) {
                 controller: 'oneTimePlanCtrl',
                 url: '/a-la-cart'
             })
+			 .state('edit-a-la-cart',{
+                templateUrl: 'partials/edit-a-la-cart-plan.html',
+                controller: 'editOneTimePlanCtrl',
+                url: '/edit-a-la-cart/:id'
+            })
             .state('subscriptions',{
                 templateUrl: 'partials/subscriptions-plan.html',
                 controller: 'subscriptionsPlanCtrl',
@@ -49,5 +54,5 @@ myApp.config(function($stateProvider) {
     })
     .run(function($state){
         console.log($state);
-        $state.go("dashboard");
+        $state.go("plan-list");
     })

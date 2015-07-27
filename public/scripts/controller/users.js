@@ -1,3 +1,4 @@
+
 /**
  * Created by sujata.patne on 13-07-2015.
  */
@@ -7,7 +8,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     $scope.base_url = site_base_path;
     $('.removeActiveClass').removeClass('active');
     $('.removeSubactiveClass').removeClass('active');
-    $('#addedituser').addClass('active');
+    $('#changepassword').addClass('active');
 
     $scope.Permission = true;
     $scope.IsDisable = true;
@@ -27,32 +28,33 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    $scope.editable = false;
-
-    $scope.FullName = "";
-    $scope.UserName = "";
-    $scope.EmailId = "";
-    $scope.MobileNo = "";
-    $scope.SelectedVendorList = [];
-    $scope.Id = "";
-
-    $scope.NameValidation = false;
-    $scope.UserNameValidation = false;
-    $scope.EmailValidation = false;
-    $scope.MobileValidation = false;
-    $scope.RoleValidationVisible = false;
-    $scope.VendorValidation = false;
-
-    if ($scope.Permission == true) {
-        $scope.IsDisable = false;
-    }
-    else {
-        $scope.IsDisable = true;
-    }
+    //$scope.editable = false;
+    //
+    //$scope.FullName = "";
+    //$scope.UserName = "";
+    //$scope.EmailId = "";
+    //$scope.MobileNo = "";
+    //$scope.SelectedVendorList = [];
+    //$scope.Id = "";
+    //
+    //$scope.NameValidation = false;
+    //$scope.UserNameValidation = false;
+    //$scope.EmailValidation = false;
+    //$scope.MobileValidation = false;
+    //$scope.RoleValidationVisible = false;
+    //$scope.VendorValidation = false;
+    //
+    //if ($scope.Permission == true) {
+    //    $scope.IsDisable = false;
+    //}
+    //else {
+    //    $scope.IsDisable = true;
+    //}
 
     Users.getUsers(function (users) {
         $scope.UserList = angular.copy(users.UserData);
         $scope.UserRole = angular.copy(users.UserRole);
+        console.log($scope.UserList);
     });
     var data = {
         FullName: $scope.FullName,
@@ -211,7 +213,6 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
         $scope.connectionError = false;
         $scope.SaveUserData = false;
         $scope.error = "";
-        $scope.success = '';
         if ($scope.OldPassword != "") {
             if ($scope.NewPassword != "") {
                 if ($scope.ConfirmPassword != "") {
@@ -227,8 +228,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                                 $scope.OldPassword = "";
                                 $scope.NewPassword = "";
                                 $scope.ConfirmPassword = "";
-                                $scope.successvisible = true;
-                                $scope.success = "Password Changed Successfully"
+                                $scope.SaveUserData = true;
                             }
                             if (data.Result == "OldpasswordError") {
                                 $scope.OldPasswordValidation = true;
@@ -256,4 +256,5 @@ myApp.filter('startFrom', function () {
 function validateEmail(email) {
     var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
     return re.test(email);
+
 }
