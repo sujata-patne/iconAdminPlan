@@ -22,8 +22,8 @@ myApp.config(function ($stateProvider) {
             url: '/a-la-cart'
         })
          .state('edit-a-la-cart', {
-             templateUrl: 'partials/edit-a-la-cart-plan.html',
-             controller: 'editOneTimePlanCtrl',
+             templateUrl: 'partials/a-la-cart-plan.html',
+             controller: 'oneTimePlanCtrl',
              url: '/edit-a-la-cart/:id'
          })
         .state('subscriptions', {
@@ -32,8 +32,8 @@ myApp.config(function ($stateProvider) {
             url: '/subscriptions'
         })
         .state('edit-subscriptions', {
-            templateUrl: 'partials/edit-subscription-plan.html',
-            controller: 'editsubscriptionsPlanCtrl',
+            templateUrl: 'partials/subscription-plan.html',
+            controller: 'subscriptionsPlanCtrl',
             url: '/edit-subscription/:id'
         })
         .state('value-pack', {
@@ -42,8 +42,8 @@ myApp.config(function ($stateProvider) {
             url: '/value-pack'
         })
         .state('edit-value-pack', {
-            templateUrl: 'partials/edit-value-pack-plan.html',
-            controller: 'editvaluePackPlanCtrl',
+            templateUrl: 'partials/value-pack-plan.html',
+            controller: 'valuePackPlanCtrl',
             url: '/edit-value-pack/:id'
         })
         .state('plan-list', {

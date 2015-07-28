@@ -70,8 +70,8 @@
                                             <div class="row">
                                                 <div class="col-md-4"><a href="" data-ng-click="EditPlan(plan.planid,plan.contenttype)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
                                                 <div class="col-md-4"><a href="" data-ng-click="DeletePlan(plan.planid,plan.contenttype)"><i class="glyphicon glyphicon-remove" title="Delete"></i></a></div>
-                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.active == 1" width="40%" class="text-right"><a href="" title="UnBlock" data-ng-click="BlockPlan(plan.planid,plan.contenttype)"><i class="fa fa-ban text-right red" style="color: green;"></i></a></div>
-                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.active == 0" width="40%" class="text-right"><a href="" title="Block" data-ng-click="BlockPlan(plan.planid,plan.contenttype)"><i class="fa fa-ban text-right green" style="color: red;"></i></a></div>
+                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.active == 1" width="40%" class="text-right"><a href="" title="UnBlock" data-ng-click="BlockUnBlockPlan(plan.planid,plan.contenttype,plan.active)"><i class="fa fa-ban text-right red" style="color: green;"></i></a></div>
+                                                <div class="col-md-4" data-ng-show="IsDisable" data-ng-if="plan.active == 0" width="40%" class="text-right"><a href="" title="Block" data-ng-click="BlockUnBlockPlan(plan.planid,plan.contenttype,plan.active)"><i class="fa fa-ban text-right green" style="color: red;"></i></a></div>
                                             </div>
                                         </td>
                                     </tr>

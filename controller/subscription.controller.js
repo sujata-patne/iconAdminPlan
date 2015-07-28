@@ -2,6 +2,7 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
+
 exports.getsubscriptions = function (req, res, next) {
     try {
         if (req.session) {
@@ -19,11 +20,20 @@ exports.getsubscriptions = function (req, res, next) {
                                     res.status(500).json(err.message);
                                 }
                                 else {
-                                    connection_ikon_plan.release();
-                                    res.send({
-                                        JetEvents: JetEvents,
-                                        OpeartorDetail: OpeartorDetail,
-                                        RoleUser: req.session.UserRole
+                                    var query = connection_ikon_plan.query('SELECT * FROM site_sub_plan where ssp_id =? ', [req.body.planid], function (err, subplan) {
+                                        if (err) {
+                                            connection_ikon_plan.release();
+                                            res.status(500).json(err.message);
+                                        }
+                                        else {
+                                            connection_ikon_plan.release();
+                                            res.send({
+                                                JetEvents: JetEvents,
+                                                OpeartorDetail: OpeartorDetail,
+                                                RoleUser: req.session.UserRole,
+                                                PlanData: subplan
+                                            });
+                                        }
                                     });
 
                                 }
@@ -46,8 +56,7 @@ exports.getsubscriptions = function (req, res, next) {
     }
 }
 
-exports.addsubscriptions = function (req, res, next) {
-    console.log(req.body.OpeartorDetails);
+exports.addeditsubscriptions = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
@@ -58,7 +67,78 @@ exports.addsubscriptions = function (req, res, next) {
                             res.status(500).json(err.message);
                         }
                         else {
-                            if (!result.length > 0) {
+                            if (result.length > 0) {
+                                if (result[0].ssp_id == req.body.subplanId) {
+                                    if (req.body.planid) {
+                                        EditSubscriptions();
+                                    }
+                                    else {
+                                        AddSubscriptions();
+                                    }
+                                }
+                                else {
+                                    connection_ikon_plan.release();
+                                    res.send({ success: false, message: 'Subscription Plan Name Must be Unique' });
+                                }
+                            }
+                            else {
+                                if (req.body.planid) {
+                                    EditSubscriptions();
+                                }
+                                else {
+                                    AddSubscriptions();
+                                }
+                            }
+                            function EditSubscriptions() {
+                                var query = connection_ikon_plan.query('select * from site_sub_plan where ssp_id = ?', [req.body.subplanId], function (err, result) {
+                                    if (err) {
+                                        connection_ikon_plan.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                    else {
+                                        if (result.length > 0) {
+                                            var query = connection_ikon_plan.query(' UPDATE site_sub_plan SET ssp_plan_name=?,ssp_caption=?,ssp_description=?,ssp_jed_id=?,ssp_tnb_days=?,ssp_tnb_free_cnt_limit=?,ssp_single_day_cnt_limit=?,ssp_full_sub_cnt_limit=?,ssp_modified_on=?,ssp_modified_by=? where ssp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.TryandBuyOffer, req.body.LimitTBOffer, req.body.LimitSingleday, req.body.TotalDuration, new Date(), req.session.UserName, req.body.subplanId], function (err, result) {
+                                                if (err) {
+                                                    connection_ikon_plan.release();
+                                                    res.status(500).json(err.message);
+                                                }
+                                                else {
+                                                    if (req.body.OperatorDetails.length > 0) {
+                                                        var count = req.body.OperatorDetails.length;
+                                                        var cnt = 0;
+                                                        req.body.OperatorDetails.forEach(function (value) {
+
+                                                            var query = connection_ikon_plan.query('UPDATE operator_pricepoint_detail SET opd_name = ? where opd_id = ?', [value.opd_name, value.opd_id], function (err, result) {
+                                                                if (err) {
+                                                                    connection_ikon_plan.release();
+                                                                    res.status(500).json(err.message);
+                                                                }
+                                                                else {
+                                                                    cnt++;
+                                                                    if (cnt == count) {
+                                                                        connection_ikon_plan.release();
+                                                                        res.send({ success: true, message: 'Subscription Plan Updated successfully.' });
+                                                                    }
+                                                                }
+                                                            });
+                                                        });
+                                                    }
+                                                    else {
+                                                        connection_ikon_plan.release();
+                                                        res.send({ success: true, message: 'Subscription Plan Updated successfully.' });
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            connection_ikon_plan.release();
+                                            res.send({ success: false, message: 'Invalid Subscription Plan Id.' });
+                                        }
+                                    }
+                                });
+                            }
+
+                            function AddSubscriptions() {
                                 var query = connection_ikon_plan.query('select max(ssp_id) as id from site_sub_plan', function (err, result) {
                                     if (err) {
                                         connection_ikon_plan.release();
@@ -114,138 +194,6 @@ exports.addsubscriptions = function (req, res, next) {
                                                 }
                                             }
                                         });
-                                    }
-                                });
-                            }
-                            else {
-                                connection_ikon_plan.release();
-                                res.send({ success: false, message: 'Sunscription Plan Name Must be Unique' });
-                            }
-                        }
-                    });
-                });
-            }
-            else {
-                res.redirect('/accountlogin');
-            }
-        }
-        else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        connection_ikon_plan.release();
-        res.status(500).json(err.message);
-    }
-}
-
-exports.geteditsubscriptions = function (req, res, next) {
-    try {
-        if (req.session) {
-            if (req.session.UserName) {
-                mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
-                    var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null', function (err, JetEvents) {
-                        if (err) {
-                            connection_ikon_plan.release();
-                            res.status(500).json(err.message);
-                        }
-                        else {
-                            var query = connection_ikon_plan.query('SELECT * FROM  (SELECT * FROM  operator_pricepoint_detail where opd_is_active =1 and opd_pp_type ="subscription")alacart inner join (select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null)jetpay on(alacart.opd_jed_id =jetpay.jed_id)', function (err, OpeartorDetail) {
-                                if (err) {
-                                    connection_ikon_plan.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    var query = connection_ikon_plan.query('SELECT * FROM site_sub_plan where ssp_id =? ', [req.body.planid], function (err, subplan) {
-                                        if (err) {
-                                            connection_ikon_plan.release();
-                                            res.status(500).json(err.message);
-                                        }
-                                        else {
-                                            connection_ikon_plan.release();
-                                            res.send({
-                                                JetEvents: JetEvents,
-                                                OpeartorDetail: OpeartorDetail,
-                                                RoleUser: req.session.UserRole,
-                                                PlanData: subplan
-                                            });
-                                        }
-                                    });
-
-                                }
-                            });
-                        }
-                    });
-                });
-            }
-            else {
-                res.redirect('/accountlogin');
-            }
-        }
-        else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        connection_ikon_plan.release();
-        res.status(500).json(err.message);
-    }
-}
-
-exports.editsubscriptions = function (req, res, next) {
-    try {
-        if (req.session) {
-            if (req.session.UserName) {
-                mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
-                    var query = connection_ikon_plan.query('select * from site_sub_plan where lower(ssp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
-                        if (err) {
-                            connection_ikon_plan.release();
-                            res.status(500).json(err.message);
-                        }
-                        else {
-                            if (result.length > 0) {
-                                if (result[0].ssp_id == req.body.subplanId) {
-                                    EditSubscriptions();
-                                }
-                                else {
-                                    connection_ikon_plan.release();
-                                    res.send({ success: false, message: 'Subscription Plan Name Must be Unique' });
-                                }
-                            }
-                            else {
-                                EditALacart();
-                            }
-                            function EditALacart() {
-                                var query = connection_ikon_plan.query(' UPDATE site_sub_plan SET ssp_plan_name=?,ssp_caption=?,ssp_description=?,ssp_jed_id=?,ssp_tnb_days=?,ssp_tnb_free_cnt_limit=?,ssp_single_day_cnt_limit=?,ssp_full_sub_cnt_limit=?,ssp_modified_on=?,ssp_modified_by=? where ssp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.TryandBuyOffer, req.body.LimitTBOffer, req.body.LimitSingleday, req.body.TotalDuration, new Date(), req.session.UserName, req.body.subplanId], function (err, result) {
-                                    if (err) {
-                                        connection_ikon_plan.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                    else {
-                                        if (req.body.OperatorDetails.length > 0) {
-                                            var count = req.body.OperatorDetails.length;
-                                            var cnt = 0;
-                                            req.body.OperatorDetails.forEach(function (value) {
-
-                                                var query = connection_ikon_plan.query('UPDATE operator_pricepoint_detail SET opd_name = ? where opd_id = ?', [value.opd_name, value.opd_id], function (err, result) {
-                                                    if (err) {
-                                                        connection_ikon_plan.release();
-                                                        res.status(500).json(err.message);
-                                                    }
-                                                    else {
-                                                        cnt++;
-                                                        if (cnt == count) {
-                                                            connection_ikon_plan.release();
-                                                            res.send({ success: true, message: 'Subscription Plan Updated successfully.' });
-                                                        }
-                                                    }
-                                                });
-                                            });
-                                        }
-                                        else {
-                                            connection_ikon_plan.release();
-                                            res.send({ success: true, message: 'Subscription Plan Updated successfully.' });
-                                        }
                                     }
                                 });
                             }

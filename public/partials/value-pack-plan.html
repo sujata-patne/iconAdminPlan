@@ -8,7 +8,7 @@
             <form class="form-horizontal" role="form" name="valuePackForm" data-ng-submit="submitForm(valuePackForm.$valid)" novalidate>
                 <div class="row">
                     <div class="col-md-6">
-                        <span class="col-sm-offset-3 col-sm-9" data-ng-show="connectionError" style="color: red;">{{error}}
+                        <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
                         </span>
                         <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color: green;">{{success}}
                         </span>
@@ -16,7 +16,7 @@
                             <label for="planname" class="col-sm-3 control-label"><span class="asterisk">*</span>Plan Name</label>
                             <div class="col-sm-9">
                                 <input type="text" name="planname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" required>
-                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="ld_Id">
+                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.planname.$touched">
                                     <span ng-show="valuePackForm.planname.$error.required">Plan Name is required.</span>
