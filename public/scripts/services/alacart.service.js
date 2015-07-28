@@ -4,26 +4,15 @@
 myApp.service('AlaCarts', ['$http', function ($http) {
     var service = {};
     service.baseRestUrl = 'http://localhost:3000';
-    service.GetAlacartData = function(success){
-        $http.get(service.baseRestUrl + '/alacart').success(function (items) {
-            success(items);
-        });
-    }
-
-    service.AddAlacart = function(data,success){
-        $http.post(service.baseRestUrl + '/alacart', data).success(function (items) {
+	
+	service.GetAlacartData = function(data,success){
+	    $http.post(service.baseRestUrl + '/getalacart', data).success(function (items) {
             success(items);
         });
     }
 	
-	service.GetEditAlacartData = function(data,success){
-        $http.post(service.baseRestUrl + '/editalacartdata', data).success(function (items) {
-            success(items);
-        });
-    }
-	
-	service.EditAlacart = function(data,success){
-        $http.post(service.baseRestUrl + '/editalacart', data).success(function (items) {
+	service.AddEditAlacart = function(data,success){
+	    $http.post(service.baseRestUrl + '/addeditalacart', data).success(function (items) {
             success(items);
         });
     }

@@ -1,8 +1,7 @@
 /**
  * Created by sujata.patne on 15-07-2015.
  */
-var site_base_path = '';
-//var site_base_path = 'http://dailymagic.in';
+
 myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, $window) {
     $('.removeActiveClass').removeClass('active');
     $('#plan-list').addClass('active');
@@ -15,6 +14,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
+    // get contenttype
     $scope.getContentName = function (id) {
         var type = '';
         $scope.ContentTypes.forEach(function (data) {
@@ -25,14 +25,15 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         return (type) ? type : '';
     }
 
-    $scope.BlockPlan = function (id, contenttype) {
+    // block - unblock Plan
+    $scope.BlockUnBlockPlan = function (id, contenttype) {
         $scope.AllPlanList.forEach(function (value) {
             if (value.planid == id && value.contenttype == contenttype) {
                 var active = 1;
                 if (value.active == 1) {
                     active = 0;
                 }
-                if (confirm("Are you want to sure " + (active == 0 ? 'block' : 'unblock') + ' plan ?')) {
+                if (confirm("Are you want to sure " + (active == 0 ? 'block' : 'unblock') + ' this plan ?')) {
                     var plan = {
                         ContentType: value.contenttype,
                         active: active,
@@ -57,6 +58,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         });
     }
 
+    //on edit click
     $scope.EditPlan = function (id, contenttype) {
         if (contenttype == "Subscription") {
             $window.location.href = "/#/edit-subscription/" + id;
@@ -69,8 +71,9 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         }
     }
 
+    //delete plan
     $scope.DeletePlan = function (id, contenttype) {
-        if (confirm('Are you want to sure delete plan ?')) {
+        if (confirm('Are you want to sure delete this plan ?')) {
             var plan = {
                 ContentType: contenttype,
                 PlanId: id,
@@ -102,6 +105,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
 
     }
 
+    //Search click
     $scope.FilterContent = function () {
         var plans = [];
         $scope.AllPlanList.forEach(function (value) {
@@ -131,6 +135,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         $scope.planList = plans;
     }
 
+    // get all plan 
     PlanList.GetPlanList(function (PlanList) {
         $scope.ContentTypes = angular.copy(PlanList.ContentTypes);
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Subscription", cd_id: "Subscription", cd_name: "Subscription" });
@@ -147,6 +152,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         $scope.planList = $scope.AllPlanList;
     });
 
+    //export plan 
     $scope.ExportPlan = function () {
         PlanList.ExportPlan({ PlanList: $scope.planList }, function (data) {
             var blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8" });
@@ -155,6 +161,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         });
     }
 
+    //convert date format
     $scope.setDate = function (val) {
         var d = new Date(val);
         var date = d.getDate();

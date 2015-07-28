@@ -21,6 +21,9 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     $scope.success = false;
     $scope.errorvisible = false;
     $scope.error = false;
+    $scope.passwordtype = "password";
+    $scope.newpasswordtype = "password";
+    $scope.confirmpasswordtype = "password";
 
     $scope.usercurrentPage = 0;
     $scope.userpageSize = 5;
@@ -219,6 +222,18 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
         $scope.successvisible = false;
         $scope.errorvisible = false;
     };
+
+    $scope.Passwordvisible = function (val) {
+        if (val == 1) {
+            $scope.passwordtype = $scope.passwordtype == "password" ? "text" : "password";
+        }
+        else if (val == 2) {
+            $scope.newpasswordtype = $scope.passwordtype == "password" ? "text" : "password";
+        }
+        else {
+            $scope.confirmpasswordtype = $scope.passwordtype == "password" ? "text" : "password";
+        }
+    }
 });
 
 myApp.filter('startFrom', function () {

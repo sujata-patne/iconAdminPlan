@@ -4,11 +4,8 @@
 
 var valuepack = require('../controller/valuepack.controller');
 module.exports = function (app) {
-    app.route('/valuepack')
-       .get(valuepack.getvaluepacks)
-       .post(valuepack.addvaluepacks);
-    app.route('/editvaluepackdata')
-      .post(valuepack.geteditvaluepacks)
-    app.route('/editvaluepack')
-      .post(valuepack.editvaluepacks);
+    app.route('/getvaluepack')
+      .post(valuepack.getvaluepack)
+    app.route('/addeditvaluepack')
+      .post(valuepack.addeditvaluepack);
 }

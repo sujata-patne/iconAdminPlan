@@ -16,7 +16,7 @@
                             <label for="planname" class="col-sm-3 control-label"><span class="asterisk">*</span>Plan Name</label>
                             <div class="col-sm-9">
                                 <input type="text" name="planname" class="form-control" placeholder="Plan Name" data-ng-model="PlanName" required>
-                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="ld_Id">
+                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.planname.$touched">
                                     <span ng-show="subscriptionForm.planname.$error.required">Plan Name is required.</span>
