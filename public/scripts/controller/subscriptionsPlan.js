@@ -54,7 +54,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
-        $scope.errorvisible == false;
+        $scope.errorvisible = false;
         if (isValid) {
             var subscription = {
                 planid: $stateParams.id,
