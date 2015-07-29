@@ -149,22 +149,19 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         PlanList.ValuePacks.forEach(function (value) {
             $scope.AllPlanList.push({ planid: value.svp_id, planname: value.svp_plan_name, created_on: $scope.setDate(value.svp_created_on), active: value.svp_is_active, contenttype: "Value Pack", contentid: "Value Pack" });
         });
-        //console.log($scope.AllPlanList)
         $scope.planList = $scope.AllPlanList;
 
     });
 
     //export plan 
     $scope.ExportPlan = function () {
-        console.log($scope.planList)
         PlanList.ExportPlan({ PlanList: $scope.planList }, function (data) {
             var blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8" });
-            console.log(blob);
             window.saveAs(blob, 'PlanList.xlsx');
         });
     }
 
-    //convert date format
+    //convert date formatdata);
     $scope.setDate = function (val) {
         var d = new Date(val);
         var date = d.getDate();

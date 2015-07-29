@@ -89,7 +89,7 @@ exports.blockunblockplan = function (req, res, next) {
                             }
                         });
                     }
-                    else if (req.body.ContentType == "ValuePack") {
+                    else if (req.body.ContentType == "Value Pack") {
                         var query = connection_ikon_plan.query('UPDATE site_valuepack_plan set svp_is_active= ? where svp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
@@ -146,7 +146,7 @@ exports.deleteplan = function (req, res, next) {
                             }
                         });
                     }
-                    else if (req.body.ContentType == "ValuePack") {
+                    else if (req.body.ContentType == "Value Pack") {
                         var query = connection_ikon_plan.query('Delete From site_valuepack_plan where svp_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
@@ -154,7 +154,7 @@ exports.deleteplan = function (req, res, next) {
                             }
                             else {
                                 connection_ikon_plan.release();
-                                res.send({ success: true, message: 'ValuePack Plan delete successfully.' });
+                                res.send({ success: true, message: 'ValuePack Plan deleted successfully.' });
                             }
                         });
                     }
@@ -166,7 +166,7 @@ exports.deleteplan = function (req, res, next) {
                             }
                             else {
                                 connection_ikon_plan.release();
-                                res.send({ success: true, message: 'A-La-Cart Plan delete successfully.' });
+                                res.send({ success: true, message: 'A-La-Cart Plan deleted successfully.' });
                             }
                         });
                     }
@@ -187,7 +187,7 @@ exports.deleteplan = function (req, res, next) {
 }
 
 exports.exportplan = function (req, res) {
-    try{
+    try {
         var conf = {};
         conf.cols = [{
             caption: 'Sr No.',
@@ -216,7 +216,6 @@ exports.exportplan = function (req, res) {
             type: 'string',
             width: 30
         }];
-
         var rows = [];
         var cnt = 1;
 
@@ -232,7 +231,6 @@ exports.exportplan = function (req, res) {
             cnt++;
         })
         conf.rows = rows;
-        console.log(conf.rows)
         var result = nodeExcel.execute(conf);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats');
         res.setHeader("Content-Disposition", "attachment; filename=PlanList.xlsx");

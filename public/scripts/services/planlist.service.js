@@ -23,7 +23,7 @@ myApp.service('PlanList', ['$http', function ($http) {
     }
 
     service.ExportPlan = function (data, success) {
-        $http.post(service.baseRestUrl + '/exportplan', data).success(function (items) {
+        $http({ method: "Post", url: service.baseRestUrl + '/exportplan', data: data, headers: { 'Content-type': 'application/json' }, responseType: 'arraybuffer' }).success(function (items) {
             success(items);
         });
     }
