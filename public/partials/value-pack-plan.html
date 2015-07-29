@@ -73,7 +73,7 @@
                                         <div class="form-group">
                                             <label for="setDownloadLimit" class="col-sm-6 control-label"><span class="asterisk">*</span>Set Download Limit</label>
                                             <div class="col-sm-6">
-                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" required>
+                                                <input type="text" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" required>
                                                 <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.setDownloadLimit.$touched">
                                                     <span ng-show="valuePackForm.setDownloadLimit.$error.required">Insert download limit.</span>
                                                     <span ng-show="valuePackForm.setDownloadLimit.$error.pattern">Insert valid download limit.</span>
@@ -83,7 +83,7 @@
                                         <div class="form-group">
                                             <label for="setDurationLimit" class="col-sm-6 control-label"><span class="asterisk">*</span>Set Duration Limit</label>
                                             <div class="col-sm-6">
-                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="setDurationLimit" placeholder="Set Duration Limit" data-ng-model="setDurationLimit" required>
+                                                <input type="text" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDurationLimit" placeholder="Set Duration Limit" data-ng-model="setDurationLimit" required>
                                                 <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.setDurationLimit.$touched">
                                                     <span ng-show="valuePackForm.setDurationLimit.$error.required">Insert Duration limit.</span>
                                                     <span ng-show="valuePackForm.setDurationLimit.$error.pattern">Insert valid Duration limit.</span>

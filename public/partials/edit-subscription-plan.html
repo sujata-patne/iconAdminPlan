@@ -101,7 +101,7 @@
                                         <div class="form-group">
                                             <label for="fullSubDuration" class="col-sm-6 control-label"><span class="asterisk">*</span>For Full Subscription Duration</label>
                                             <div class="col-sm-6">
-                                                <input type="text" ng-pattern="/^[1-9]*$/" class="form-control" name="fullSubDuration" placeholder="Limit for Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" required>
+                                                <input type="text" ng-pattern="/^[1-9][]*$/" class="form-control" name="fullSubDuration" placeholder="Limit for Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" required>
                                                 <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.fullSubDuration.$touched">
                                                     <span ng-show="subscriptionForm.fullSubDuration.$error.required">Insert limit for Full Subscription.</span>
                                                     <span ng-show="subscriptionForm.fullSubDuration.$error.pattern">Insert valid limit for Full Subscription.</span>

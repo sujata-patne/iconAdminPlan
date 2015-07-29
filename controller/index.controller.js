@@ -107,7 +107,7 @@ function getPages(role) {
     if (role == "Super Admin") {
         var pagesjson = [
             //{ 'pagename': 'Add/Edit User', 'href': 'users','id':'addedituser', 'class': 'fa fa-user', 'submenuflag': '0', 'sub': [] },
-             { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
@@ -118,7 +118,7 @@ function getPages(role) {
     }
     else if (role == "Content Mgr.") {
         var pagesjson = [
-             { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
@@ -128,7 +128,7 @@ function getPages(role) {
     }
     else if (role == "Moderator") {
         var pagesjson = [
-             { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
