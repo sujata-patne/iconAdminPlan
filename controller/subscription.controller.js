@@ -2,7 +2,13 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
-
+/**
+ * @function getsubscriptions
+ * @param req
+ * @param res
+ * @param next
+ * @description get all records in subscription plan
+ */
 exports.getsubscriptions = function (req, res, next) {
     try {
         if (req.session) {
@@ -55,7 +61,13 @@ exports.getsubscriptions = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
-
+/**
+ * @function addeditsubscriptions
+ * @param req
+ * @param res
+ * @param next
+ * @description add new subscription plan and update selected subscription plan
+ */
 exports.addeditsubscriptions = function (req, res, next) {
     try {
         if (req.session) {

@@ -2,6 +2,13 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
+/**
+ * @function getalacartadata
+ * @param req
+ * @param res
+ * @param next
+ * @description Get all a-la-cart data with contentType and JetEventIds, operator
+ */
 exports.getalacartadata = function (req, res, next) {
     try {
         if (req.session) {
@@ -75,6 +82,13 @@ exports.getalacartadata = function (req, res, next) {
     }
 }
 
+/**
+ * @function addeditalacart
+ * @param req
+ * @param res
+ * @param next
+ * @description add & edit records in a-la-cart data
+ */
 exports.addeditalacart = function (req, res, next) {
     try {
         if (req.session) {

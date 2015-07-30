@@ -12,8 +12,6 @@ module.exports = function (app) {
         .post(index.authenticate);
     app.route('/logout')
         .get(index.logout)
-    app.route('/dashboard')
-        .get(index.GetDashBoardData);
     app.route('/accountforgot')
         .get(index.viewForgotPassword)
         .post(index.forgotPassword);

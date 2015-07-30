@@ -2,7 +2,13 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
-
+/**
+ * @function getvaluepack
+ * @param req
+ * @param res
+ * @param next
+ * @description get list all value pack plans
+ */
 exports.getvaluepack = function (req, res, next) {
     try {
         if (req.session) {
@@ -55,7 +61,13 @@ exports.getvaluepack = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
-
+/**
+ * @function addeditvaluepack
+ * @param req
+ * @param res
+ * @param next
+ * @description add new value pack plan and update existing selected value pack plan
+ */
 exports.addeditvaluepack = function (req, res, next) {
     try {
         if (req.session) {

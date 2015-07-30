@@ -3,7 +3,13 @@
  */
 var mysql = require('../config/db').pool;
 var nodeExcel = require('excel-export');
-
+/**
+ * @function getplanlist
+ * @param req
+ * @param res
+ * @param next
+ * @decsription get all records of all plans
+ */
 exports.getplanlist = function (req, res, next) {
     try {
         if (req.session) {
@@ -71,7 +77,13 @@ exports.getplanlist = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
-
+/**
+ * @function blockunblockplan
+ * @param req
+ * @param res
+ * @param next
+ * @description block and unblock selected plan
+ */
 exports.blockunblockplan = function (req, res, next) {
     try {
         if (req.session) {
@@ -128,7 +140,13 @@ exports.blockunblockplan = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
-
+/**
+ * @function deleteplan
+ * @param req
+ * @param res
+ * @param next
+ * @description deleted selected plan
+ */
 exports.deleteplan = function (req, res, next) {
     try {
         if (req.session) {
@@ -185,7 +203,12 @@ exports.deleteplan = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
-
+/**
+ * @function exportplan
+ * @param req
+ * @param res
+ * @description process plan list for download in to excel/xml format
+ */
 exports.exportplan = function (req, res) {
     try {
         var conf = {};

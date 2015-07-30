@@ -4,13 +4,17 @@
 
 var mysql = require('../config/db').pool;
 var nodemailer = require('nodemailer');
-
+/**
+ * @function pages
+ * @param req
+ * @param res
+ * @param next
+ * @description get list of menus with related pages
+ */
 exports.pages = function (req, res, next) {
     var role;
 
     var pagesjson = [
-        //{ 'pagename': 'Dashboard', 'href': 'dashboard','id':'dashboard', 'class': 'fa fa-dashboard', 'submenuflag': '0', 'sub': [] },
-        //{ 'pagename': 'Add/Edit User', 'href': 'users','id':'addedituser', 'class': 'fa fa-user', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
@@ -33,6 +37,13 @@ exports.pages = function (req, res, next) {
     }
 }
 
+/**
+ * @function login
+ * @param req
+ * @param res
+ * @param next
+ * @description user can login
+ */
 exports.login = function (req, res, next) {
     if (req.session) {
         if (req.session.UserName) {
@@ -46,7 +57,13 @@ exports.login = function (req, res, next) {
         res.render('account-login', { error: '' });
     }
 }
-
+/**
+ * @function logout
+ * @param req
+ * @param res
+ * @param next
+ * @description user can logout
+ */
 exports.logout = function (req, res, next) {
     try {
         if (req.session) {
@@ -67,7 +84,13 @@ exports.logout = function (req, res, next) {
         res.render('account-login', { error: error.message });
     }
 }
-
+/**
+ * @function authenticate
+ * @param req
+ * @param res
+ * @param next
+ * @description user is authenticated
+ */
 exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CENTRAL', function (err, connection_central) {
@@ -101,12 +124,16 @@ exports.authenticate = function (req, res, next) {
         res.render('account-login', { error: 'Error in database connection.' });
     }
 }
-
+/**
+ * #function getPages
+ * @param role
+ * @returns json array
+ * @description get list of pages allowed as per user-role
+ */
 function getPages(role) {
 
     if (role == "Super Admin") {
         var pagesjson = [
-            //{ 'pagename': 'Add/Edit User', 'href': 'users','id':'addedituser', 'class': 'fa fa-user', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
@@ -114,226 +141,27 @@ function getPages(role) {
             { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
         ];
 
-        return pagesjson;
-    }
-    else if (role == "Content Mgr.") {
-        var pagesjson = [
-            { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
-        ];
-        return pagesjson;
-    }
-    else if (role == "Moderator") {
-        var pagesjson = [
-            { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Change Password', 'href': '#change-password', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
-        ];
         return pagesjson;
     }
 }
-
-exports.GetDashBoardData = function (req, res) {
-    try {
-        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-            if (req.session) {
-                if (req.session.UserName) {
-                    if (req.session.UserRole == "Content Mgr.") {
-                        var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id IN (1,2)', function (err, FileStatus) {
-                            if (err) {
-                                console.log(err.message);
-                                connection_ikon_cms.release();
-                                res.status(500).json(err.message);
-                            }
-                            else {
-                                mysql.getConnection('CENTRAL', function (err, connection_central) {
-                                    var query = connection_central.query('select * from (select * from vendor_detail where vd_is_active =1) vd inner join (select * from vendor_profile)vp on (vd.vd_id =vp.vp_vendor_id) inner join (select * from login_user_vendor)uv on (vd.vd_id =uv.uv_vd_id and uv_ld_id =?)', [req.session.UserId], function (err, Vendors) {
-                                        if (err) {
-                                            console.log(err.message);
-                                            connection_central.release();
-                                            connection_ikon_cms.release();
-                                            res.status(500).json(err.message);
-                                        }
-                                        else {
-                                            if (Vendors.length > 0) {
-                                                var VendorArray = [];
-                                                for (var i in Vendors) {
-                                                    VendorArray.push(Vendors[i].vd_id);
-                                                }
-                                                var query = connection_ikon_cms.query('SELECT * FROM content_metadata WHERE cm_property_id is null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ')', function (err, Property) {
-                                                    if (err) {
-                                                        connection_ikon_cms.release();
-                                                        connection_central.release();
-                                                        res.status(500).json(err.message);
-                                                    }
-                                                    else {
-                                                        var PropertyArray = [];
-                                                        for (var i in Property) {
-                                                            PropertyArray.push(Property[i].cm_id);
-                                                        }
-                                                        if (PropertyArray.length > 0) {
-                                                            var query = connection_ikon_cms.query('SELECT cm_state,count(*) as count FROM content_metadata WHERE cm_property_id is not null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ') and cm_property_id in(' + PropertyArray.toString() + ') group by cm_state', function (err, StatusFiles) {
-                                                                if (err) {
-                                                                    console.log(err.message);
-                                                                    connection_ikon_cms.release();
-                                                                    connection_central.release();
-                                                                    res.status(500).json(err.message);
-                                                                }
-                                                                else {
-                                                                    var query = connection_ikon_cms.query('SELECT * FROM (SELECT cm_vendor, cm_content_type, COUNT( * ) as count FROM  `content_metadata` WHERE  `cm_property_id` IS NOT NULL and cm_is_active=1 and cm_vendor in(' + VendorArray.toString() + ') AND cm_state =4 GROUP BY  `cm_vendor` ,  `cm_content_type`)cm LEFT OUTER JOIN (SELECT vd_id,vd_name FROM vendor_detail where vd_is_active =1)vendor ON ( cm.cm_vendor = vendor.vd_id )', function (err, VendorFiles) {
-                                                                        if (err) {
-                                                                            console.log(err.message);
-                                                                            connection_ikon_cms.release();
-                                                                            res.status(500).json(err.message);
-                                                                        }
-                                                                        else {
-                                                                            connection_ikon_cms.release();
-                                                                            res.send({
-                                                                                FileStatus: FileStatus,
-                                                                                StatusFiles: StatusFiles,
-                                                                                VendorFiles: VendorFiles,
-                                                                                Vendors: Vendors
-                                                                            });
-                                                                        }
-                                                                    });
-                                                                }
-                                                            });
-                                                        }
-                                                        else {
-                                                            res.send({
-                                                                FileStatus: FileStatus,
-                                                                StatusFiles: [],
-                                                                VendorFiles: [],
-                                                                Vendors: Vendors
-                                                            });
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                            else {
-                                                res.send({
-                                                    FileStatus: FileStatus,
-                                                    StatusFiles: [],
-                                                    VendorFiles: [],
-                                                    Vendors: []
-                                                });
-                                            }
-                                        }
-                                    });
-                                });
-                            }
-                        });
-                    }
-                    else {
-                        var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id IN (1,2)', function (err, FileStatus) {
-                            if (err) {
-                                console.log(err.message);
-                                connection_ikon_cms.release();
-                                connection_central.release();
-                                res.status(500).json(err.message);
-                            }
-                            else {
-                                var query = connection_central.query('SELECT * FROM  vendor_detail where vd_is_active =1', function (err, Vendors) {
-                                    if (err) {
-                                        console.log(err.message);
-                                        connection_central.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                    else {
-                                        if (Vendors.length > 0) {
-                                            var VendorArray = [];
-                                            for (var i in Vendors) {
-                                                VendorArray.push(Vendors[i].vd_id);
-                                            }
-                                            var query = connection_ikon_cms.query('SELECT * FROM content_metadata WHERE cm_property_id is null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ')', function (err, Property) {
-                                                if (err) {
-                                                    connection_ikon_cms.release();
-                                                    res.status(500).json(err.message);
-                                                }
-                                                else {
-                                                    var PropertyArray = [];
-                                                    for (var i in Property) {
-                                                        PropertyArray.push(Property[i].cm_id);
-                                                    }
-                                                    if (PropertyArray.length > 0) {
-                                                        var query = connection_ikon_cms.query('SELECT cm_state,count(*) as count FROM content_metadata WHERE cm_property_id is not null  and cm_is_active =1 and cm_vendor in(' + VendorArray.toString() + ') and cm_property_id in(' + PropertyArray.toString() + ') group by cm_state', function (err, StatusFiles) {
-                                                            if (err) {
-                                                                console.log(err.message);
-                                                                connection_ikon_cms.release();
-                                                                res.status(500).json(err.message);
-                                                            }
-                                                            else {
-                                                                var query = connection_ikon_cms.query('SELECT * FROM (SELECT cm_vendor, cm_content_type, COUNT( * ) as count FROM  `content_metadata` WHERE  `cm_property_id` IS NOT NULL and cm_is_active=1 and cm_vendor in(' + VendorArray.toString() + ') AND cm_state =4 GROUP BY  `cm_vendor` ,  `cm_content_type`)cm LEFT OUTER JOIN (SELECT vd_id,vd_name FROM vendor_detail where vd_is_active =1)vendor ON ( cm.cm_vendor = vendor.vd_id )', function (err, VendorFiles) {
-                                                                    if (err) {
-                                                                        console.log(err.message);
-                                                                        connection_ikon_cms.release();
-                                                                        res.status(500).json(err.message);
-                                                                    }
-                                                                    else {
-                                                                        connection_ikon_cms.release();
-                                                                        res.send({
-                                                                            FileStatus: FileStatus,
-                                                                            StatusFiles: StatusFiles,
-                                                                            VendorFiles: VendorFiles,
-                                                                            Vendors: Vendors
-                                                                        });
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
-                                                    }
-                                                    else {
-                                                        res.send({
-                                                            FileStatus: FileStatus,
-                                                            StatusFiles: [],
-                                                            VendorFiles: [],
-                                                            Vendors: Vendors
-                                                        });
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        else {
-                                            res.send({
-                                                FileStatus: FileStatus,
-                                                StatusFiles: [],
-                                                VendorFiles: [],
-                                                Vendors: []
-                                            });
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }
-                }
-                else {
-                    res.redirect('/accountlogin');
-                }
-            }
-            else {
-                res.redirect('/accountlogin');
-            }
-        })
-    }
-    catch (err) {
-        connection_ikon_cms.release();
-        connection_central.release();
-        console.log(err.message);
-        res.status(500).json(err.message);
-    }
-};
-
+/**
+ * @function viewForgotPassword
+ * @param req
+ * @param res
+ * @param next
+ * @description display forgot password page
+ */
 exports.viewForgotPassword = function (req, res, next) {
     req.session = null;
     res.render('account-forgot', { error: '', msg: '' });
 }
-
+/**
+ * @function forgotPassword
+ * @param req
+ * @param res
+ * @param next
+ * @description get forgot password for user
+ */
 exports.forgotPassword = function (req, res, next) {
     try {
         mysql.getConnection('CENTRAL', function (err, connection_central) {
@@ -380,12 +208,23 @@ exports.forgotPassword = function (req, res, next) {
         res.render('account-forgot', { error: 'Error in database connection.' });
     }
 }
-
+/**
+ * @function viewChangePassword
+ * @param req
+ * @param res
+ * @param next
+ * @description displays change password page
+ */
 exports.viewChangePassword = function (req, res, next) {
     req.session = null;
     res.render('account-changepassword', { error: '' });
 }
-
+/**
+ * @function changePassword
+ * @param req
+ * @param res
+ * @description process change password request
+ */
 exports.changePassword = function (req, res) {
     try {
         if (req.session) {

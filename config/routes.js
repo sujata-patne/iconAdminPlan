@@ -3,7 +3,6 @@
  */
 module.exports = function(app){
     require('../routes/index')(app);
-    require('../routes/users')(app);
     require('../routes/a-la-cart')(app);
     require('../routes/subscriptions')(app);
     require('../routes/value-pack')(app);
