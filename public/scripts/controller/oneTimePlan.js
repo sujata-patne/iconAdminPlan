@@ -19,11 +19,16 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     $scope.errorvisible = false;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
-
+    $scope.GeoLoction = [
+        {cd_id:1,cd_name:'India',cd_cur:'INR'},
+        {cd_id:2,cd_name:'US',cd_cur:'USD'},
+        {cd_id:3,cd_name:'UK',cd_cur:'EUR'}
+    ];
     // get alacart data & jetpay id
     AlaCarts.GetAlacartData({ planid: $stateParams.id }, function (Alacarts) {
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
+        //$scope.AllGeoLactions = angular.copy(Alacarts.GeoLocations);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetail);
         $scope.PlanData = angular.copy(Alacarts.PlanData);
         $scope.PlanData.forEach(function (value) {
@@ -33,22 +38,82 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.Description = value.sap_description;
             $scope.SelectedContentType = value.sap_content_type;
             $scope.SelectedEventId = value.sap_jed_id;
+            $scope.SelectedDeliveryType = value.delivery_type || 2;
             $scope.ContentTypeChange();
             $scope.displayOperators();
         });
 
     });
 
-    //change jetpayid on change of content type
+    //change jetpayid,geoLocation,deliveryType on change of content type
     $scope.ContentTypeChange = function () {
         $scope.JetPayEvent = [];
         $scope.AllJetPayEvents.forEach(function (value) {
             if (value.jed_content_type == $scope.SelectedContentType) {
                 $scope.JetPayEvent.push(value);
             }
-        })
+        });
+        /*This will be implemented for future chnages.*/
+        /*$scope.GeoLoction = [];
+        $scope.AllGeoLactions.forEach(function (value){
+            if (value.jed_content_type == $scope.SelectedContentType) {
+                $scope.GeoLoction.push(value);
+            }
+        })*/
+        if($scope.SelectedContentType == 9 || $scope.SelectedContentType == 10){
+            $scope.deliveryType = [
+                {cd_id:1,cd_name:'Download'},
+                {cd_id:2,cd_name:'Streaming'}
+            ];
+        }else{
+            $scope.deliveryType = [
+                {cd_id:1,cd_name:'Download'}
+            ];
+        }
     }
 
+    $scope.geoLocationChange = function(){
+        var currency = '';
+        $scope.GeoLoction.forEach(function (value) {
+            if ($scope.SelectedGeoLocation == value.cd_id) {
+                currency = value.cd_cur;
+            }
+        });
+        $scope.selectedCurrency = currency;
+    }
+    // fruits
+    $scope.distributionChannelList = ['Web', 'Mobile Web', 'App', 'TV'];
+
+    // selected fruits
+    $scope.selectedDistributionChannel = ['Web', 'Mobile Web'];
+
+    // toggle selection for a given distributionChannel by name
+    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
+        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
+        // is currently selected
+        if (idx > -1) {
+            $scope.selectedDistributionChannel.splice(idx, 1);
+        }
+        // is newly selected
+        else {
+            $scope.selectedDistributionChannel.push(fruitName);
+        }
+    };
+    $scope.durationOptions = [
+        { cd_id: 'Min', cd_name: 'Min' },
+        { cd_id: 'Hours', cd_name: 'Hours' },
+        { cd_id: 'Days', cd_name: 'Days' },
+        { cd_id: 'Week', cd_name: 'Week' },
+        { cd_id: 'Month', cd_name: 'Month' },
+        { cd_id: 'Year', cd_name: 'Year' }
+    ]
+    $scope.deliveryTypeChange = function(){
+        if($scope.SelectedDeliveryType == 2){
+            $scope.streamingSetting = true;
+        }else{
+            $scope.streamingSetting = false;
+        }
+    }
     // display operator on change of jet pay id 
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
