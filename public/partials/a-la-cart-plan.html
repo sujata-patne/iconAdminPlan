@@ -48,6 +48,69 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="deliveryType" class="col-sm-3 control-label"><span class="asterisk">*</span>Delivery Type</label>
+                            <div class="col-sm-9">
+                                <span class="ui-select">
+                                    <select name="deliveryType" class="form-control" data-ng-model="SelectedDeliveryType" data-ng-options="item.cd_id as item.cd_name for item in deliveryType" data-ng-change="deliveryTypeChange()" required>
+                                        <option value="">-- Select Delivery Type --</option>
+                                    </select>
+                                </span>
+                                <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.deliveryType.$touched">
+                                    <span ng-show="aLaCartForm.deliveryType.$error.required">Please Select Delivery Type.</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="geoLocation" class="col-sm-3 control-label"><span class="asterisk">*</span>Geo Location</label>
+                            <div class="col-sm-5">
+                                <span class="ui-select">
+                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.cd_id as item.cd_name for item in GeoLoction" data-ng-change="geoLocationChange()" required>
+                                        <option value="">-- Select Geo Location --</option>
+                                    </select>
+                                </span>
+                                <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.geoLocation.$touched">
+                                    <span ng-show="aLaCartForm.geoLocation.$error.required">Please Select Geo Location.</span>
+                                </span>
+                            </div>
+                            <label for="currency" class="col-sm-2 control-label">Currency</label>
+                            <div class="col-sm-2">
+                                <input type="text" readonly name="currency" class="form-control" id="" placeholder="Currency" data-ng-model="selectedCurrency">
+                            </div>
+                        </div>
+                        <fieldset><legend><h5>Streaming Setting</h5></legend>
+                            <div class="form-group">
+                                <label for="streamNoOfTime" class="col-sm-3 control-label">Stream No.of Times</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="streamNoOfTime" class="form-control" id="" placeholder="Stream No.of Times" data-ng-model="streamNoOfTime">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="streamDuration" class="col-sm-3 control-label">Streaming Duration</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="streamDuration" class="form-control" id="" placeholder="Streaming Duration" data-ng-model="streamDuration">
+                                </div>
+                                <div class="col-sm-3">
+                                    <select name="durationOptions" class="form-control" data-ng-model="SelectedDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
+                                        <option value="">-- Duration --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-group">
+                            <label for="distributionChannel" class="col-sm-3 control-label">Distribution Channel</label>
+                            <div class="col-sm-9">
+                                <label ng-repeat="distributionChannelItem in distributionChannelList">
+                                    &nbsp;<input type="checkbox"
+                                            name="distributionChannel[]"
+                                            value="{{distributionChannelItem}}"
+                                            ng-checked="selectedDistributionChannel.indexOf(distributionChannelItem) > -1"
+                                            ng-click="toggleDistributionChannelSelection(distributionChannelItem)"> {{distributionChannelItem}}&nbsp;
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
                             <label for="jetPayEventId" class="col-sm-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
                             <div class="col-sm-9">
                                 <span class="ui-select">
@@ -60,8 +123,6 @@
                                 </span>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="form-group table-responsive">
                             <table id="eventOperators" class="table table-striped table-bordered table-checkable">
                                 <thead>
