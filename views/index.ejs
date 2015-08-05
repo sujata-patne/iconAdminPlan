@@ -77,40 +77,17 @@
 <script src="scripts/controller/users.js"></script>
 <script src="scripts/controller/oneTimePlan.js"></script>
 <script src="scripts/controller/subscriptionsPlan.js"></script>
+<script src="scripts/controller/offerplan.js"></script>
 <script src="scripts/controller/valuePackPlan.js"></script>
 <script src="scripts/controller/planList.js"></script>
 <script src="scripts/directives/arrayElementValidation.js"></script>
 <script src="scripts/services/users.service.js"></script>
 <script src="scripts/services/alacart.service.js"></script>
 <script src="scripts/services/subscription.service.js"></script>
+<script src="scripts/services/offer.service.js"></script>
 <script src="scripts/services/valuepack.service.js"></script>
 <script src="scripts/services/planlist.service.js"></script>
  
 
-    <script type="text/javascript">
-
-           jQuery.ajax({
-            url: 'https://api.maxmind.com/device/v1.0/ip/1.23.138.127',
-            type: 'GET',
-			headers: { "username ": 101108,"password" :'sHciT4aFZzvw' },
-            //data: { 'username': '101108', 'password': 'sHciT4aFZzvw' },
-            success: function (geoipResponse) {
-                lat = geoipResponse.location.latitude;
-                lang = geoipResponse.location.longitude;
-                CountryCode = geoipResponse.country.iso_code.toLowerCase();
-                Ip = geoipResponse.traits.ip_address;
-               console.log(Ip);
-        //    }
-        //    //url: 'https://freegeoip.net/json/',
-        //    //type: 'POST',
-        //    //dataType: 'jsonp',
-        //    //success: function (location) {
-        //    //    lat = location.latitude;
-        //    //    lang = location.longitude;
-        //    //    CountryCode = location.country_code.toLowerCase();
-        //    //    Ip = location.ip;
-       }
-        });
-
-    </script>
+  
 </html>

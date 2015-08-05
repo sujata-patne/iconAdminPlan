@@ -1,10 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-
-</body>
-</html>
+<div class="container">
+    <div class="content">
+        <div class="content-container">
+            <div class="content-header">
+                <h2 class="content-header-title">Offers Plans</h2>
+            </div>
+            <!-- /.content-header -->
+            <form class="form-horizontal" role="form" name="offerplanForm" data-ng-submit="submitForm(offerplanForm.$valid)" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
+                        </span>
+                        <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color: green;">{{success}}
+                        </span>
+                        <div class="form-group">
+                            <label for="planname" class="col-sm-3 control-label"><span class="asterisk">*</span>Plan Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="planname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" required>
+                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
+                                <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
+                                <span style="color: red" data-ng-show="offerplanForm.$submitted || offerplanForm.planname.$touched">
+                                    <span data-ng-show="offerplanForm.planname.$error.required">Plan Name is required.</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="caption" class="col-sm-3 control-label">Caption</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="u_caption" class="form-control" id="" placeholder="Caption" data-ng-model="Caption">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="col-sm-3 control-label">Description</label>
+                            <div class="col-sm-9">
+                                <textarea name="u_caption" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="buyitems" class="col-sm-3 control-label"><span class="asterisk">*</span>Buy items</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="buyitems" class="form-control" id="" placeholder="Buy items" data-ng-model="Buyitems" data-ng-pattern="/^[0-9]{1,9}$/" required>
+                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
+                                <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
+                                <span style="color: red" ng-show="offerplanForm.$submitted || offerplanForm.buyitems.$touched">
+                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Not a valid number!</span>
+                                    <span ng-show="offerplanForm.buyitems.$error.required">Buy items is required.</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="getfreeitems" class="col-sm-3 control-label"><span class="asterisk">*</span>Get free items</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="getfreeitems" class="form-control" id="" placeholder="Get free items" data-ng-pattern="/^[0-9]{1,9}$/" data-ng-model="Getfreeitems" required>
+                                <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
+                                <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
+                                <span style="color: red" data-ng-show="offerplanForm.$submitted || offerplanForm.getfreeitems.$touched">
+                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Not a valid number!</span>
+                                    <span data-ng-show="offerplanForm.getfreeitems.$error.required">Get free items is required.</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="caption" class="col-sm-3 control-label">Distribution Channels</label>
+                            <div class="col-sm-9">
+                                <span data-ng-repeat="i in DistributionChannels ">
+                                    <input type="checkbox" name="{{i.cd_name}}" data-ng-model="i.isactive">{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="col-sm-offset-5 col-sm-7">
+                            <button type="submit" class="btn btn-primary btn-w-md" title="Save">Submit</button>
+                            <button type="reset" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

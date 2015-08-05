@@ -46,6 +46,16 @@ myApp.config(function ($stateProvider) {
             controller: 'valuePackPlanCtrl',
             url: '/edit-value-pack/:id'
         })
+         .state('offer-plan', {
+             templateUrl: 'partials/offer-plan.html',
+             controller: 'offerPlanCtrl',
+             url: '/offer-plan'
+         })
+        .state('edit-offer-plan', {
+            templateUrl: 'partials/offer-plan.html',
+            controller: 'offerPlanCtrl',
+            url: '/edit-offer-plan/:id'
+        })
         .state('plan-list', {
             templateUrl: 'partials/plan-list.html',
             controller: 'planListCtrl',
