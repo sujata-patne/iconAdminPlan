@@ -77,35 +77,50 @@
                                 <input type="text" readonly name="currency" class="form-control" id="" placeholder="Currency" data-ng-model="selectedCurrency">
                             </div>
                         </div>
-                        <fieldset><legend><h5>Streaming Setting</h5></legend>
+                        <fieldset ng-show="streamingSetting" style="border: 1px solid #eeeeee; padding: 2px;"><legend><h4>Streaming Setting</h4></legend>
                             <div class="form-group">
-                                <label for="streamNoOfTime" class="col-sm-3 control-label">Stream No.of Times</label>
+                                <label for="streamNoOfTime" class="col-sm-3 control-label"><span class="asterisk">*</span>Stream No.of Times</label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="streamNoOfTime" class="form-control" id="" placeholder="Stream No.of Times" data-ng-model="streamNoOfTime">
+                                    <input type="text" name="streamNoOfTime" class="form-control" id="" placeholder="Stream No.of Times" data-ng-model="streamNoOfTime" required>
+                                    <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.streamNoOfTime.$touched">
+                                        <span ng-show="aLaCartForm.streamNoOfTime.$error.required">Stream No.of Times is required.</span>
+                                    </span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="streamDuration" class="col-sm-3 control-label">Streaming Duration</label>
+                                <label for="streamDuration" class="col-sm-3 control-label"><span class="asterisk">*</span>Streaming Duration</label>
                                 <div class="col-sm-6">
-                                    <input type="text" name="streamDuration" class="form-control" id="" placeholder="Streaming Duration" data-ng-model="streamDuration">
+                                    <input type="text" name="streamDuration" class="form-control" id="" placeholder="Streaming Duration" data-ng-model="streamDuration" required>
+                                    <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.streamDuration.$touched">
+                                        <span ng-show="aLaCartForm.streamDuration.$error.required">Streaming Duration is required.</span>
+                                    </span>
                                 </div>
                                 <div class="col-sm-3">
                                     <select name="durationOptions" class="form-control" data-ng-model="SelectedDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
                                         <option value="">-- Duration --</option>
                                     </select>
+                                    <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.durationOptions.$touched">
+                                        <span ng-show="aLaCartForm.durationOptions.$error.required">Duration Options is required.</span>
+                                    </span>
                                 </div>
                             </div>
                         </fieldset>
                         <div class="form-group">
-                            <label for="distributionChannel" class="col-sm-3 control-label">Distribution Channel</label>
+                            <label for="distributionChannel" class="col-sm-3 control-label"><span class="asterisk">*</span>Distribution Channel</label>
                             <div class="col-sm-9">
                                 <label ng-repeat="distributionChannelItem in distributionChannelList">
-                                    &nbsp;<input type="checkbox"
+                                    &nbsp;<input type="checkbox" required
                                             name="distributionChannel[]"
+                                            ng-model="distributionChannel"
                                             value="{{distributionChannelItem}}"
                                             ng-checked="selectedDistributionChannel.indexOf(distributionChannelItem) > -1"
-                                            ng-click="toggleDistributionChannelSelection(distributionChannelItem)"> {{distributionChannelItem}}&nbsp;
+                                            ng-click="toggleDistributionChannelSelection(distributionChannelItem)"
+                                            require-items="{{selectedDistributionChannel.length}}"> {{distributionChannelItem}}&nbsp;
                                 </label>
+                                <br />
+                                <span style="color: red" ng-hide="!aLaCartForm.$submitted || selectedDistributionChannel.length > 0">
+                                    Distribution Channel is required.
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -138,8 +153,7 @@
                                         <td>{{$index+1}}</td>
                                         <td>{{operators.opd_partner_name}}</td>
                                         <td>{{operators.opd_amount}}</td>
-                                        <td>
-                                            <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.opd_name"></td>
+                                        <td><input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.opd_name"></td>
                                     </tr>
                                     <tr data-ng-hide="SelectedEventId">
                                         <td colspan="4">Only For selected JetPay Event Id.</td>

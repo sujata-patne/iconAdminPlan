@@ -81,11 +81,11 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         });
         $scope.selectedCurrency = currency;
     }
-    // fruits
+    // Distribution Channel
     $scope.distributionChannelList = ['Web', 'Mobile Web', 'App', 'TV'];
 
-    // selected fruits
-    $scope.selectedDistributionChannel = ['Web', 'Mobile Web'];
+    // selected Distribution Channel
+    $scope.selectedDistributionChannel = [];
 
     // toggle selection for a given distributionChannel by name
     $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
@@ -96,9 +96,10 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         }
         // is newly selected
         else {
-            $scope.selectedDistributionChannel.push(fruitName);
+            $scope.selectedDistributionChannel.push(distributionChannel);
         }
     };
+
     $scope.durationOptions = [
         { cd_id: 'Min', cd_name: 'Min' },
         { cd_id: 'Hours', cd_name: 'Hours' },
@@ -106,7 +107,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         { cd_id: 'Week', cd_name: 'Week' },
         { cd_id: 'Month', cd_name: 'Month' },
         { cd_id: 'Year', cd_name: 'Year' }
-    ]
+    ];
     $scope.deliveryTypeChange = function(){
         if($scope.SelectedDeliveryType == 2){
             $scope.streamingSetting = true;

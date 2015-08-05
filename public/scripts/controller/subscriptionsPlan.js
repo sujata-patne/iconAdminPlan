@@ -83,4 +83,44 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             });
         }
     };
+    $scope.GeoLoction = [
+        {cd_id:1,cd_name:'India',cd_cur:'INR'},
+        {cd_id:2,cd_name:'US',cd_cur:'USD'},
+        {cd_id:3,cd_name:'UK',cd_cur:'EUR'}
+    ];
+    $scope.geoLocationChange = function(){
+        var currency = '';
+        $scope.GeoLoction.forEach(function (value) {
+            if ($scope.SelectedGeoLocation == value.cd_id) {
+                currency = value.cd_cur;
+            }
+        });
+        $scope.selectedCurrency = currency;
+    }
+    $scope.durationOptions = [
+        { cd_id: 'Min', cd_name: 'Min' },
+        { cd_id: 'Hours', cd_name: 'Hours' },
+        { cd_id: 'Days', cd_name: 'Days' },
+        { cd_id: 'Week', cd_name: 'Week' },
+        { cd_id: 'Month', cd_name: 'Month' },
+        { cd_id: 'Year', cd_name: 'Year' }
+    ];
+    // Distribution Channel
+    $scope.distributionChannelList = ['Web', 'Mobile Web', 'App', 'TV'];
+
+    // selected Distribution Channel
+    $scope.selectedDistributionChannel = [];
+
+    // toggle selection for a given distributionChannel by name
+    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
+        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
+        // is currently selected
+        if (idx > -1) {
+            $scope.selectedDistributionChannel.splice(idx, 1);
+        }
+        // is newly selected
+        else {
+            $scope.selectedDistributionChannel.push(distributionChannel);
+        }
+    };
 })
