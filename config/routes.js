@@ -5,6 +5,7 @@ module.exports = function(app){
     require('../routes/index')(app);
     require('../routes/a-la-cart')(app);
     require('../routes/subscriptions')(app);
+    require('../routes/offer')(app);
     require('../routes/value-pack')(app);
     require('../routes/plan-list')(app);
 
