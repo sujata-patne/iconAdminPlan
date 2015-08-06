@@ -123,4 +123,5 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             $scope.selectedDistributionChannel.push(distributionChannel);
         }
     };
+    $scope.atCostFreePaid = 'paid';
 })
