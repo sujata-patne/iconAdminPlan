@@ -21,16 +21,14 @@ exports.getalacartadata = function (req, res, next) {
                             res.status(500).json(err.message);
                         }
                         else {
-                            mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
-                                var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is not null', function (err, JetEvents) {
-                                    // Neat!
-                                    if (err) {
-                                        connection_ikon_plan.release();
-                                        connection_ikon_cms.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                    else {
-                                        var query = connection_ikon_plan.query('SELECT * FROM  (SELECT * FROM  operator_pricepoint_detail where opd_is_active =1 and opd_pp_type ="alacarte")alacart inner join (select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is not null)jetpay on(alacart.opd_jed_id =jetpay.jed_id)', function (err, OpeartorDetail) {
+                            var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 4', function (err, DistributionChannel) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                }
+                                else {
+                                    mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
+                                        var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is not null', function (err, JetEvents) {
                                             // Neat!
                                             if (err) {
                                                 connection_ikon_plan.release();
@@ -38,7 +36,7 @@ exports.getalacartadata = function (req, res, next) {
                                                 res.status(500).json(err.message);
                                             }
                                             else {
-                                                var query = connection_ikon_plan.query('SELECT * FROM site_alacart_plan where sap_id =? ', [req.body.planid], function (err, alacart) {
+                                                var query = connection_ikon_plan.query('SELECT * FROM  (SELECT * FROM  operator_pricepoint_detail where opd_is_active =1 and opd_pp_type ="alacarte")alacart inner join (select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is not null)jetpay on(alacart.opd_jed_id =jetpay.jed_id)', function (err, OpeartorDetail) {
                                                     // Neat!
                                                     if (err) {
                                                         connection_ikon_plan.release();
@@ -46,22 +44,34 @@ exports.getalacartadata = function (req, res, next) {
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
-                                                        connection_ikon_plan.release();
-                                                        connection_ikon_cms.release();
-                                                        res.send({
-                                                            ContentTypes: ContentTypes,
-                                                            JetEvents: JetEvents,
-                                                            OpeartorDetail: OpeartorDetail,
-                                                            RoleUser: req.session.UserRole,
-                                                            PlanData: alacart
+                                                        var query = connection_ikon_plan.query('SELECT * FROM site_alacart_plan where sap_id =? ', [req.body.planid], function (err, alacart) {
+                                                            // Neat!
+                                                            if (err) {
+                                                                connection_ikon_plan.release();
+                                                                connection_ikon_cms.release();
+                                                                res.status(500).json(err.message);
+                                                            }
+                                                            else {
+                                                                connection_ikon_plan.release();
+                                                                connection_ikon_cms.release();
+                                                                res.send({
+                                                                    ContentTypes: ContentTypes,
+                                                                    DistributionChannel: DistributionChannel,
+                                                                    JetEvents: JetEvents,
+                                                                    OpeartorDetail: OpeartorDetail,
+                                                                    RoleUser: req.session.UserRole,
+                                                                    PlanData: alacart
+                                                                });
+                                                            }
                                                         });
+
                                                     }
                                                 });
-
                                             }
                                         });
-                                    }
-                                });
+                                    });
+
+                                }
                             });
                         }
                     });

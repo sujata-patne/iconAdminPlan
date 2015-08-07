@@ -20,6 +20,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
 
     // get subscription  & jet events 
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
+        $scope.distributionChannelList = GetDistributionChannel(angular.copy(SubscriptionData.DistributionChannel));
         $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
         $scope.AllOperatorDetails = angular.copy(SubscriptionData.OpeartorDetail);
         $scope.PlanData = angular.copy(SubscriptionData.PlanData);
@@ -36,6 +37,16 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             $scope.displayOperators();
         });
     });
+
+    $scope.selectedDistributionChannel = [];
+    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
+        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
+        if (idx > -1) {
+            $scope.selectedDistributionChannel.splice(idx, 1);
+        }else {
+            $scope.selectedDistributionChannel.push(distributionChannel);
+        }
+    };
 
     // operator display on change of jet event id
     $scope.displayOperators = function () {
@@ -56,6 +67,11 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.successvisible = false;
         $scope.errorvisible = false;
         if (isValid) {
+            $scope.distributionChannelList.forEach(function (val) {
+                if (val.isactive == true) {
+                    $scope.selectedDistributionChannel.push(val.cd_id);
+                }
+            });
             var subscription = {
                 planid: $stateParams.id,
                 subplanId: $scope.PlanId,
@@ -67,7 +83,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 LimitTBOffer: $scope.numContentOffer,
                 LimitSingleday: $scope.limitSingleDay,
                 TotalDuration: $scope.fullSubDuration,
-                OperatorDetails: $scope.OperatorDetails
+                OperatorDetails: $scope.OperatorDetails,
+                DistributionChannels: $scope.selectedDistributionChannel
             }
             ngProgress.start();
             Subscriptions.AddEditSubscription(subscription, function (data) {
@@ -87,6 +104,41 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         {cd_id:1,cd_name:'India',cd_cur:'INR'},
         {cd_id:2,cd_name:'US',cd_cur:'USD'},
         {cd_id:3,cd_name:'UK',cd_cur:'EUR'}
+    ];
+    $scope.WallpaperPlan = [
+        {cd_id:1,cd_name:'Single WP @ 4 INR'},
+        {cd_id:2,cd_name:'Single WP @ 5 INR'},
+        {cd_id:3,cd_name:'Single WP @ 8 INR'}
+    ];
+    $scope.AnimationPlan = [
+        {cd_id:1,cd_name:'Single Ani @ 4 INR'},
+        {cd_id:2,cd_name:'Single Ani @ 6 INR'},
+        {cd_id:3,cd_name:'Single Ani @ 8 INR'}
+    ];
+    $scope.RingTonePlan = [
+        {cd_id:1,cd_name:'Single RT @ 4 INR'},
+        {cd_id:2,cd_name:'Single RT @ 5 INR'},
+        {cd_id:3,cd_name:'Single RT @ 8 INR'}
+    ];
+    $scope.TextArticalPlan = [
+        {cd_id:1,cd_name:'Single TA @ 4 INR'},
+        {cd_id:2,cd_name:'Single TA @ 6 INR'},
+        {cd_id:3,cd_name:'Single TA @ 8 INR'}
+    ];
+    $scope.GameAppPlan = [
+        {cd_id:1,cd_name:'Single GA @ 4 INR'},
+        {cd_id:2,cd_name:'Single GA @ 6 INR'},
+        {cd_id:3,cd_name:'Single GA @ 8 INR'}
+    ];
+    $scope.VideoPlan = [
+        {cd_id:1,cd_name:'Single Vid @ 4 INR'},
+        {cd_id:2,cd_name:'Single Vid @ 6 INR'},
+        {cd_id:3,cd_name:'Single Vid @ 8 INR'}
+    ];
+    $scope.SongsPlan = [
+        {cd_id:1,cd_name:'Single FS @ 4 INR'},
+        {cd_id:2,cd_name:'Single FS @ 6 INR'},
+        {cd_id:3,cd_name:'Single FS @ 8 INR'}
     ];
     $scope.geoLocationChange = function(){
         var currency = '';
@@ -108,10 +160,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     // Distribution Channel
     $scope.distributionChannelList = ['Web', 'Mobile Web', 'App', 'TV'];
 
-    // selected Distribution Channel
-    $scope.selectedDistributionChannel = [];
-
-    // toggle selection for a given distributionChannel by name
+    /*// toggle selection for a given distributionChannel by name
     $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
         var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
         // is currently selected
@@ -122,6 +171,6 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         else {
             $scope.selectedDistributionChannel.push(distributionChannel);
         }
-    };
+    };*/
     $scope.atCostFreePaid = 'paid';
 })

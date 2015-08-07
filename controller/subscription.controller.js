@@ -13,36 +13,46 @@ exports.getsubscriptions = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
-                    var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null', function (err, JetEvents) {
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                    var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 4', function (err, DistributionChannel) {
                         if (err) {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            var query = connection_ikon_plan.query('SELECT * FROM  (SELECT * FROM  operator_pricepoint_detail where opd_is_active =1 and opd_pp_type ="subscription")alacart inner join (select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null)jetpay on(alacart.opd_jed_id =jetpay.jed_id)', function (err, OpeartorDetail) {
-                                if (err) {
-                                    connection_ikon_plan.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    var query = connection_ikon_plan.query('SELECT * FROM site_sub_plan where ssp_id =? ', [req.body.planid], function (err, subplan) {
-                                        if (err) {
-                                            connection_ikon_plan.release();
-                                            res.status(500).json(err.message);
-                                        }
-                                        else {
-                                            connection_ikon_plan.release();
-                                            res.send({
-                                                JetEvents: JetEvents,
-                                                OpeartorDetail: OpeartorDetail,
-                                                RoleUser: req.session.UserRole,
-                                                PlanData: subplan
-                                            });
-                                        }
-                                    });
-
-                                }
+                            mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
+                                var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null', function (err, JetEvents) {
+                                    if (err) {
+                                        connection_ikon_plan.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                    else {
+                                        var query = connection_ikon_plan.query('SELECT * FROM  (SELECT * FROM  operator_pricepoint_detail where opd_is_active =1 and opd_pp_type ="subscription")alacart inner join (select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null)jetpay on(alacart.opd_jed_id =jetpay.jed_id)', function (err, OpeartorDetail) {
+                                            if (err) {
+                                                connection_ikon_plan.release();
+                                                res.status(500).json(err.message);
+                                            }
+                                            else {
+                                                var query = connection_ikon_plan.query('SELECT * FROM site_sub_plan where ssp_id =? ', [req.body.planid], function (err, subplan) {
+                                                    if (err) {
+                                                        connection_ikon_plan.release();
+                                                        res.status(500).json(err.message);
+                                                    }
+                                                    else {
+                                                        connection_ikon_plan.release();
+                                                        res.send({
+                                                            JetEvents: JetEvents,
+                                                            DistributionChannel: DistributionChannel,
+                                                            OpeartorDetail: OpeartorDetail,
+                                                            RoleUser: req.session.UserRole,
+                                                            PlanData: subplan
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
                             });
                         }
                     });

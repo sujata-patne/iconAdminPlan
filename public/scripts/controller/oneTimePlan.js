@@ -26,6 +26,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     ];
     // get alacart data & jetpay id
     AlaCarts.GetAlacartData({ planid: $stateParams.id }, function (Alacarts) {
+        $scope.distributionChannelList = GetDistributionChannel(angular.copy(Alacarts.DistributionChannel));
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         //$scope.AllGeoLactions = angular.copy(Alacarts.GeoLocations);
@@ -53,7 +54,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 $scope.JetPayEvent.push(value);
             }
         });
-        /*This will be implemented for future chnages.*/
+        /*This will be implemented for future changes.*/
         /*$scope.GeoLoction = [];
         $scope.AllGeoLactions.forEach(function (value){
             if (value.jed_content_type == $scope.SelectedContentType) {
@@ -81,24 +82,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         });
         $scope.selectedCurrency = currency;
     }
-    // Distribution Channel
-    $scope.distributionChannelList = ['Web', 'Mobile Web', 'App', 'TV'];
-
-    // selected Distribution Channel
-    $scope.selectedDistributionChannel = [];
-
-    // toggle selection for a given distributionChannel by name
-    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
-        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
-        // is currently selected
-        if (idx > -1) {
-            $scope.selectedDistributionChannel.splice(idx, 1);
-        }
-        // is newly selected
-        else {
-            $scope.selectedDistributionChannel.push(distributionChannel);
-        }
-    };
 
     $scope.durationOptions = [
         { cd_id: 'Min', cd_name: 'Min' },
@@ -128,12 +111,28 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';
     }
+    $scope.selectedDistributionChannel = [];
+    // Distribution Channel
 
+    // toggle selection for a given distributionChannel by name
+    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
+        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
+        if (idx > -1) {
+            $scope.selectedDistributionChannel.splice(idx, 1);
+        }else {
+            $scope.selectedDistributionChannel.push(distributionChannel);
+        }
+    };
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
         if (isValid) {
+            $scope.distributionChannelList.forEach(function (val) {
+                if (val.isactive == true) {
+                    $scope.selectedDistributionChannel.push(val.cd_id);
+                }
+            });
             var Alacart = {
                 planid: $stateParams.id,
                 alacartplanid: $scope.PlanId,
@@ -142,7 +141,8 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 Description: $scope.Description,
                 ContentType: $scope.SelectedContentType,
                 JetId: $scope.SelectedEventId,
-                OperatorDetails: $scope.OperatorDetails
+                OperatorDetails: $scope.OperatorDetails,
+                DistributionChannels: $scope.selectedDistributionChannel
             };
             ngProgress.start();
             AlaCarts.AddEditAlacart(Alacart, function (data) {

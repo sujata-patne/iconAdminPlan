@@ -42,7 +42,7 @@
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" ng-show="offerplanForm.$submitted || offerplanForm.buyitems.$touched">
-                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Not a valid number!</span>
+                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Insert valid limit for buy items.</span>
                                     <span ng-show="offerplanForm.buyitems.$error.required">Buy items is required.</span>
                                 </span>
                             </div>
@@ -54,7 +54,7 @@
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" data-ng-show="offerplanForm.$submitted || offerplanForm.getfreeitems.$touched">
-                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Not a valid number!</span>
+                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Insert valid limit for free items.</span>
                                     <span data-ng-show="offerplanForm.getfreeitems.$error.required">Get free items is required.</span>
                                 </span>
                             </div>
@@ -63,7 +63,11 @@
                             <label for="caption" class="col-sm-3 control-label">Distribution Channels</label>
                             <div class="col-sm-9">
                                 <span data-ng-repeat="i in DistributionChannels ">
-                                    <input type="checkbox" name="{{i.cd_name}}" data-ng-model="i.isactive">{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                    <input type="checkbox" name="{{i.cd_name}}" data-ng-model="i.isactive"  ng-click="toggleDistributionChannelSelection(distributionChannelItem)">{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                </span>
+                                <br />
+                                <span style="color: red" ng-hide="!offerplanForm.$submitted || selectedDistributionChannel.length > 0">
+                                    Distribution Channel is required.
                                 </span>
                             </div>
                         </div>

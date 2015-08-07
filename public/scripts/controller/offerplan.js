@@ -2,9 +2,6 @@
 * Created by sujata.patne on 15-07-2015.
 */
 myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Offers) {
-
-     
-
     $('.removeActiveClass').removeClass('active');
     $('#offer-plan').addClass('active');
     $scope.contentType = 'Offer Plan';
@@ -15,15 +12,6 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
     $scope.errorvisible = false;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
-
-    function GetDistributionChannel(Distribution) {
-        var DataArray = [];
-        Distribution.forEach(function (value) {
-            DataArray.push({ cd_id: value.cd_id, cd_name: value.cd_name, isactive: false });
-        });
-        console.log(DataArray);
-        return Distribution;
-    }
 
     // get valuepack data & jet pay id
     Offers.GetOfferData({ planid: $stateParams.id }, function (offer) {
@@ -40,16 +28,25 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
         });
     });
 
-
+    $scope.selectedDistributionChannel = [];
+    // toggle selection for a given distributionChannel by name
+    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
+        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
+        if (idx > -1) {
+            $scope.selectedDistributionChannel.splice(idx, 1);
+        }else {
+            $scope.selectedDistributionChannel.push(distributionChannel);
+        }
+    };
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
         if (isValid) {
-            var SelectedChannel = [];
-            $scope.DistributionChannels.forEach(function (val) {
+
+            $scope.distributionChannelList.forEach(function (val) {
                 if (val.isactive == true) {
-                    SelectedChannel.push(val.cd_id);
+                    $scope.selectedDistributionChannel.push(val.cd_id);
                 }
             });
             var offer = {
@@ -60,7 +57,7 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
                 Description: $scope.Description,
                 Buyitems: $scope.Buyitems,
                 GetFreeItems: $scope.Getfreeitems,
-                DistributionChannels: SelectedChannel
+                DistributionChannels: $scope.selectedDistributionChannel
             }
             console.log(offer);
             //ngProgress.start();
