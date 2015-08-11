@@ -7,7 +7,7 @@
             <!-- /.content-header -->
             <form class="form-horizontal" role="form" name="valuePackForm" data-ng-submit="submitForm(valuePackForm.$valid)" novalidate>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-7">
                         <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
                         </span>
                         <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color: green;">{{success}}
@@ -18,8 +18,8 @@
                                 <input type="text" name="planname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
-                                <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.planname.$touched">
-                                    <span ng-show="valuePackForm.planname.$error.required">Plan Name is required.</span>
+                                <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.planname.$touched">
+                                    <span data-ng-show="valuePackForm.planname.$error.required">Plan Name is required.</span>
                                 </span>
                             </div>
                         </div>
@@ -39,15 +39,29 @@
                         <!--<label for="contentType" class="col-sm-3 control-label"><span class="asterisk">*</span>Content Type</label>-->
                         <!--<div class="col-sm-9">-->
                         <!--<span class="ui-select">-->
-                        <!--<select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-change="ContentTypeChange()" required>-->
+                        <!--<select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-chadata-nge="ContentTypeChadata-nge()" required>-->
                         <!--<option value="">&#45;&#45; Select Content Type &#45;&#45;</option>-->
                         <!--</select>-->
                         <!--</span>-->
-                        <!--<span style="color:red" ng-show="valuePackForm.$submitted || valuePackForm.contentType.$touched">-->
-                        <!--<span ng-show="valuePackForm.contentType.$error.required" >Please Select Content Type.</span>-->
+                        <!--<span style="color:red" data-ng-show="valuePackForm.$submitted || valuePackForm.contentType.$touched">-->
+                        <!--<span data-ng-show="valuePackForm.contentType.$error.required" >Please Select Content Type.</span>-->
                         <!--</span>-->
                         <!--</div>-->
                         <!--</div>-->
+                        <div class="form-group">
+                            <label for="geoLocation" class="col-sm-3 control-label">Geo Location</label>
+                            <div class="col-sm-5">
+                                <span class="ui-select">
+                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.cd_id as item.cd_name for item in GeoLoction" data-ng-change="geoLocationChange()" required>
+                                        <option value="">-- Select Geo Location --</option>
+                                    </select>
+                                </span>
+                            </div>
+                            <label for="currency" class="col-sm-2 control-label">Currency</label>
+                            <div class="col-sm-2">
+                                <input type="text" readonly name="currency" class="form-control" id="" placeholder="Currency" data-ng-model="selectedCurrency">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label for="jetPayEventId" class="col-sm-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
                             <div class="col-sm-9">
@@ -56,14 +70,14 @@
                                         <option value="">-- Select JetPay Event --</option>
                                     </select>
                                 </span>
-                                <span style="color: red" ng-show="valuePackForm.$submitted">
-                                    <span ng-show="valuePackForm.jetPayEventId.$error.required">Please Select JetPay EventId.</span>
+                                <span style="color: red" data-ng-show="valuePackForm.$submitted">
+                                    <span data-ng-show="valuePackForm.jetPayEventId.$error.required">Please Select JetPay EventId.</span>
                                 </span>
                             </div>
                         </div>
                         <div class="portlet">
                             <div class="portlet-header">
-                                <h3><i class="fa fa-tasks"></i>Download Setting</h3>
+                                <h3><i class="fa fa-tasks"></i>Download Settidata-ng</h3>
                             </div>
                             <!-- /.portlet-header -->
                             <div class="portlet-content">
@@ -71,36 +85,83 @@
                                     <div class="col-xs-12">
                                         <h5>Content Allowed to Consume</h5>
                                         <div class="form-group">
-                                            <label for="setDownloadLimit" class="col-sm-6 control-label"><span class="asterisk">*</span>Set Download Limit</label>
-                                            <div class="col-sm-6">
-                                                <input type="text" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" required>
-                                                <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.setDownloadLimit.$touched">
-                                                    <span ng-show="valuePackForm.setDownloadLimit.$error.required">Insert download limit.</span>
-                                                    <span ng-show="valuePackForm.setDownloadLimit.$error.pattern">Insert valid download limit.</span>
-                                                </span>
+                                            <label for="setDownloadLimit" class="col-sm-4 control-label"><span class="asterisk">*</span>Set Download Limit</label>
+                                            <div class="col-sm-8">
+                                                <div class="col-sm-8">
+                                                    <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" required>
+                                                    <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.setDownloadLimit.$touched">
+                                                        <span data-ng-show="valuePackForm.setDownloadLimit.$error.required">Insert download limit.</span>
+                                                        <span data-ng-show="valuePackForm.setDownloadLimit.$error.pattern">Insert valid download limit.</span>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
+                                           </div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4">
                                         <div class="form-group">
-                                            <label for="setDurationLimit" class="col-sm-6 control-label"><span class="asterisk">*</span>Set Duration Limit</label>
-                                            <div class="col-sm-6">
-                                                <input type="text" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDurationLimit" placeholder="Set Duration Limit" data-ng-model="setDurationLimit" required>
-                                                <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.setDurationLimit.$touched">
-                                                    <span ng-show="valuePackForm.setDurationLimit.$error.required">Insert Duration limit.</span>
-                                                    <span ng-show="valuePackForm.setDurationLimit.$error.pattern">Insert valid Duration limit.</span>
-                                                </span>
+                                            
+                                                <label for="setDownloadLimit" class="col-sm-8 control-label"><span><input type="radio" name="stream" data-ng-model="Stream" value="1">&nbsp;Stream</span>&nbsp;Number Of Content</label>
+                                                
+                                                    <div class="col-sm-4 no-padding">
+                                                        <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" data-ng-disabled="isCheckboxSelected('2')" name="numberOfContent" data-ng-model="NumberOfContent" >
+                                                    </div>
+                                                
+                                                 
                                             </div>
-                                        </div>
+                                     </div>
+                                        <div class="col-sm-8">
                                         <div class="form-group">
-                                            <label for="durationOptions" class="col-sm-6 control-label"><span class="asterisk">*</span>Duration In </label>
+                                            <label for="setDurationLimit" class="col-sm-6 control-label"><span><input type="radio" name="stream" data-ng-model="Stream" value="2">&nbsp;Streaming</span>&nbsp;Duration</label>
                                             <div class="col-sm-6">
-                                                <select name="durationOptions" class="form-control" data-ng-model="SelectedDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
-                                                    <option value="">-- Select Duration --</option>
-                                                </select>
-                                                <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.durationOptions.$touched">
-                                                    <span ng-show="valuePackForm.durationOptions.$error.required">Select Time/Days.</span>
-                                                </span>
+                                                <div class="col-sm-6 no-padding">
+                                                    <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" data-ng-disabled="isCheckboxSelected('1')" class="form-control" name="duration" placeholder="Duration" data-ng-model="Duration" >
+
+                                                </div>
+                                                <div class="col-sm-6 no-padding">
+                                                    <select name="durationOptions" class="form-control" data-ng-disabled="isCheckboxSelected('1')" data-ng-model="Durationselect" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" >
+                                                        <option value="">-- Select Duration --</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
+                                            </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="setDurationLimit" class="col-sm-4 control-label"><span class="asterisk">*</span>Set Duration Limit</label>
+                                            <div class="col-sm-8">
+                                                <div class="col-sm-5">
+                                                    <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDurationLimit" placeholder="Duration Limit" data-ng-model="setDurationLimit" required>
+
+                                                    <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.setDurationLimit.$touched">
+                                                        <span data-ng-show="valuePackForm.setDurationLimit.$error.required">Insert Duration limit.</span>
+                                                        <span data-ng-show="valuePackForm.setDurationLimit.$error.pattern">Insert valid Duration limit.</span>
+                                                    </span>
+
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <select name="durationOptions" class="form-control" data-ng-model="SetDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
+                                                        <option value="">-- Select Duration --</option>
+                                                    </select>
+
+                                                    <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.durationOptions.$touched">
+                                                        <span data-ng-show="valuePackForm.durationOptions.$error.required">Please Select Duration .</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                                                                    <!--<div class="form-group">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="col-sm-3">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <select name="durationOptions" class="form-control" data-ng-model="SelectedDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <option value="">-- Select Duration --</option>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </select>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.durationOptions.$touched">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span data-ng-show="valuePackForm.durationOptions.$error.required">Select Time/Days.</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>-->
                                     </div>
 
                                 </div>
@@ -108,33 +169,35 @@
                             </div>
                             <!-- /.portlet-content -->
                         </div>
-                    </div>
-                    <div class="col-md-6">
+                     <div class="col-md-5">
                         <div class="table-responsive">
                             <table id="user-signups" class="table table-striped table-bordered table-checkable">
                                 <thead>
-                                    <tr>
-                                        <th>Sr.No.</th>
-                                        <th>Operator</th>
-                                        <th>Amount</th>
-                                        <th>Disclaimer Text</th>
-                                    </tr>
+                                <tr>
+                                    <th>Sr.No.</th>
+                                    <th>Operator</th>
+                                    <th>Amount</th>
+                                    <th>Disclaimer Text</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
-                                        <td>{{$index+1}}</td>
-                                        <td>{{operators.opd_partner_name}}</td>
-                                        <td>{{operators.opd_amount}}</td>
-                                        <td>
-                                            <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.opd_name"></td>
-                                    </tr>
-                                    <tr data-ng-hide="SelectedEventId">
-                                        <td colspan="4">Only For selected JetPay Event Id.</td>
-                                    </tr>
+                                <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
+                                    <td>{{$index+1}}</td>
+                                    <td>{{operators.opd_partner_name}}</td>
+                                    <td>{{operators.opd_amount}}</td>
+                                    <td>
+                                        <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.opd_name">
+                                    </td>
+                                </tr>
+                                <tr data-ng-hide="SelectedEventId">
+                                    <td colspan="4">Only For selected JetPay Event Id.</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    </div>
+                   
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
