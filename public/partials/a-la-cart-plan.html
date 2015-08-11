@@ -4,14 +4,14 @@
             <div class="content-header">
                 <h2 class="content-header-title">A-La-Cart Plan</h2>
             </div>
-            <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}</span>
-            <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color: green;">{{success}}</span>
+            <span class="col-md-offset-3 col-md-9" data-ng-show="errorvisible" style="color: red;">{{error}}</span>
+            <span class="col-md-offset-3 col-md-9" data-ng-show="successvisible" style="color: green;">{{success}}</span>
             <form method="post" class="form-horizontal" role="form" name="aLaCartForm" data-ng-submit="submitForm(aLaCartForm.$valid)" novalidate>
                 <div class="row">
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
-                            <label class="col-sm-3 control-label"><span class="asterisk">*</span>Plan Name</label>
-                            <div class="col-sm-9">
+                            <label class="col-md-3 control-label"><span class="asterisk">*</span>Plan Name</label>
+                            <div class="col-md-9">
                                 <input type="text" name="planname" class="form-control" placeholder="Plan Name" data-ng-model="PlanName" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.planname.$touched">
@@ -20,20 +20,20 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="caption" class="col-sm-3 control-label">Caption</label>
-                            <div class="col-sm-9">
+                            <label for="caption" class="col-md-3 control-label">Caption</label>
+                            <div class="col-md-9">
                                 <input type="text" name="u_caption" class="form-control" id="" placeholder="Caption" data-ng-model="Caption">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="description" class="col-sm-3 control-label">Description</label>
-                            <div class="col-sm-9">
+                            <label for="description" class="col-md-3 control-label">Description</label>
+                            <div class="col-md-9">
                                 <textarea name="u_caption" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="contentType" class="col-sm-3 control-label"><span class="asterisk">*</span>Content Type</label>
-                            <div class="col-sm-9">
+                            <label for="contentType" class="col-md-3 control-label"><span class="asterisk">*</span>Content Type</label>
+                            <div class="col-md-9">
                                 <span class="ui-select">
                                     <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" data-ng-change="ContentTypeChange()" required>
                                         <option value="">-- Select Content Type --</option>
@@ -45,8 +45,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="deliveryType" class="col-sm-3 control-label"><span class="asterisk">*</span>Delivery Type</label>
-                            <div class="col-sm-9">
+                            <label for="deliveryType" class="col-md-3 control-label"><span class="asterisk">*</span>Delivery Type</label>
+                            <div class="col-md-9">
                                 <span class="ui-select">
                                     <select name="deliveryType" class="form-control" data-ng-model="SelectedDeliveryType" data-ng-options="item.cd_id as item.cd_name for item in deliveryType" data-ng-change="deliveryTypeChange()" required>
                                         <option value="">-- Select Delivery Type --</option>
@@ -58,8 +58,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="geoLocation" class="col-sm-3 control-label"><span class="asterisk">*</span>Geo Location</label>
-                            <div class="col-sm-5">
+                            <label for="geoLocation" class="col-md-3 control-label"><span class="asterisk">*</span>Geo Location</label>
+                            <div class="col-md-5">
                                 <span class="ui-select">
                                     <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.cd_id as item.cd_name for item in GeoLoction" data-ng-change="geoLocationChange()" required>
                                         <option value="">-- Select Geo Location --</option>
@@ -69,14 +69,14 @@
                                     <span ng-show="aLaCartForm.geoLocation.$error.required">Please Select Geo Location.</span>
                                 </span>
                             </div>
-                            <label for="currency" class="col-sm-2 control-label">Currency</label>
-                            <div class="col-sm-2">
+                            <label for="currency" class="col-md-2 control-label">Currency</label>
+                            <div class="col-md-2">
                                 <input type="text" readonly name="currency" class="form-control"  placeholder="Currency" data-ng-model="selectedCurrency">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="jetPayEventId" class="col-sm-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
-                            <div class="col-sm-9">
+                            <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
+                            <div class="col-md-9">
                                 <span class="ui-select">
                                     <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.jed_id as item.jed_event for item in JetPayEvent" data-ng-change="displayOperators()" required>
                                         <option value="">-- Select JetPay Event --</option>
@@ -89,11 +89,11 @@
                         </div>
                         <fieldset ng-show="streamingSetting" style="border: 1px solid #eeeeee; padding: 2px;"><legend><h4>Streaming Setting</h4></legend>
                             <div class="form-group">
-                                <label for="streamNoOfTime" class="col-sm-4 control-label"><span class="asterisk">*</span>Stream No.of Times</label>
-                                <div class="col-sm-1">
+                                <label for="streamNoOfTime" class="col-md-4 col-xs-10 control-label"><span class="asterisk">*</span>Stream No.of Times</label>
+                                <div class="col-md-1 col-xs-2">
                                     <input type="radio" ng-value="1" name="streamingLimitType" ng-model="streamingLimitType" >
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-md-6 col-xs-12">
                                     <input type="text" name="streamNoOfContentLimit" ng-disabled="streamingLimitType == 2" class="form-control" placeholder="Stream No.of Times" data-ng-model="streamNoOfContentLimit" required>
                                     <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.streamNoOfContentLimit.$touched">
                                         <span ng-show="aLaCartForm.streamNoOfContentLimit.$error.required">Stream No.of Times is required.</span>
@@ -101,17 +101,17 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="streamDuration" class="col-sm-4 control-label"><span class="asterisk">*</span>Streaming Duration</label>
-                                <div class="col-sm-1">
+                                <label for="streamDuration" class="col-md-4 col-xs-10 control-label"><span class="asterisk">*</span>Streaming Duration</label>
+                                <div class="col-md-1 col-xs-2">
                                     <input type="radio" ng-value="2" name="streamingLimitType" ng-model="streamingLimitType" >
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-md-4 col-xs-6">
                                     <input type="text" name="streamDurationLimit" ng-disabled="streamingLimitType == 1" class="form-control" placeholder="Streaming Duration" data-ng-model="streamDurationLimit" required>
                                     <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.streamDurationLimit.$touched">
                                         <span ng-show="aLaCartForm.streamDurationLimit.$error.required">Streaming Duration is required.</span>
                                     </span>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-3 col-xs-6">
                                     <select name="durationOptions" class="form-control" ng-disabled="streamingLimitType == 1" data-ng-model="SelectedDurationIn" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" required>
                                         <option value="">-- Duration --</option>
                                     </select>
@@ -122,8 +122,8 @@
                             </div>
                         </fieldset>
                         <div class="form-group">
-                            <label for="distributionChannel" class="col-sm-3 control-label"><span class="asterisk">*</span>Distribution Channel</label>
-                            <div class="col-sm-9">
+                            <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk">*</span>Distribution Channel</label>
+                            <div class="col-md-9">
                                 <!--<label ng-repeat="distributionChannelItem in distributionChannelList">-->
                                     <!--&nbsp;<input type="checkbox" required-->
                                             <!--name="{{distributionChannelItem.cd_name}}"-->
