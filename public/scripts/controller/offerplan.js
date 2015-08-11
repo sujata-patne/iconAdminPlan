@@ -34,7 +34,7 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
         var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
         if (idx > -1) {
             $scope.selectedDistributionChannel.splice(idx, 1);
-        }else {
+        } else {
             $scope.selectedDistributionChannel.push(distributionChannel);
         }
     };

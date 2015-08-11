@@ -1,7 +1,25 @@
 /**
- * Created by sujata.patne on 15-07-2015.
- */
+* Created by sujata.patne on 15-07-2015.
+*/
 myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Valuepacks) {
+
+    $scope.GeoLoction = [
+        { cd_id: 1, cd_name: 'India', cd_cur: 'INR' },
+        { cd_id: 2, cd_name: 'US', cd_cur: 'USD' },
+        { cd_id: 3, cd_name: 'UK', cd_cur: 'EUR' }
+    ];
+    $scope.durationOptions = [
+        { cd_id: 'Minuts', cd_name: 'Minuts' },
+        { cd_id: 'Hours', cd_name: 'Hours' },
+        { cd_id: 'Days', cd_name: 'Days' },
+        { cd_id: 'Months', cd_name: 'Months' }
+    ];
+    $scope.streaming = [
+        { cd_id: 1, is_active: true },
+        { cd_id: 2, is_active: false },
+
+    ];
+
 
     $('.removeActiveClass').removeClass('active');
     $('#value-pack').addClass('active');
@@ -16,6 +34,8 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
     $scope.errorvisible = false;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
+    $scope.isCheckboxSelected = "";
+    $scope.Stream = 1;
 
     // get valuepack data & jet pay id
     Valuepacks.GetValuepackData({ planid: $stateParams.id }, function (valuepacks) {
@@ -23,6 +43,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
         $scope.AllOperatorDetails = angular.copy(valuepacks.OpeartorDetail);
         $scope.PlanData = angular.copy(valuepacks.PlanData);
         console.log(valuepacks);
+        console.log( $scope.AllOperatorDetails)
         $scope.PlanData.forEach(function (value) {
             $scope.PlanId = value.svp_id;
             $scope.PlanName = value.svp_plan_name;
@@ -36,8 +57,23 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
         });
     });
 
+    $scope.isCheckboxSelected = function (val) {
+        return val == $scope.Stream;
+    }
+
+    $scope.geoLocationChange = function () {
+        var currency = '';
+        $scope.GeoLoction.forEach(function (value) {
+            if ($scope.SelectedGeoLocation == value.cd_id) {
+                currency = value.cd_cur;
+            }
+        });
+        $scope.selectedCurrency = currency;
+    }
+
     // display operator on change of jet event id
     $scope.displayOperators = function () {
+        console.log($scope.SelectedEventId);
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
             if ($scope.SelectedEventId == value.opd_jed_id) {
@@ -83,8 +119,5 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
         }
     };
 
-    $scope.durationOptions = [
-        { cd_id: 'Hours', cd_name: 'Hours' },
-        { cd_id: 'Days', cd_name: 'Days' },
-    ]
+
 });
