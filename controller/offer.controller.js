@@ -3,11 +3,11 @@
  */
 var mysql = require('../config/db').pool;
 /**
- * @function getvaluepack
+ * @function getofferdata
  * @param req
  * @param res
  * @param next
- * @description get list all value pack plans
+ * @description get list all offer plans
  */
 exports.getofferdata = function (req, res, next) {
     try {
@@ -42,11 +42,11 @@ exports.getofferdata = function (req, res, next) {
     }
 }
 /**
- * @function addeditvaluepack
+ * @function addeditoffer
  * @param req
  * @param res
  * @param next
- * @description add new value pack plan and update existing selected value pack plan
+ * @description add new offer plan and update existing selected offer plan
  */
 exports.addeditoffer = function (req, res, next) {
     try {
