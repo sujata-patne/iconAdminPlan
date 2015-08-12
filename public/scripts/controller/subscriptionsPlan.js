@@ -173,4 +173,5 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         }
     };*/
     $scope.atCostFreePaid = 'paid';
+    $scope.streamingLimitType = 1;
 })

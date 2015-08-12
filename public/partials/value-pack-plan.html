@@ -99,7 +99,11 @@
                                         <div class="form-group">
                                             <label for="setDownloadLimit" class="col-md-4 col-xs-12 control-label">Stream Number Of Content&nbsp;<span><input type="radio" name="stream" data-ng-model="Stream" value="1"></span></label>
                                             <div class="col-md-8 col-xs-12 no-padding">
-                                                <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" data-ng-disabled="isCheckboxSelected('2')" name="numberOfContent" data-ng-model="NumberOfContent" >
+                                                <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" data-ng-disabled="isCheckboxSelected('2')" name="numberOfContent" data-ng-model="numberOfContent"  ng-required="Stream == 1">
+                                                <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.streamingDurationLimit.$touched">
+                                                    <span data-ng-show="valuePackForm.numberOfContent.$error.required">Insert Streaming No. of Content limit.</span>
+                                                    <span data-ng-show="valuePackForm.numberOfContent.$error.pattern">Insert valid Streaming No. of Content limit.</span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -107,12 +111,19 @@
                                         <div class="form-group">
                                             <label for="setDurationLimit" class="col-md-4 col-xs-12 control-label">Streaming Duration&nbsp;<span><input type="radio" name="stream" data-ng-model="Stream" value="2"></span></label>
                                             <div class="col-md-4 col-xs-6">
-                                                <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" data-ng-disabled="isCheckboxSelected('1')" class="form-control" name="duration" placeholder="Duration" data-ng-model="Duration" >
+                                                <input type="text" data-ng-pattern="/^[1-9][0-9]*$/" data-ng-disabled="isCheckboxSelected('1')" class="form-control" name="streamingDurationLimit" placeholder="Streaming Duration" data-ng-model="streamingDurationLimit" ng-required="Stream == 2" >
+                                                <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.streamingDurationLimit.$touched">
+                                                    <span data-ng-show="valuePackForm.streamingDurationLimit.$error.required">Insert Streaming Duration limit.</span>
+                                                    <span data-ng-show="valuePackForm.streamingDurationLimit.$error.pattern">Insert valid Streaming Duration limit.</span>
+                                                </span>
                                             </div>
                                             <div class="col-md-4 col-xs-6 no-padding">
-                                                <select name="durationOptions" class="form-control" data-ng-disabled="isCheckboxSelected('1')" data-ng-model="Durationselect" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" >
+                                                <select name="streamDurationOptions" class="form-control" data-ng-disabled="isCheckboxSelected('1')" data-ng-model="streamDurationOptions" data-ng-options="item.cd_id as item.cd_name for item in durationOptions" ng-required="streamingDurationLimit > 0">
                                                     <option value="">-- Select Duration --</option>
                                                 </select>
+                                                <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.streamDurationOptions.$touched">
+                                                    <span data-ng-show="valuePackForm.streamDurationOptions.$error.required">Please Select Streaming Duration .</span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

@@ -200,7 +200,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="text" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="slc_single_day_cnt_limit" data-ng-disabled="limitSingleDayDisabled">
+                                                    <input type="text" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="slc_single_day_cnt_limit" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.slc_single_day_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.slc_single_day_cnt_limit.$error.pattern">Insert valid download limit for Single Day.</span>
                                                     </span>
@@ -208,7 +208,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="text" ng-disabled="streamingLimitType == 2" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="slc_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="slc_full_sub_cnt_limit" data-ng-disabled="fullSubDurationDisabled" ng-required="streamingLimitType == 1">
+                                                    <input type="text" ng-disabled="streamingLimitType == 2" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="slc_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="slc_full_sub_cnt_limit" ng-required="streamingLimitType == 1">
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.slc_full_sub_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.required">Insert content limit for Full Subscription.</span>
                                                         <span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.pattern">Insert valid content limit for Full Subscription.</span>
@@ -220,7 +220,7 @@
                                         <div class="col-md-4 col-xs-3">
                                             <div class="row">
                                                 <div class="form-group col-md-6 col-xs-6">
-                                                    <input ng-disabled="streamingLimitType == 1" type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_tnb_free_cnt_limit" placeholder="Limit for TB offer per day" data-ng-model="sld_tnb_free_cnt_limit" data-ng-disabled="numContentOfferDisabled">
+                                                    <input ng-disabled="streamingLimitType == 1" type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_tnb_free_cnt_limit" placeholder="Limit for TB offer per day" data-ng-model="sld_tnb_free_cnt_limit" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_tnb_free_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.sld_tnb_free_cnt_limit.$error.pattern && streamingLimitType == 2">Insert valid limit for TB Offer per day.</span>
                                                     </span>
@@ -237,7 +237,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-6 col-xs-6">
-                                                    <input type="text" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="sld_single_day_cnt_limit" data-ng-disabled="limitSingleDayDisabled">
+                                                    <input type="text" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="sld_single_day_cnt_limit" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_single_day_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.sld_single_day_cnt_limit.$error.pattern && streamingLimitType == 2">Insert valid download limit for Single Day.</span>
                                                     </span>
@@ -254,9 +254,10 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-6 col-xs-6">
-                                                    <input type="text" ng-disabled="streamingLimitType == 1" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="sld_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="sld_full_sub_cnt_limit" data-ng-disabled="fullSubDurationDisabled" ng-required="streamingLimitType == 2">
+                                                    <input type="text" ng-disabled="streamingLimitType == 1" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="sld_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="sld_full_sub_cnt_limit" ng-required="streamingLimitType == 2">
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_full_sub_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.required">Insert duration limit for Full Subscription.</span>
+                                                        <span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.pattern">Insert valid duration limit for Full Subscription.</span>
                                                         <span ng-show="sld_full_sub_cnt_limit < sld_single_day_cnt_limit">Value must be greater than For Single Day limit.</span>
                                                     </span>
                                                 </div>
@@ -314,7 +315,6 @@
                                         <div class="row"><div class="form-group col-md-12">
                                             <label for="gameApps" class="col-md-12 control-label" style="margin: 1px;">Games/App</label>
                                         </div></div>
-
                                         <div class="row"><div class="form-group col-md-12">
                                             <label for="video" class="col-md-12 control-label" style="margin: 1px;">Video</label>
                                         </div></div>
