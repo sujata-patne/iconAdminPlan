@@ -1,7 +1,6 @@
 /**
  * Created by sujata.patne on 15-07-2015.
  */
-
 myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngProgress, AlaCarts) {
 
     $('.removeActiveClass').removeClass('active');
@@ -19,27 +18,34 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     $scope.errorvisible = false;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
-    $scope.GeoLoction = [
-        {cd_id:1,cd_name:'India',cd_cur:'INR'},
-        {cd_id:2,cd_name:'US',cd_cur:'USD'},
-        {cd_id:3,cd_name:'UK',cd_cur:'EUR'}
-    ];
+    $scope.selectedDistributionChannel = [];
+    $scope.distributionChannelArray = [];
     // get alacart data & jetpay id
     AlaCarts.GetAlacartData({ planid: $stateParams.id }, function (Alacarts) {
-        $scope.distributionChannelList = GetDistributionChannel(angular.copy(Alacarts.DistributionChannel));
+        console.log(Alacarts)
+        //console.log(Alacarts.DistributionChannel)
+        $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
+        $scope.GeoLocations = angular.copy(Alacarts.GeoLocations);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
-        //$scope.AllGeoLactions = angular.copy(Alacarts.GeoLocations);
-        $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetail);
+        $scope.durationOptions = angular.copy(Alacarts.DurationOptions);
+        $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetails);
         $scope.PlanData = angular.copy(Alacarts.PlanData);
+        Alacarts.selectedDistributionChannel.forEach(function(data){
+            $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
+            $scope.distributionChannelArray[data.cmd_entity_detail] = true;
+        })
         $scope.PlanData.forEach(function (value) {
-            $scope.PlanId = value.sap_id;
-            $scope.PlanName = value.sap_plan_name;
-            $scope.Caption = value.sap_caption;
-            $scope.Description = value.sap_description;
-            $scope.SelectedContentType = value.sap_content_type;
-            $scope.SelectedEventId = value.sap_jed_id;
-            $scope.SelectedDeliveryType = value.delivery_type || 2;
+            $scope.PlanId = value.ap_id;
+            $scope.PlanName = value.ap_plan_name;
+            $scope.Caption = value.ap_caption;
+            $scope.Description = value.ap_description;
+            $scope.SelectedContentType = value.ap_content_type;
+            $scope.SelectedEventId = value.ap_jed_id;
+            $scope.SelectedDeliveryType = value.ap_delivery_type || 2;
+            $scope.SelectedDurationIn = value.ap_stream_dur_type || 'Min';
+            $scope.SelectedGeoLocation = value.ap_cty_id;
+
             $scope.ContentTypeChange();
             $scope.displayOperators();
         });
@@ -48,12 +54,12 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
 
     //change jetpayid,geoLocation,deliveryType on change of content type
     $scope.ContentTypeChange = function () {
-        $scope.JetPayEvent = [];
+        /*$scope.JetPayEvent = [];
         $scope.AllJetPayEvents.forEach(function (value) {
             if (value.jed_content_type == $scope.SelectedContentType) {
                 $scope.JetPayEvent.push(value);
             }
-        });
+        });*/
         /*This will be implemented for future changes.*/
         /*$scope.GeoLoction = [];
         $scope.AllGeoLactions.forEach(function (value){
@@ -66,14 +72,16 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 {cd_id:1,cd_name:'Download'},
                 {cd_id:2,cd_name:'Streaming'}
             ];
+            $scope.streamingLimitType = 1;
         }else{
             $scope.deliveryType = [
                 {cd_id:1,cd_name:'Download'}
             ];
+
         }
     }
 
-    $scope.geoLocationChange = function(){
+    /*$scope.geoLocationChange = function(){
         var currency = '';
         $scope.GeoLoction.forEach(function (value) {
             if ($scope.SelectedGeoLocation == value.cd_id) {
@@ -81,16 +89,8 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             }
         });
         $scope.selectedCurrency = currency;
-    }
+    }*/
 
-    $scope.durationOptions = [
-        { cd_id: 'Min', cd_name: 'Min' },
-        { cd_id: 'Hours', cd_name: 'Hours' },
-        { cd_id: 'Days', cd_name: 'Days' },
-        { cd_id: 'Week', cd_name: 'Week' },
-        { cd_id: 'Month', cd_name: 'Month' },
-        { cd_id: 'Year', cd_name: 'Year' }
-    ];
     $scope.deliveryTypeChange = function(){
         if($scope.SelectedDeliveryType == 2){
             $scope.streamingSetting = true;
@@ -98,11 +98,12 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.streamingSetting = false;
         }
     }
+
     // display operator on change of jet pay id 
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.opd_jed_id) {
+            if ($scope.SelectedEventId == value.dcl_ref_jed_id) {
                 $scope.OperatorDetails.push(value);
             }
         })
@@ -111,39 +112,42 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';
     }
-    $scope.selectedDistributionChannel = [];
-    // Distribution Channel
 
-    // toggle selection for a given distributionChannel by name
-    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
-        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
-        if (idx > -1) {
-            $scope.selectedDistributionChannel.splice(idx, 1);
-        }else {
-            $scope.selectedDistributionChannel.push(distributionChannel);
+    $scope.stateChanged = function (id) {
+        if($scope.distributionChannelArray[id] === true){
+            $scope.selectedDistributionChannel.push(id);
         }
+        if($scope.distributionChannelArray[id] === false){
+            var idx = $scope.selectedDistributionChannel.indexOf($scope.distributionChannelArray[id]);
+            $scope.selectedDistributionChannel.splice(idx, 1);
+        }
+        console.log($scope.selectedDistributionChannel)
     };
+
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
+        console.log(isValid)
         $scope.successvisible = false;
         $scope.errorvisible = false;
+        var Alacart = {
+            planid: $stateParams.id,
+            alacartplanid: $scope.PlanId,
+            PlanName: $scope.PlanName,
+            DeliveryType: $scope.SelectedDeliveryType,
+            Caption: $scope.Caption,
+            Description: $scope.Description,
+            ContentType: $scope.SelectedContentType,
+            JetId: $scope.SelectedEventId,
+            OperatorDetails: $scope.OperatorDetails,
+            DistributionChannels: $scope.selectedDistributionChannel,
+            NoOfStream: $scope.streamNoOfContentLimit,
+            StreamDuration: $scope.streamDurationLimit,
+            StreamDurationType: $scope.SelectedDurationType,
+            CountryId: $scope.SelectedGeoLocation,
+            StreamSetting: $scope.streamingLimitType
+        };
+        //console.log(Alacart)
         if (isValid) {
-            $scope.distributionChannelList.forEach(function (val) {
-                if (val.isactive == true) {
-                    $scope.selectedDistributionChannel.push(val.cd_id);
-                }
-            });
-            var Alacart = {
-                planid: $stateParams.id,
-                alacartplanid: $scope.PlanId,
-                PlanName: $scope.PlanName,
-                Caption: $scope.Caption,
-                Description: $scope.Description,
-                ContentType: $scope.SelectedContentType,
-                JetId: $scope.SelectedEventId,
-                OperatorDetails: $scope.OperatorDetails,
-                DistributionChannels: $scope.selectedDistributionChannel
-            };
             ngProgress.start();
             AlaCarts.AddEditAlacart(Alacart, function (data) {
                 if (data.success) {
@@ -158,4 +162,5 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             });
         }
     };
+
 });

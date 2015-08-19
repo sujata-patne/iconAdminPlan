@@ -52,8 +52,8 @@ exports.addeditoffer = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
-                    var query = connection_ikon_plan.query('select * from site_valuepack_plan where lower(svp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
+                mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+                    var query = connection_ikon_plan.query('select * from icn_valuepack_plan where lower(svp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
                         if (err) {
                             connection_ikon_plan.release();
                             res.status(500).json(err.message);
@@ -82,14 +82,14 @@ exports.addeditoffer = function (req, res, next) {
                                 }
                             }
                             function EditValuePack() {
-                                var query = connection_ikon_plan.query('select * from site_valuepack_plan where svp_id = ?', [req.body.valuepackplanId], function (err, result) {
+                                var query = connection_ikon_plan.query('select * from icn_valuepack_plan where svp_id = ?', [req.body.valuepackplanId], function (err, result) {
                                     if (err) {
                                         connection_ikon_plan.release();
                                         res.status(500).json(err.message);
                                     }
                                     else {
                                         if (result.length > 0) {
-                                            var query = connection_ikon_plan.query('UPDATE site_valuepack_plan SET svp_plan_name=?,svp_caption=?,svp_description=?,svp_jed_id=?,svp_download_limit=?,svp_duration_limit=?,svp_durration_type=?,svp_modified_on=?,svp_modified_by=? WHERE svp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.DowmloadLimit, req.body.DurationLimit, req.body.DurationIn, new Date(), req.session.UserName, req.body.valuepackplanId], function (err, result) {
+                                            var query = connection_ikon_plan.query('UPDATE icn_valuepack_plan SET svp_plan_name=?,svp_caption=?,svp_description=?,svp_jed_id=?,svp_download_limit=?,svp_duration_limit=?,svp_durration_type=?,svp_modified_on=?,svp_modified_by=? WHERE svp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.DowmloadLimit, req.body.DurationLimit, req.body.DurationIn, new Date(), req.session.UserName, req.body.valuepackplanId], function (err, result) {
                                                 if (err) {
                                                     connection_ikon_plan.release();
                                                     res.status(500).json(err.message);
@@ -131,7 +131,7 @@ exports.addeditoffer = function (req, res, next) {
                             }
 
                             function AddValuePack() {
-                                var query = connection_ikon_plan.query('select max(svp_id) as id from site_valuepack_plan', function (err, result) {
+                                var query = connection_ikon_plan.query('select max(svp_id) as id from icn_valuepack_plan', function (err, result) {
                                     if (err) {
                                         console.log(err.message);
                                         connection_ikon_plan.release();
@@ -154,7 +154,7 @@ exports.addeditoffer = function (req, res, next) {
                                             svp_modified_on: new Date(),
                                             svp_modified_by: req.session.UserName
                                         }
-                                        var query = connection_ikon_plan.query('INSERT INTO site_valuepack_plan SET ?', data, function (err, result) {
+                                        var query = connection_ikon_plan.query('INSERT INTO icn_valuepack_plan SET ?', data, function (err, result) {
                                             if (err) {
                                                 console.log(err.message);
                                                 connection_ikon_plan.release();

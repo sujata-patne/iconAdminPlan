@@ -141,13 +141,13 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Subscription", cd_id: "Subscription", cd_name: "Subscription" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Value Pack", cd_id: "Value Pack", cd_name: "Value Pack" });
         PlanList.Alacarts.forEach(function (value) {
-            $scope.AllPlanList.push({ planid: value.sap_id, planname: value.sap_plan_name, created_on: $scope.setDate(value.sap_created_on), active: value.sap_is_active, contenttype: $scope.getContentName(value.sap_content_type), contentid: value.sap_content_type });
+            $scope.AllPlanList.push({ planid: value.ap_id, planname: value.ap_plan_name, created_on: $scope.setDate(value.ap_created_on), active: value.ap_is_active, contenttype: $scope.getContentName(value.ap_content_type), contentid: value.ap_content_type });
         });
         PlanList.Subscriptions.forEach(function (value) {
-            $scope.AllPlanList.push({ planid: value.ssp_id, planname: value.ssp_plan_name, created_on: $scope.setDate(value.ssp_created_on), active: value.ssp_is_active, contenttype: 'Subscription', contentid: 'Subscription' });
+            $scope.AllPlanList.push({ planid: value.sp_id, planname: value.sp_plan_name, created_on: $scope.setDate(value.sp_created_on), active: value.sp_is_active, contenttype: 'Subscription', contentid: 'Subscription' });
         });
         PlanList.ValuePacks.forEach(function (value) {
-            $scope.AllPlanList.push({ planid: value.svp_id, planname: value.svp_plan_name, created_on: $scope.setDate(value.svp_created_on), active: value.svp_is_active, contenttype: "Value Pack", contentid: "Value Pack" });
+            $scope.AllPlanList.push({ planid: value.vp_id, planname: value.vp_plan_name, created_on: $scope.setDate(value.vp_created_on), active: value.vp_is_active, contenttype: "Value Pack", contentid: "Value Pack" });
         });
         $scope.planList = $scope.AllPlanList;
 

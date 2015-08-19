@@ -21,22 +21,22 @@ exports.getplanlist = function (req, res, next) {
                             res.status(500).json(err.message);
                         }
                         else {
-                            mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
-                                var query = connection_ikon_plan.query('SELECT * FROM site_alacart_plan', function (err, Alacarts) {
+                            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+                                var query = connection_ikon_plan.query('SELECT * FROM icn_alacart_plan', function (err, Alacarts) {
                                     if (err) {
                                         connection_ikon_plan.release();
                                         connection_ikon_cms.release();
                                         res.status(500).json(err.message);
                                     }
                                     else {
-                                        var query = connection_ikon_plan.query('SELECT * FROM site_sub_plan', function (err, Subscriptions) {
+                                        var query = connection_ikon_plan.query('SELECT * FROM icn_sub_plan', function (err, Subscriptions) {
                                             if (err) {
                                                 connection_ikon_plan.release();
                                                 connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
-                                                var query = connection_ikon_plan.query('SELECT * FROM site_valuepack_plan', function (err, ValuePacks) {
+                                                var query = connection_ikon_plan.query('SELECT * FROM icn_valuepack_plan', function (err, ValuePacks) {
                                                     if (err) {
                                                         connection_ikon_plan.release();
                                                         connection_ikon_cms.release();
@@ -88,9 +88,9 @@ exports.blockunblockplan = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
+                mysql.getConnection('CMS', function (err, connection_ikon_plan) {
                     if (req.body.ContentType == "Subscription") {
-                        var query = connection_ikon_plan.query('UPDATE site_sub_plan set ssp_is_active= ? where ssp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('UPDATE icn_sub_plan set ssp_is_active= ? where ssp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -102,7 +102,7 @@ exports.blockunblockplan = function (req, res, next) {
                         });
                     }
                     else if (req.body.ContentType == "Value Pack") {
-                        var query = connection_ikon_plan.query('UPDATE site_valuepack_plan set svp_is_active= ? where svp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('UPDATE icn_valuepack_plan set svp_is_active= ? where svp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -114,7 +114,7 @@ exports.blockunblockplan = function (req, res, next) {
                         });
                     }
                     else {
-                        var query = connection_ikon_plan.query('UPDATE site_alacart_plan set sap_is_active= ? where sap_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('UPDATE icn_alacart_plan set sap_is_active= ? where sap_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -151,9 +151,9 @@ exports.deleteplan = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
+                mysql.getConnection('CMS', function (err, connection_ikon_plan) {
                     if (req.body.ContentType == "Subscription") {
-                        var query = connection_ikon_plan.query('Delete From site_sub_plan  where ssp_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('Delete From icn_sub_plan  where ssp_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -165,7 +165,7 @@ exports.deleteplan = function (req, res, next) {
                         });
                     }
                     else if (req.body.ContentType == "Value Pack") {
-                        var query = connection_ikon_plan.query('Delete From site_valuepack_plan where svp_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('Delete From icn_valuepack_plan where svp_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -177,7 +177,7 @@ exports.deleteplan = function (req, res, next) {
                         });
                     }
                     else {
-                        var query = connection_ikon_plan.query('Delete From site_alacart_plan where sap_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('Delete From icn_alacart_plan where sap_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);

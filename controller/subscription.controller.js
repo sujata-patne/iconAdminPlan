@@ -20,7 +20,7 @@ exports.getsubscriptions = function (req, res, next) {
                             res.status(500).json(err.message);
                         }
                         else {
-                            mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
+                            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
                                 var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null', function (err, JetEvents) {
                                     if (err) {
                                         connection_ikon_plan.release();
@@ -33,7 +33,7 @@ exports.getsubscriptions = function (req, res, next) {
                                                 res.status(500).json(err.message);
                                             }
                                             else {
-                                                var query = connection_ikon_plan.query('SELECT * FROM site_sub_plan where ssp_id =? ', [req.body.planid], function (err, subplan) {
+                                                var query = connection_ikon_plan.query('SELECT * FROM icn_sub_plan where ssp_id =? ', [req.body.planid], function (err, subplan) {
                                                     if (err) {
                                                         connection_ikon_plan.release();
                                                         res.status(500).json(err.message);
@@ -82,8 +82,8 @@ exports.addeditsubscriptions = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('PLAN', function (err, connection_ikon_plan) {
-                    var query = connection_ikon_plan.query('select * from site_sub_plan where lower(ssp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
+                mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+                    var query = connection_ikon_plan.query('select * from icn_sub_plan where lower(ssp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
                         if (err) {
                             connection_ikon_plan.release();
                             res.status(500).json(err.message);
@@ -112,14 +112,14 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 }
                             }
                             function EditSubscriptions() {
-                                var query = connection_ikon_plan.query('select * from site_sub_plan where ssp_id = ?', [req.body.subplanId], function (err, result) {
+                                var query = connection_ikon_plan.query('select * from icn_sub_plan where ssp_id = ?', [req.body.subplanId], function (err, result) {
                                     if (err) {
                                         connection_ikon_plan.release();
                                         res.status(500).json(err.message);
                                     }
                                     else {
                                         if (result.length > 0) {
-                                            var query = connection_ikon_plan.query(' UPDATE site_sub_plan SET ssp_plan_name=?,ssp_caption=?,ssp_description=?,ssp_jed_id=?,ssp_tnb_days=?,ssp_tnb_free_cnt_limit=?,ssp_single_day_cnt_limit=?,ssp_full_sub_cnt_limit=?,ssp_modified_on=?,ssp_modified_by=? where ssp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.TryandBuyOffer, req.body.LimitTBOffer, req.body.LimitSingleday, req.body.TotalDuration, new Date(), req.session.UserName, req.body.subplanId], function (err, result) {
+                                            var query = connection_ikon_plan.query(' UPDATE icn_sub_plan SET ssp_plan_name=?,ssp_caption=?,ssp_description=?,ssp_jed_id=?,ssp_tnb_days=?,ssp_tnb_free_cnt_limit=?,ssp_single_day_cnt_limit=?,ssp_full_sub_cnt_limit=?,ssp_modified_on=?,ssp_modified_by=? where ssp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.TryandBuyOffer, req.body.LimitTBOffer, req.body.LimitSingleday, req.body.TotalDuration, new Date(), req.session.UserName, req.body.subplanId], function (err, result) {
                                                 if (err) {
                                                     connection_ikon_plan.release();
                                                     res.status(500).json(err.message);
@@ -161,7 +161,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                             }
 
                             function AddSubscriptions() {
-                                var query = connection_ikon_plan.query('select max(ssp_id) as id from site_sub_plan', function (err, result) {
+                                var query = connection_ikon_plan.query('select max(ssp_id) as id from icn_sub_plan', function (err, result) {
                                     if (err) {
                                         connection_ikon_plan.release();
                                         res.status(500).json(err.message);
@@ -184,7 +184,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             ssp_modified_on: new Date(),
                                             ssp_modified_by: req.session.UserName
                                         }
-                                        var query = connection_ikon_plan.query('INSERT INTO site_sub_plan SET ?', data, function (err, result) {
+                                        var query = connection_ikon_plan.query('INSERT INTO icn_sub_plan SET ?', data, function (err, result) {
                                             if (err) {
                                                 connection_ikon_plan.release();
                                                 res.status(500).json(err.message);

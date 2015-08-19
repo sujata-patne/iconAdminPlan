@@ -34,7 +34,7 @@
         <div class="container">
             <a class="navbar-brand navbar-brand-image" href="#/"> <img src="./assets/img/logo.png" alt="Site Logo" class="logo"> </a>
             <button type="button" class="btn mainbar-toggle" data-toggle="collapse" data-target=".mainbar-collapse"> <i class="fa fa-bars"></i> </button>
-            <div class="mainbar-collapse collapse">
+            <div  id="myNavBar" class="mainbar-collapse collapse">
                 <ul class="nav navbar-nav mainbar-nav">
                     <!--<li class="removeActiveClass" id="dashboard"> <a ui-sref="dashboard"> <i class="fa fa-dashboard"></i> Dashboard </a> </li>-->
                     <% for(var i in Pages) { %>
@@ -71,6 +71,7 @@
 <!-- App JS -->
 <script src="assets/scripts/target-admin.js"></script>
 <script src="bower_components/filesaver/FileSaver.js"></script>
+
 <!-- Plugin JS -->
 <script src="scripts/app.js"></script>
 <script src="scripts/controller/dashboard.js"></script>
