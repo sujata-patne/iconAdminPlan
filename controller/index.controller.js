@@ -105,6 +105,7 @@ exports.authenticate = function (req, res, next) {
                             session.UserRole = row[0].ld_role;
                             session.UserName = req.body.username;
                             session.Password = req.body.password;
+                            session.StoreId = 1;//coming from new store's user table.
                             connection_central.release();
                             res.redirect('/');
                         }

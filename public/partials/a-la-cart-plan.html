@@ -91,7 +91,7 @@
                             <div class="form-group">
                                 <label for="streamNoOfTime" class="col-md-4 col-xs-10 control-label"><span class="asterisk">*</span>Stream No.of Times</label>
                                 <div class="col-md-1 col-xs-2">
-                                    <input type="radio" ng-value="1" name="streamingLimitType" ng-model="streamingLimitType" >
+                                    <input type="radio" ng-value="1" name="streamingLimitType" ng-model="streamingLimitType" ng-onchange="streamingLimitTypeChange()" >
                                 </div>
                                 <div class="col-md-6 col-xs-12">
                                     <input type="text" name="streamNoOfContentLimit" ng-disabled="streamingLimitType == 2" class="form-control" placeholder="Stream No.of Times" data-ng-model="streamNoOfContentLimit" ng-required="streamingSetting === true && streamingLimitType == 1">
@@ -103,7 +103,7 @@
                             <div class="form-group">
                                 <label for="streamDuration" class="col-md-4 col-xs-10 control-label"><span class="asterisk">*</span>Streaming Duration</label>
                                 <div class="col-md-1 col-xs-2">
-                                    <input type="radio" ng-value="2" name="streamingLimitType" ng-model="streamingLimitType" >
+                                    <input type="radio" ng-value="2" name="streamingLimitType" ng-model="streamingLimitType" ng-onchange="streamingLimitTypeChange()"  >
                                 </div>
                                 <div class="col-md-4 col-xs-6">
                                     <input type="text" name="streamDurationLimit" ng-disabled="streamingLimitType == 1" class="form-control" placeholder="Streaming Duration" data-ng-model="streamDurationLimit" ng-required="streamingSetting === true && streamingLimitType == 2">
@@ -147,9 +147,11 @@
                                 <tbody>
                                 <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
                                     <td class="col-md-2 col-xs-2">{{$index+1}}</td>
-                                    <td class="col-md-2 col-xs-2">{{operators.cd_name}}</td>
-                                    <td class="col-md-2 col-xs-2">{{operators.opd_amount}}</td>
-                                    <td class="col-md-6 col-xs-6"><input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.dcl_disclaimer"></td>
+                                    <td class="col-md-2 col-xs-2">{{operators.partner_name}}</td>
+                                    <td class="col-md-2 col-xs-2">{{operators.bta_amt}}</td>
+                                    <td class="col-md-6 col-xs-6">
+                                        <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.dcl_disclaimer">
+                                    </td>
                                 </tr>
                                 <tr data-ng-hide="SelectedEventId">
                                     <td class="col-md-12 col-xs-12" colspan="4">Only For selected JetPay Event Id.</td>
@@ -162,7 +164,7 @@
                     <div class="col-xs-12">
                         <div class="col-md-offset-5 col-md-7">
                             <button type="submit" class="btn btn-primary btn-w-md" title="Save">Submit</button>
-                            <button type="reset" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
+                            <button type="reset" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()" data-ng-disabled="PlanId != ''">Reset</button>
                         </div>
                     </div>
                 </div>

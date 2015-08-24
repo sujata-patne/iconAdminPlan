@@ -20,10 +20,9 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     ngProgress.height('3px');
     $scope.selectedDistributionChannel = [];
     $scope.distributionChannelArray = [];
+    $scope.streamingLimitType = 1;
     // get alacart data & jetpay id
     AlaCarts.GetAlacartData({ planid: $stateParams.id }, function (Alacarts) {
-        console.log(Alacarts)
-        //console.log(Alacarts.DistributionChannel)
         $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.GeoLocations = angular.copy(Alacarts.GeoLocations);
@@ -36,6 +35,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.distributionChannelArray[data.cmd_entity_detail] = true;
         })
         $scope.PlanData.forEach(function (value) {
+            console.log(value)
             $scope.PlanId = value.ap_id;
             $scope.PlanName = value.ap_plan_name;
             $scope.Caption = value.ap_caption;
@@ -45,7 +45,16 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.SelectedDeliveryType = value.ap_delivery_type || 2;
             $scope.SelectedDurationIn = value.ap_stream_dur_type || 'Min';
             $scope.SelectedGeoLocation = value.ap_cty_id;
+            $scope.streamNoOfContentLimit =  value.ap_no_of_stream;
+            $scope.streamDurationLimit = value.ap_stream_duration;
+            $scope.SelectedDurationType = value.ap_stream_dur_type;
+            $scope.streamingLimitType = value.ap_stream_setting;
 
+            if($scope.SelectedDeliveryType == 2){
+                $scope.streamingSetting = true;
+            }else{
+                $scope.streamingSetting = false;
+            }
             $scope.ContentTypeChange();
             $scope.displayOperators();
         });
@@ -72,12 +81,11 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 {cd_id:1,cd_name:'Download'},
                 {cd_id:2,cd_name:'Streaming'}
             ];
-            $scope.streamingLimitType = 1;
+
         }else{
             $scope.deliveryType = [
                 {cd_id:1,cd_name:'Download'}
             ];
-
         }
     }
 
@@ -98,12 +106,23 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.streamingSetting = false;
         }
     }
+    $scope.streamingLimitTypeChange = function(){
+        console.log($scope.streamingLimitType)
+        if($scope.streamingLimitType == 2){
+            $scope.streamDurationLimit = '';
+            $scope.durationOptions = '';
+            console.log($scope.streamDurationLimit)
+        }else{
+            $scope.streamNoOfContentLimit = '';
+            console.log($scope.streamNoOfContentLimit)
+        }
+    }
 
     // display operator on change of jet pay id 
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.dcl_ref_jed_id) {
+            if ($scope.SelectedEventId == value.bta_ef_id) {
                 $scope.OperatorDetails.push(value);
             }
         })
@@ -121,7 +140,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             var idx = $scope.selectedDistributionChannel.indexOf($scope.distributionChannelArray[id]);
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
-        console.log($scope.selectedDistributionChannel)
     };
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
@@ -146,6 +164,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             CountryId: $scope.SelectedGeoLocation,
             StreamSetting: $scope.streamingLimitType
         };
+
         //console.log(Alacart)
         if (isValid) {
             ngProgress.start();
