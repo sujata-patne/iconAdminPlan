@@ -66,6 +66,9 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         else if (contenttype == "Value Pack") {
             $window.location.href = "/#/edit-value-pack/" + id;
         }
+        else if (contenttype == "Offers") {
+            $window.location.href = "/#/edit-offer-plan/" + id;
+        }
         else {
             $window.location.href = "/#/edit-a-la-cart/" + id;
         }
@@ -140,6 +143,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         $scope.ContentTypes = angular.copy(PlanList.ContentTypes);
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Subscription", cd_id: "Subscription", cd_name: "Subscription" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Value Pack", cd_id: "Value Pack", cd_name: "Value Pack" });
+        $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Offers", cd_id: "Offers", cd_name: "Offers" });
         PlanList.Alacarts.forEach(function (value) {
             $scope.AllPlanList.push({ planid: value.ap_id, planname: value.ap_plan_name, created_on: $scope.setDate(value.ap_created_on), active: value.ap_is_active, contenttype: $scope.getContentName(value.ap_content_type), contentid: value.ap_content_type });
         });
@@ -148,6 +152,9 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         });
         PlanList.ValuePacks.forEach(function (value) {
             $scope.AllPlanList.push({ planid: value.vp_id, planname: value.vp_plan_name, created_on: $scope.setDate(value.vp_created_on), active: value.vp_is_active, contenttype: "Value Pack", contentid: "Value Pack" });
+        });
+        PlanList.Offers.forEach(function (value) {
+            $scope.AllPlanList.push({ planid: value.op_id, planname: value.op_plan_name, created_on: $scope.setDate(value.op_created_on), active: value.op_is_active, contenttype: "Offers", contentid: "Offers" });
         });
         $scope.planList = $scope.AllPlanList;
 

@@ -38,7 +38,7 @@
                         <div class="form-group">
                             <label for="buyitems" class="col-sm-3 control-label"><span class="asterisk">*</span>Buy items</label>
                             <div class="col-sm-9">
-                                <input type="text" name="buyitems" class="form-control" id="" placeholder="Buy items" data-ng-model="Buyitems" data-ng-pattern="/^[0-9]{1,9}$/" required>
+                                <input type="number" name="buyitems" class="form-control" id="" placeholder="Buy items" data-ng-model="Buyitems" data-ng-pattern="/^\d$/" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" ng-show="offerplanForm.$submitted || offerplanForm.buyitems.$touched">
@@ -50,7 +50,7 @@
                         <div class="form-group">
                             <label for="getfreeitems" class="col-sm-3 control-label"><span class="asterisk">*</span>Get free items</label>
                             <div class="col-sm-9">
-                                <input type="text" name="getfreeitems" class="form-control" id="" placeholder="Get free items" data-ng-pattern="/^[0-9]{1,9}$/" data-ng-model="Getfreeitems" required>
+                                <input type="number" name="getfreeitems" class="form-control" id="" placeholder="Get free items" data-ng-pattern="/^\d+$/" data-ng-model="Getfreeitems" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" data-ng-show="offerplanForm.$submitted || offerplanForm.getfreeitems.$touched">
@@ -63,7 +63,8 @@
                             <label for="caption" class="col-sm-3 control-label">Distribution Channels</label>
                             <div class="col-sm-9">
                                 <span data-ng-repeat="i in DistributionChannels ">
-                                    <input type="checkbox" name="{{i.cd_name}}" data-ng-model="i.isactive"  ng-click="toggleDistributionChannelSelection(distributionChannelItem)">{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                    <input type="checkbox" name="dc" ng-model="selectedDistributionChannel[i.cd_id]" ng-change="changeChannels()">
+                                    {{i.cd_name}}
                                 </span>
                                 <br />
                                 <span style="color: red" ng-hide="!offerplanForm.$submitted || selectedDistributionChannel.length > 0">
@@ -77,7 +78,7 @@
                     <div class="col-xs-12">
                         <div class="col-sm-offset-5 col-sm-7">
                             <button type="submit" class="btn btn-primary btn-w-md" title="Save">Submit</button>
-                            <button type="reset" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
+                            <button type="reset" ng-hide="isEdit" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
                         </div>
                     </div>
                 </div>

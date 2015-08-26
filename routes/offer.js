@@ -6,6 +6,8 @@ var offer = require('../controller/offer.controller');
 module.exports = function (app) {
     app.route('/getofferdata')
       .post(offer.getofferdata)
-    app.route('/addeditoffer')
-      .post(offer.addeditoffer);
+    app.route('/addoffer')
+      .post(offer.addOffer)
+    app.route('/editoffer')
+      .post(offer.editOffer);
 }

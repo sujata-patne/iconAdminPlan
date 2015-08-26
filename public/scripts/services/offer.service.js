@@ -11,12 +11,17 @@ myApp.service('Offers', ['$http', function ($http) {
         });
     }
 
-    service.AddEditOffer = function (data, success) {
-        $http.post(service.baseRestUrl + '/addeditoffer', data).success(function (items) {
+    service.AddOffer = function (data, success) {
+        $http.post(service.baseRestUrl + '/addoffer', data).success(function (items) {
             success(items);
         });
     }
 
+    service.EditOffer = function (data, success) {
+        $http.post(service.baseRestUrl + '/editoffer', data).success(function (items) {
+            success(items);
+        });
+    }
 
     return service;
 }]);
