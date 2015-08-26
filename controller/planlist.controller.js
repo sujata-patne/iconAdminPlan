@@ -43,15 +43,25 @@ exports.getplanlist = function (req, res, next) {
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
-                                                        connection_ikon_plan.release();
-                                                        connection_ikon_cms.release();
-                                                        res.send({
-                                                            ContentTypes: ContentTypes,
-                                                            Alacarts: Alacarts,
-                                                            Subscriptions: Subscriptions,
-                                                            ValuePacks: ValuePacks,
-                                                            RoleUser: req.session.UserRole
+                                                        var query = connection_ikon_plan.query('SELECT * FROM icn_offer_plan', function (err, Offers) {
+                                                            if(err){
+                                                                connection_ikon_plan.release();
+                                                                connection_ikon_cms.release();
+                                                                res.status(500).json(err.message);
+                                                            }else{
+                                                                connection_ikon_plan.release();
+                                                                connection_ikon_cms.release();
+                                                                res.send({
+                                                                    ContentTypes: ContentTypes,
+                                                                    Alacarts: Alacarts,
+                                                                    Subscriptions: Subscriptions,
+                                                                    ValuePacks: ValuePacks,
+                                                                    Offers: Offers,
+                                                                    RoleUser: req.session.UserRole
+                                                                 });
+                                                            }
                                                         });
+                                                        
                                                     }
                                                 });
                                             }
@@ -103,6 +113,18 @@ exports.blockunblockplan = function (req, res, next) {
                     }
                     else if (req.body.ContentType == "Value Pack") {
                         var query = connection_ikon_plan.query('UPDATE icn_valuepack_plan set svp_is_active= ? where svp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                            if (err) {
+                                connection_ikon_plan.release();
+                                res.status(500).json(err.message);
+                            }
+                            else {
+                                connection_ikon_plan.release();
+                                res.send({ success: true, message: 'Plan ' + req.body.Status + ' successfully.' });
+                            }
+                        });
+                    }
+                    else if (req.body.ContentType == "Offers") {
+                        var query = connection_ikon_plan.query('UPDATE icn_offer_plan set op_is_active = ? where op_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -173,6 +195,18 @@ exports.deleteplan = function (req, res, next) {
                             else {
                                 connection_ikon_plan.release();
                                 res.send({ success: true, message: 'ValuePack Plan deleted successfully.' });
+                            }
+                        });
+                    }
+                    else if (req.body.ContentType == "Offers") {
+                        var query = connection_ikon_plan.query('Delete From icn_offer_plan where op_id =?', [req.body.PlanId], function (err, result) {
+                            if (err) {
+                                connection_ikon_plan.release();
+                                res.status(500).json(err.message);
+                            }
+                            else {
+                                connection_ikon_plan.release();
+                                res.send({ success: true, message: 'Offer Plan deleted successfully.' });
                             }
                         });
                     }

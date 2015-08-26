@@ -8,75 +8,86 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
     $scope.PlanId = "";
     $scope.success = "";
     $scope.successvisible = false;
+    $scope.isEdit = false;
     $scope.error = "";
     $scope.errorvisible = false;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    // get valuepack data & jet pay id
-    Offers.GetOfferData({ planid: $stateParams.id }, function (offer) {
-        $scope.DistributionChannels = GetDistributionChannel(angular.copy(offer.DistributionChannel));
-        $scope.PlanData = [];
-        $scope.PlanData.forEach(function (value) {
-            $scope.PlanId = value.svp_id;
-            $scope.PlanName = value.svp_plan_name;
-            $scope.Caption = value.svp_caption;
-            $scope.Description = value.svp_description;
-            $scope.Buyitems = 1;
-            $scope.Getfreeitems = 2;
-            $scope.SelectedChannel = [12, 13];
-        });
-    });
-
     $scope.selectedDistributionChannel = [];
-    // toggle selection for a given distributionChannel by name
-    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
-        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
-        if (idx > -1) {
-            $scope.selectedDistributionChannel.splice(idx, 1);
-        } else {
-            $scope.selectedDistributionChannel.push(distributionChannel);
+    $scope.final_selectedDistributionChannel = [];
+
+    $scope.changeChannels = function(){
+        $scope.final_selectedDistributionChannel = [];
+        for ( i in $scope.selectedDistributionChannel){
+            if($scope.selectedDistributionChannel[i]){
+                $scope.final_selectedDistributionChannel.push(parseInt(i));
+            }
         }
-    };
+    }
+
+    // if id is given for edit purpose : 
+         Offers.GetOfferData({ planid: $stateParams.id }, function (offer) {
+                    $scope.DistributionChannels = offer.DistributionChannel; //Fetching distribution channels.
+                    if($stateParams.id){
+                        $scope.isEdit = true;
+                        $scope.PlanId = offer.row[0].op_id;
+                        $scope.PlanName = offer.row[0].op_plan_name;
+                        $scope.Caption = offer.row[0].op_caption;
+                        $scope.Description = offer.row[0].op_description;
+                        $scope.Buyitems = offer.row[0].op_buy_item;
+                        $scope.Getfreeitems = offer.row[0].op_free_item;
+                        offer.selectedDistributionChannel.forEach(function(el){
+                            $scope.selectedDistributionChannel[el.cmd_entity_detail] = true;
+                        });
+                    }
+        });
+   
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
         if (isValid) {
+            ngProgress.start();
+            if($stateParams.id){
+                $scope.changeChannels();
+                 var offer = {
+                        offerplanId: $scope.PlanId,
+                        PlanName: $scope.PlanName,
+                        Caption: $scope.Caption,
+                        Description: $scope.Description,
+                        Buyitems: $scope.Buyitems,
+                        GetFreeItems: $scope.Getfreeitems,
+                        DistributionChannels: $scope.final_selectedDistributionChannel
+                  }
+                 Offers.EditOffer(offer,function(data){
+                    $scope.success = data.message;
+                    $scope.successvisible = true;
+                 });
+                ngProgress.complete();
+            }else{
 
-            $scope.distributionChannelList.forEach(function (val) {
-                if (val.isactive == true) {
-                    $scope.selectedDistributionChannel.push(val.cd_id);
-                }
-            });
-            var offer = {
-                planid: $stateParams.id,
-                offerplanId: $scope.PlanId,
-                PlanName: $scope.PlanName,
-                Caption: $scope.Caption,
-                Description: $scope.Description,
-                Buyitems: $scope.Buyitems,
-                GetFreeItems: $scope.Getfreeitems,
-                DistributionChannels: $scope.selectedDistributionChannel
+                  var offer = {
+                        PlanName: $scope.PlanName,
+                        Caption: $scope.Caption,
+                        Description: $scope.Description,
+                        Buyitems: $scope.Buyitems,
+                        GetFreeItems: $scope.Getfreeitems,
+                        DistributionChannels: $scope.final_selectedDistributionChannel
+                  }
+                Offers.AddOffer(offer,function(data){
+                    if(!data.success){
+                        $scope.error = data.message;
+                        $scope.errorvisible = true;
+                    }else{
+                        $scope.success = data.message;
+                        $scope.successvisible = true;
+                    }
+                   
+                 });
+                 ngProgress.complete();
             }
-            console.log(offer);
-            //ngProgress.start();
-            //Valuepacks.AddEditValuepack(valuepack, function (data) {
-            //    if (data.success) {
-            //        $scope.success = data.message;
-            //        $scope.successvisible = true;
-            //    }
-            //    else {
-            //        $scope.error = data.message;
-            //        $scope.errorvisible = true;
-            //    }
-            //    ngProgress.complete();
-            //});
         }
     };
 
-    $scope.durationOptions = [
-        { cd_id: 'Hours', cd_name: 'Hours' },
-        { cd_id: 'Days', cd_name: 'Days' },
-    ]
 });
