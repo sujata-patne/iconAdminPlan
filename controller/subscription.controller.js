@@ -20,81 +20,98 @@ exports.getsubscriptions = function (req, res, next) {
                             res.status(500).json(err.message);
                         }
                         else {
+                            /**
+                             * Get content type list
+                             */
                             var query = connection_ikon_plan.query('select cd.* FROM catalogue_detail as cd ' +
                                 'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
                                 'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
-                                'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.StoreId], function (err, DistributionChannel) {
-
+                                'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_content_type ' +
+                                'WHERE cm.cm_name in ("content type") AND s.st_id = ? ', [req.session.StoreId], function (err, ContentTypes) {
                                 if (err) {
                                     connection_ikon_plan.release();
                                     res.status(500).json(err.message);
+                                    console.log(err)
                                 }
                                 else {
-                                    /**
-                                     * get country list
-                                     */
-                                    var query = connection_ikon_plan.query('SELECT DISTINCT(`cmd_entity_detail`) as geoID, UCASE(`cd_name`) as geoName FROM `multiselect_metadata_detail` AS m ' +
-                                        'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
-                                        'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                                        'LEFT JOIN catalogue_master AS cm ON cm.cm_id = m.cmd_entity_type WHERE s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
-                                        console.log(GeoLocations)
+                                    var query = connection_ikon_plan.query('select cd.* FROM catalogue_detail as cd ' +
+                                        'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
+                                        'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
+                                        'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
+                                        'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.StoreId], function (err, DistributionChannel) {
+
                                         if (err) {
                                             connection_ikon_plan.release();
                                             res.status(500).json(err.message);
-                                            console.log(err);
-                                        } else {
+                                        }
+                                        else {
                                             /**
-                                             * get stream duration list
+                                             * get country list
                                              */
-                                            var query = connection_ikon_plan.query('select cd.* from catalogue_detail as cd ' +
-                                                'join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Stream Duration")', function (err, DurationOptions) {
+                                            var query = connection_ikon_plan.query('SELECT DISTINCT(`cmd_entity_detail`) as geoID, UCASE(`cd_name`) as geoName FROM `multiselect_metadata_detail` AS m ' +
+                                                'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
+                                                'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
+                                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = m.cmd_entity_type WHERE s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
+                                                console.log(GeoLocations)
                                                 if (err) {
                                                     connection_ikon_plan.release();
                                                     res.status(500).json(err.message);
-                                                    console.log(err)
+                                                    console.log(err);
                                                 } else {
-                                                    mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                                                        var query = connection_ikon_bg.query('select * from billing_ef_bgw_event where ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
-                                                            if (err) {
-                                                                connection_ikon_bg.release();
-                                                                connection_ikon_plan.release();
-                                                                res.status(500).json(err.message);
-                                                                console.log(err)
-                                                            }
-                                                            else {
-                                                                var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
-                                                                    'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
-                                                                    'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
-                                                                    'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = alacart.bta_ef_id AND dis.dcl_partner_id = alacart.bta_partner_id', function (err, OpeartorDetail) {
+                                                    /**
+                                                     * get stream duration list
+                                                     */
+                                                    var query = connection_ikon_plan.query('select cd.* from catalogue_detail as cd ' +
+                                                        'join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Stream Duration")', function (err, DurationOptions) {
+                                                        if (err) {
+                                                            connection_ikon_plan.release();
+                                                            res.status(500).json(err.message);
+                                                            console.log(err)
+                                                        } else {
+                                                            mysql.getConnection('BG', function (err, connection_ikon_bg) {
+                                                                var query = connection_ikon_bg.query('select * from billing_ef_bgw_event where ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
                                                                     if (err) {
-                                                                        connection_ikon_plan.release();
                                                                         connection_ikon_bg.release();
+                                                                        connection_ikon_plan.release();
                                                                         res.status(500).json(err.message);
+                                                                        console.log(err)
                                                                     }
                                                                     else {
-                                                                        connection_ikon_plan.release();
-                                                                        connection_ikon_bg.release();
-                                                                        res.send({
-                                                                            JetEvents: JetEvents,
-                                                                            DistributionChannel: DistributionChannel,
-                                                                            OpeartorDetail: OpeartorDetail,
-                                                                            GeoLocations: GeoLocations,
-                                                                            DurationOptions: DurationOptions,
-                                                                            RoleUser: req.session.UserRole,
-                                                                            PlanData: subplan
+                                                                        var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
+                                                                            'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
+                                                                            'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
+                                                                            'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = alacart.bta_ef_id AND dis.dcl_partner_id = alacart.bta_partner_id', function (err, OpeartorDetail) {
+                                                                            if (err) {
+                                                                                connection_ikon_plan.release();
+                                                                                connection_ikon_bg.release();
+                                                                                res.status(500).json(err.message);
+                                                                            }
+                                                                            else {
+                                                                                connection_ikon_plan.release();
+                                                                                connection_ikon_bg.release();
+                                                                                res.send({
+                                                                                    JetEvents: JetEvents,
+                                                                                    DistributionChannel: DistributionChannel,
+                                                                                    OpeartorDetail: OpeartorDetail,
+                                                                                    ContentTypes: ContentTypes,
+                                                                                    GeoLocations: GeoLocations,
+                                                                                    DurationOptions: DurationOptions,
+                                                                                    RoleUser: req.session.UserRole,
+                                                                                    PlanData: subplan
+                                                                                });
+                                                                            }
                                                                         });
                                                                     }
                                                                 });
-                                                            }
-                                                        });
+                                                            })
+                                                        }
                                                     })
                                                 }
                                             })
                                         }
-                                    })
+                                    });
                                 }
-                            });
+                            })
                         }
                     });
                 });

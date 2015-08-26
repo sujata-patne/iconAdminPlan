@@ -51,13 +51,10 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.SelectedDurationType = value.ap_stream_dur_type;
             $scope.streamingLimitType = value.ap_stream_setting;
 
-            if($scope.SelectedDeliveryType == 2){
-                $scope.streamingSetting = true;
-            }else{
-                $scope.streamingSetting = false;
-            }
+
             $scope.ContentTypeChange();
             $scope.displayOperators();
+            $scope.deliveryTypeChange();
         });
 
     });
@@ -73,22 +70,14 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         }
     }
 
-    /*$scope.geoLocationChange = function(){
-        var currency = '';
-        $scope.GeoLoction.forEach(function (value) {
-            if ($scope.SelectedGeoLocation == value.cd_id) {
-                currency = value.cd_cur;
-            }
-        });
-        $scope.selectedCurrency = currency;
-    }*/
-
     $scope.deliveryTypeChange = function(){
-        if($scope.SelectedDeliveryType == 2){
-            $scope.streamingSetting = true;
-        }else{
-            $scope.streamingSetting = false;
-        }
+        $scope.deliveryType.forEach(function(type) {
+            if( $scope.SelectedDeliveryType == type.cd_id && type.cd_name == "Download"){
+                $scope.streamingSetting = false;
+            }else{
+                $scope.streamingSetting = true;
+            }
+        })
     }
     $scope.streamingLimitTypeChange = function(){
         if($scope.streamingLimitType == 2){
@@ -107,7 +96,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 $scope.OperatorDetails.push(value);
             }
         })
-        console.log($scope.OperatorDetails)
+        //console.log($scope.OperatorDetails)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -126,7 +115,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
-        console.log(isValid)
+       // console.log(isValid)
         $scope.successvisible = false;
         $scope.errorvisible = false;
         var Alacart = {

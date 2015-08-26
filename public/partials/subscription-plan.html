@@ -89,9 +89,11 @@
                             <tbody>
                             <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
                                 <td class="col-md-2 col-xs-2">{{$index+1}}</td>
-                                <td class="col-md-2 col-xs-2">{{operators.opd_partner_name}}</td>
-                                <td class="col-md-2 col-xs-2">{{operators.opd_amount}}</td>
-                                <td class="col-md-6 col-xs-6"><input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.opd_name"></td>
+                                <td class="col-md-2 col-xs-2">{{operators.partner_name}}</td>
+                                <td class="col-md-2 col-xs-2">{{operators.bta_amt}}</td>
+                                <td class="col-md-6 col-xs-6">
+                                    <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.dcl_disclaimer">
+                                </td>
                             </tr>
                             <tr data-ng-hide="SelectedEventId">
                                 <td class="col-md-12 col-xs-12" colspan="4">Only For selected JetPay Event Id.</td>
