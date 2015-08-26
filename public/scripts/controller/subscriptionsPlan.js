@@ -24,6 +24,44 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
         $scope.AllOperatorDetails = angular.copy(SubscriptionData.OpeartorDetail);
         $scope.PlanData = angular.copy(SubscriptionData.PlanData);
+        $scope.durationOptions = angular.copy(SubscriptionData.DurationOptions);
+        $scope.GeoLocations = angular.copy(SubscriptionData.GeoLocations);
+        $scope.WallpaperPlan = [
+            {cd_id:1,cd_name:'Single WP @ 4 INR'},
+            {cd_id:2,cd_name:'Single WP @ 5 INR'},
+            {cd_id:3,cd_name:'Single WP @ 8 INR'}
+        ];
+        $scope.AnimationPlan = [
+            {cd_id:1,cd_name:'Single Ani @ 4 INR'},
+            {cd_id:2,cd_name:'Single Ani @ 6 INR'},
+            {cd_id:3,cd_name:'Single Ani @ 8 INR'}
+        ];
+        $scope.RingTonePlan = [
+            {cd_id:1,cd_name:'Single RT @ 4 INR'},
+            {cd_id:2,cd_name:'Single RT @ 5 INR'},
+            {cd_id:3,cd_name:'Single RT @ 8 INR'}
+        ];
+        $scope.TextArticalPlan = [
+            {cd_id:1,cd_name:'Single TA @ 4 INR'},
+            {cd_id:2,cd_name:'Single TA @ 6 INR'},
+            {cd_id:3,cd_name:'Single TA @ 8 INR'}
+        ];
+        $scope.GameAppPlan = [
+            {cd_id:1,cd_name:'Single GA @ 4 INR'},
+            {cd_id:2,cd_name:'Single GA @ 6 INR'},
+            {cd_id:3,cd_name:'Single GA @ 8 INR'}
+        ];
+        $scope.VideoPlan = [
+            {cd_id:1,cd_name:'Single Vid @ 4 INR'},
+            {cd_id:2,cd_name:'Single Vid @ 6 INR'},
+            {cd_id:3,cd_name:'Single Vid @ 8 INR'}
+        ];
+        $scope.SongsPlan = [
+            {cd_id:1,cd_name:'Single FS @ 4 INR'},
+            {cd_id:2,cd_name:'Single FS @ 6 INR'},
+            {cd_id:3,cd_name:'Single FS @ 8 INR'}
+        ];
+
         $scope.PlanData.forEach(function (value) {
             $scope.PlanId = value.ssp_id;
             $scope.PlanName = value.ssp_plan_name;
@@ -34,7 +72,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             $scope.numContentOffer = value.ssp_tnb_free_cnt_limit;
             $scope.limitSingleDay = value.ssp_single_day_cnt_limit;
             $scope.fullSubDuration = value.ssp_full_sub_cnt_limit;
-            Alacarts.selectedDistributionChannel.forEach(function(data){
+            SubscriptionData.selectedDistributionChannel.forEach(function(data){
                 $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
                 $scope.distributionChannelArray[data.cmd_entity_detail] = true;
             })
@@ -59,6 +97,15 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 $scope.OperatorDetails.push(value);
             }
         })
+    }
+    $scope.displayOperators = function () {
+        $scope.OperatorDetails = [];
+        $scope.AllOperatorDetails.forEach(function (value) {
+            if ($scope.SelectedEventId == value.bta_ef_id) {
+                $scope.OperatorDetails.push(value);
+            }
+        })
+        console.log($scope.OperatorDetails)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -103,46 +150,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             });
         }
     };
-    $scope.GeoLoction = [
-        {cd_id:1,cd_name:'India',cd_cur:'INR'},
-        {cd_id:2,cd_name:'US',cd_cur:'USD'},
-        {cd_id:3,cd_name:'UK',cd_cur:'EUR'}
-    ];
-    $scope.WallpaperPlan = [
-        {cd_id:1,cd_name:'Single WP @ 4 INR'},
-        {cd_id:2,cd_name:'Single WP @ 5 INR'},
-        {cd_id:3,cd_name:'Single WP @ 8 INR'}
-    ];
-    $scope.AnimationPlan = [
-        {cd_id:1,cd_name:'Single Ani @ 4 INR'},
-        {cd_id:2,cd_name:'Single Ani @ 6 INR'},
-        {cd_id:3,cd_name:'Single Ani @ 8 INR'}
-    ];
-    $scope.RingTonePlan = [
-        {cd_id:1,cd_name:'Single RT @ 4 INR'},
-        {cd_id:2,cd_name:'Single RT @ 5 INR'},
-        {cd_id:3,cd_name:'Single RT @ 8 INR'}
-    ];
-    $scope.TextArticalPlan = [
-        {cd_id:1,cd_name:'Single TA @ 4 INR'},
-        {cd_id:2,cd_name:'Single TA @ 6 INR'},
-        {cd_id:3,cd_name:'Single TA @ 8 INR'}
-    ];
-    $scope.GameAppPlan = [
-        {cd_id:1,cd_name:'Single GA @ 4 INR'},
-        {cd_id:2,cd_name:'Single GA @ 6 INR'},
-        {cd_id:3,cd_name:'Single GA @ 8 INR'}
-    ];
-    $scope.VideoPlan = [
-        {cd_id:1,cd_name:'Single Vid @ 4 INR'},
-        {cd_id:2,cd_name:'Single Vid @ 6 INR'},
-        {cd_id:3,cd_name:'Single Vid @ 8 INR'}
-    ];
-    $scope.SongsPlan = [
-        {cd_id:1,cd_name:'Single FS @ 4 INR'},
-        {cd_id:2,cd_name:'Single FS @ 6 INR'},
-        {cd_id:3,cd_name:'Single FS @ 8 INR'}
-    ];
+
     /*$scope.geoLocationChange = function(){
         var currency = '';
         $scope.GeoLoction.forEach(function (value) {
@@ -152,16 +160,6 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         });
         $scope.selectedCurrency = currency;
     }*/
-    $scope.durationOptions = [
-        { cd_id: 'Min', cd_name: 'Min' },
-        { cd_id: 'Hours', cd_name: 'Hours' },
-        { cd_id: 'Days', cd_name: 'Days' },
-        { cd_id: 'Week', cd_name: 'Week' },
-        { cd_id: 'Month', cd_name: 'Month' },
-        { cd_id: 'Year', cd_name: 'Year' }
-    ];
-    // Distribution Channel
-    $scope.distributionChannelList = ['Web', 'Mobile Web', 'App', 'TV'];
 
     /*// toggle selection for a given distributionChannel by name
     $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {

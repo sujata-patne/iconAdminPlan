@@ -31,6 +31,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         $scope.durationOptions = angular.copy(Alacarts.DurationOptions);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetails);
         $scope.PlanData = angular.copy(Alacarts.PlanData);
+        $scope.AllDeliveryType = angular.copy(Alacarts.DeliveryTypes);
         Alacarts.selectedDistributionChannel.forEach(function(data){
             $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
             $scope.distributionChannelArray[data.cmd_entity_detail] = true;
@@ -63,29 +64,12 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
 
     //change jetpayid,geoLocation,deliveryType on change of content type
     $scope.ContentTypeChange = function () {
-        /*$scope.JetPayEvent = [];
-        $scope.AllJetPayEvents.forEach(function (value) {
-            if (value.jed_content_type == $scope.SelectedContentType) {
-                $scope.JetPayEvent.push(value);
-            }
-        });*/
-        /*This will be implemented for future changes.*/
-        /*$scope.GeoLoction = [];
-        $scope.AllGeoLactions.forEach(function (value){
-            if (value.jed_content_type == $scope.SelectedContentType) {
-                $scope.GeoLoction.push(value);
-            }
-        })*/
         if($scope.SelectedContentType == 9 || $scope.SelectedContentType == 10){
-            $scope.deliveryType = [
-                {cd_id:1,cd_name:'Download'},
-                {cd_id:2,cd_name:'Streaming'}
-            ];
-
+            $scope.deliveryType = $scope.AllDeliveryType;
         }else{
-            $scope.deliveryType = [
-                {cd_id:1,cd_name:'Download'}
-            ];
+            $scope.deliveryType = $scope.AllDeliveryType.filter(function (type){
+                return type.cd_name == "Download";
+            })
         }
     }
 
@@ -107,14 +91,11 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         }
     }
     $scope.streamingLimitTypeChange = function(){
-        console.log($scope.streamingLimitType)
         if($scope.streamingLimitType == 2){
             $scope.streamDurationLimit = '';
             $scope.durationOptions = '';
-            console.log($scope.streamDurationLimit)
         }else{
             $scope.streamNoOfContentLimit = '';
-            console.log($scope.streamNoOfContentLimit)
         }
     }
 
@@ -158,6 +139,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             ContentType: $scope.SelectedContentType,
             JetId: $scope.SelectedEventId,
             OperatorDetails: $scope.OperatorDetails,
+            DistributionChannelList: $scope.distributionChannelList,
             DistributionChannels: $scope.selectedDistributionChannel,
             NoOfStream: $scope.streamNoOfContentLimit,
             StreamDuration: $scope.streamDurationLimit,
