@@ -2,25 +2,6 @@
 * Created by sujata.patne on 15-07-2015.
 */
 myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Valuepacks) {
-
-    $scope.GeoLoction = [
-        { cd_id: 1, cd_name: 'India', cd_cur: 'INR' },
-        { cd_id: 2, cd_name: 'US', cd_cur: 'USD' },
-        { cd_id: 3, cd_name: 'UK', cd_cur: 'EUR' }
-    ];
-    $scope.durationOptions = [
-        { cd_id: 'Minuts', cd_name: 'Minuts' },
-        { cd_id: 'Hours', cd_name: 'Hours' },
-        { cd_id: 'Days', cd_name: 'Days' },
-        { cd_id: 'Months', cd_name: 'Months' }
-    ];
-    $scope.streaming = [
-        { cd_id: 1, is_active: true },
-        { cd_id: 2, is_active: false },
-
-    ];
-
-
     $('.removeActiveClass').removeClass('active');
     $('#value-pack').addClass('active');
     $scope.contentType = 'Value Pack';
@@ -35,33 +16,35 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
     $scope.isCheckboxSelected = "";
-    $scope.Stream = 1;
+    //$scope.SelectedStreamType = 1;
 
     // get valuepack data & jet pay id
     Valuepacks.GetValuepackData({ planid: $stateParams.id }, function (valuepacks) {
         $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
         $scope.AllOperatorDetails = angular.copy(valuepacks.OpeartorDetail);
+        $scope.durationOptions = angular.copy(valuepacks.DurationOptions);
         $scope.PlanData = angular.copy(valuepacks.PlanData);
-        console.log(valuepacks);
-        console.log( $scope.AllOperatorDetails)
+        $scope.GeoLocations = angular.copy(valuepacks.GeoLocations);
         $scope.PlanData.forEach(function (value) {
-            $scope.PlanId = value.svp_id;
-            $scope.PlanName = value.svp_plan_name;
-            $scope.Caption = value.svp_caption;
-            $scope.Description = value.svp_description;
-            $scope.SelectedEventId = value.svp_jed_id;
-            $scope.setDownloadLimit = value.svp_download_limit;
-            $scope.setDurationLimit = value.svp_duration_limit;
-            $scope.SelectedDurationIn = value.svp_durration_type;
+            $scope.PlanId = value.vp_id;
+            $scope.PlanName = value.vp_plan_name;
+            $scope.Caption = value.vp_caption;
+            $scope.Description = value.vp_description;
+            $scope.SelectedEventId = value.vp_jed_id;
+            $scope.setDownloadLimit = value.vp_download_limit;
+            $scope.setDurationLimit = value.vp_duration_limit;
+            $scope.streamDurationOptions = value.vp_stream_dur_type;
+            $scope.SelectedStreamType = value.vp_stream_setting;
+            $scope.SelectedGeoLocation = value.vp_cty_id;
+            $scope.numberOfContent = value.vp_stream_limit;
+            $scope.streamingDurationLimit = value.vp_stream_duration;
+            $scope.selectedDurationOptions = value.vp_duration_type;
+            ;
             $scope.displayOperators();
         });
     });
 
-    $scope.isCheckboxSelected = function (val) {
-        return val == $scope.Stream;
-    }
-
-    $scope.geoLocationChange = function () {
+    /*$scope.geoLocationChange = function () {
         var currency = '';
         $scope.GeoLoction.forEach(function (value) {
             if ($scope.SelectedGeoLocation == value.cd_id) {
@@ -69,14 +52,13 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
             }
         });
         $scope.selectedCurrency = currency;
-    }
+    }*/
 
     // display operator on change of jet event id
     $scope.displayOperators = function () {
-        console.log($scope.SelectedEventId);
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.opd_jed_id) {
+            if ($scope.SelectedEventId == value.bta_ef_id) {
                 $scope.OperatorDetails.push(value);
             }
         })
@@ -101,9 +83,15 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
                 JetId: $scope.SelectedEventId,
                 DowmloadLimit: $scope.setDownloadLimit,
                 DurationLimit: $scope.setDurationLimit,
-                DurationIn: $scope.SelectedDurationIn,
-                OperatorDetails: $scope.OperatorDetails
+                StreamType: $scope.SelectedStreamType,
+                CountryId: $scope.SelectedGeoLocation,
+                OperatorDetails: $scope.OperatorDetails,
+                NoOfStreamContent: $scope.numberOfContent,
+                StreamDuration: $scope.streamingDurationLimit,
+                DurationOptions: $scope.selectedDurationOptions,
+                StreamDurationOptions: $scope.streamDurationOptions
             }
+            console.log(valuepack)
             ngProgress.start();
             Valuepacks.AddEditValuepack(valuepack, function (data) {
                 if (data.success) {

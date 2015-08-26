@@ -13,27 +13,38 @@ exports.getsubscriptions = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 4', function (err, DistributionChannel) {
+                mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+                    //var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 4', function (err, DistributionChannel) {
+                    var query = connection_ikon_plan.query('select cd.* FROM catalogue_detail as cd ' +
+                        'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
+                        'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
+                        'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
+                        'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.StoreId], function (err, DistributionChannel) {
+
                         if (err) {
-                            connection_ikon_cms.release();
+                            connection_ikon_plan.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
-                                var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null', function (err, JetEvents) {
+                            mysql.getConnection('BG', function (err, connection_ikon_bg) {
+                                var query = connection_ikon_bg.query('select * from billing_ef_bgw_event where ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
                                     if (err) {
-                                        connection_ikon_plan.release();
+                                        connection_ikon_bg.release();
+                                        connection_ikon_cms.release();
                                         res.status(500).json(err.message);
+                                        console.log(err)
                                     }
                                     else {
-                                        var query = connection_ikon_plan.query('SELECT * FROM  (SELECT * FROM  operator_pricepoint_detail where opd_is_active =1 and opd_pp_type ="subscription")alacart inner join (select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null)jetpay on(alacart.opd_jed_id =jetpay.jed_id)', function (err, OpeartorDetail) {
+                                        var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
+                                            'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
+                                            'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
+                                            'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = alacart.bta_ef_id AND dis.dcl_partner_id = alacart.bta_partner_id', function (err, OpeartorDetail) {
                                             if (err) {
                                                 connection_ikon_plan.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
-                                                var query = connection_ikon_plan.query('SELECT * FROM icn_sub_plan where ssp_id =? ', [req.body.planid], function (err, subplan) {
+                                                var query = connection_ikon_plan.query('SELECT * FROM icn_sub_plan where sp_id =? ', [req.body.planid], function (err, subplan) {
                                                     if (err) {
                                                         connection_ikon_plan.release();
                                                         res.status(500).json(err.message);
@@ -53,7 +64,7 @@ exports.getsubscriptions = function (req, res, next) {
                                         });
                                     }
                                 });
-                            });
+                            })
                         }
                     });
                 });
@@ -83,14 +94,14 @@ exports.addeditsubscriptions = function (req, res, next) {
         if (req.session) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_plan) {
-                    var query = connection_ikon_plan.query('select * from icn_sub_plan where lower(ssp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
+                    var query = connection_ikon_plan.query('select * from icn_sub_plan where lower(sp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
                         if (err) {
                             connection_ikon_plan.release();
                             res.status(500).json(err.message);
                         }
                         else {
                             if (result.length > 0) {
-                                if (result[0].ssp_id == req.body.subplanId) {
+                                if (result[0].sp_id == req.body.subplanId) {
                                     if (req.body.planid) {
                                         EditSubscriptions();
                                     }
@@ -112,14 +123,14 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 }
                             }
                             function EditSubscriptions() {
-                                var query = connection_ikon_plan.query('select * from icn_sub_plan where ssp_id = ?', [req.body.subplanId], function (err, result) {
+                                var query = connection_ikon_plan.query('select * from icn_sub_plan where sp_id = ?', [req.body.subplanId], function (err, result) {
                                     if (err) {
                                         connection_ikon_plan.release();
                                         res.status(500).json(err.message);
                                     }
                                     else {
                                         if (result.length > 0) {
-                                            var query = connection_ikon_plan.query(' UPDATE icn_sub_plan SET ssp_plan_name=?,ssp_caption=?,ssp_description=?,ssp_jed_id=?,ssp_tnb_days=?,ssp_tnb_free_cnt_limit=?,ssp_single_day_cnt_limit=?,ssp_full_sub_cnt_limit=?,ssp_modified_on=?,ssp_modified_by=? where ssp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.TryandBuyOffer, req.body.LimitTBOffer, req.body.LimitSingleday, req.body.TotalDuration, new Date(), req.session.UserName, req.body.subplanId], function (err, result) {
+                                            var query = connection_ikon_plan.query(' UPDATE icn_sub_plan SET sp_plan_name=?,sp_caption=?,sp_description=?,sp_jed_id=?,sp_tnb_days=?,sp_tnb_free_cnt_limit=?,sp_single_day_cnt_limit=?,sp_full_sub_cnt_limit=?,sp_modified_on=?,sp_modified_by=? where sp_id =?', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.JetId, req.body.TryandBuyOffer, req.body.LimitTBOffer, req.body.LimitSingleday, req.body.TotalDuration, new Date(), req.session.UserName, req.body.subplanId], function (err, result) {
                                                 if (err) {
                                                     connection_ikon_plan.release();
                                                     res.status(500).json(err.message);
@@ -161,28 +172,28 @@ exports.addeditsubscriptions = function (req, res, next) {
                             }
 
                             function AddSubscriptions() {
-                                var query = connection_ikon_plan.query('select max(ssp_id) as id from icn_sub_plan', function (err, result) {
+                                var query = connection_ikon_plan.query('select max(sp_id) as id from icn_sub_plan', function (err, result) {
                                     if (err) {
                                         connection_ikon_plan.release();
                                         res.status(500).json(err.message);
                                     }
                                     else {
                                         var data = {
-                                            ssp_id: result[0].id != null ? parseInt(result[0].id + 1) : 1,
-                                            ssp_vendor_id: null,
-                                            ssp_plan_name: req.body.PlanName,
-                                            ssp_caption: req.body.Caption,
-                                            ssp_description: req.body.Description,
-                                            ssp_jed_id: req.body.JetId,
-                                            ssp_tnb_days: req.body.TryandBuyOffer,
-                                            ssp_tnb_free_cnt_limit: req.body.LimitTBOffer,
-                                            ssp_single_day_cnt_limit: req.body.LimitSingleday,
-                                            ssp_full_sub_cnt_limit: req.body.TotalDuration,
-                                            ssp_is_active: 1,
-                                            ssp_created_on: new Date(),
-                                            ssp_created_by: req.session.UserName,
-                                            ssp_modified_on: new Date(),
-                                            ssp_modified_by: req.session.UserName
+                                            sp_id: result[0].id != null ? parseInt(result[0].id + 1) : 1,
+                                            sp_vendor_id: null,
+                                            sp_plan_name: req.body.PlanName,
+                                            sp_caption: req.body.Caption,
+                                            sp_description: req.body.Description,
+                                            sp_jed_id: req.body.JetId,
+                                            sp_tnb_days: req.body.TryandBuyOffer,
+                                            sp_tnb_free_cnt_limit: req.body.LimitTBOffer,
+                                            sp_single_day_cnt_limit: req.body.LimitSingleday,
+                                            sp_full_sub_cnt_limit: req.body.TotalDuration,
+                                            sp_is_active: 1,
+                                            sp_created_on: new Date(),
+                                            sp_created_by: req.session.UserName,
+                                            sp_modified_on: new Date(),
+                                            sp_modified_by: req.session.UserName
                                         }
                                         var query = connection_ikon_plan.query('INSERT INTO icn_sub_plan SET ?', data, function (err, result) {
                                             if (err) {

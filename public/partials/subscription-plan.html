@@ -44,25 +44,16 @@
                                     <span ng-show="subscriptionForm.geoLocation.$error.required">Please Select Geo Location.</span>
                                 </span>
                             </div>
-                            <label for="currency" class="col-md-2 control-label">Currency</label>
-                            <div class="col-md-2">
-                                <input type="text" readonly name="currency" class="form-control" id="" placeholder="Currency" data-ng-model="selectedCurrency">
-                            </div>
+                            <!--<label for="currency" class="col-md-2 control-label">Currency</label>-->
+                            <!--<div class="col-md-2">-->
+                                <!--<input type="text" readonly name="currency" class="form-control" id="" placeholder="Currency" data-ng-model="selectedCurrency">-->
+                            <!--</div>-->
                         </div>
                         <div class="form-group">
                             <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk">*</span>Distribution Channel</label>
                             <div class="col-md-9">
-                                <!--<label ng-repeat="distributionChannelItem in distributionChannelList">-->
-                                    <!--&nbsp;<input type="checkbox" required-->
-                                                 <!--name="distributionChannel[]"-->
-                                                 <!--ng-model="distributionChannel"-->
-                                                 <!--value="{{distributionChannelItem}}"-->
-                                                 <!--ng-checked="selectedDistributionChannel.indexOf(distributionChannelItem) > -1"-->
-                                                 <!--ng-click="toggleDistributionChannelSelection(distributionChannelItem)"-->
-                                                 <!--require-items="{{selectedDistributionChannel.length}}"> {{distributionChannelItem}}&nbsp;-->
-                                <!--</label>-->
                                 <span data-ng-repeat="i in distributionChannelList ">
-                                    <input type="checkbox" name="{{i.cd_name}}" data-ng-model="i.isactive" ng-click="toggleDistributionChannelSelection(distributionChannelItem)">&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                    <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)">&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
                                 </span>
                                 <br />
                                 <span style="color: red" ng-hide="!subscriptionForm.$submitted || selectedDistributionChannel.length > 0">
@@ -70,11 +61,12 @@
                                 </span>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
                             <div class="col-md-9">
                                 <span class="ui-select">
-                                    <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.jed_id as item.jed_event for item in AllJetPayEvents" data-ng-change="displayOperators()" required>
+                                    <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.ebe_ef_id as item.ebe_bgw_id_desc for item in AllJetPayEvents" data-ng-change="displayOperators()" required>
                                         <option value="">-- Select JetPay Event --</option>
                                     </select>
                                 </span>

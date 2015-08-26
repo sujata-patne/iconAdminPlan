@@ -18,10 +18,10 @@ exports.getalacartadata = function (req, res, next) {
                  */
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     var query = connection_ikon_cms.query('SELECT * FROM icn_alacart_plan where ap_id =? ', [req.body.planid], function (err, alacart) {
-
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
+                            console.log(err)
                         }
                         else {
                             /**
@@ -30,6 +30,8 @@ exports.getalacartadata = function (req, res, next) {
                             var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("content type")', function (err, ContentTypes) {
                                 if (err) {
                                     connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                    console.log(err)
                                 }
                                 else {
                                     /**
@@ -38,22 +40,35 @@ exports.getalacartadata = function (req, res, next) {
                                     var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Stream Duration")', function (err, DurationOptions) {
                                         if (err) {
                                             connection_ikon_cms.release();
+                                            res.status(500).json(err.message);
+                                            console.log(err)
                                         }
                                         else {
                                             /**
                                              * get country list
                                              */
-                                            var query = connection_ikon_cms.query('(SELECT `cty_id` as geoID,`cty_name` as geoName FROM `icn_country` where isnull(`cty_region_id`)) union (SELECT `cty_region_id` as geoID, `cty_region_name`  as geoName FROM `icn_country` where `cty_region_id` IS NOT NULL group by `cty_region_id`)', function (err, GeoLocations) {
+                                            var query = connection_ikon_cms.query('SELECT DISTINCT(`cmd_entity_detail`) as geoID, UCASE(`cd_name`) as geoName FROM `multiselect_metadata_detail` AS m ' +
+                                            'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
+                                            'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
+                                            'LEFT JOIN catalogue_master AS cm ON cm.cm_id = m.cmd_entity_type WHERE s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
                                                 if (err) {
                                                     connection_ikon_cms.release();
+                                                    res.status(500).json(err.message);
+                                                    console.log(err);
                                                 }
                                                 else {
                                                     /**
                                                      * get channel distribution list
                                                      */
-                                                    var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Channel Distribution")', function (err, DistributionChannel) {
+                                                    var query = connection_ikon_cms.query('select cd.* FROM catalogue_detail as cd ' +
+                                                        'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
+                                                        'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
+                                                        'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
+                                                        'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.StoreId], function (err, DistributionChannel) {
                                                         if (err) {
                                                             connection_ikon_cms.release();
+                                                            res.status(500).json(err.message);
+                                                            console.log(err)
                                                         }
                                                         else {
                                                             /**
@@ -64,18 +79,22 @@ exports.getalacartadata = function (req, res, next) {
                                                                     if (err) {
                                                                         connection_ikon_bg.release();
                                                                         connection_ikon_cms.release();
+                                                                        res.status(500).json(err.message);
+                                                                        console.log(err)
                                                                     }
                                                                     else {
                                                                         /**
                                                                          * get operator details
                                                                          */
-                                                                        var query = connection_ikon_bg.query('SELECT dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
+                                                                        var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
                                                                             'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
                                                                             'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
                                                                             'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = alacart.bta_ef_id AND dis.dcl_partner_id = alacart.bta_partner_id', function (err, OperatorDetails) {
                                                                             if (err) {
                                                                                 connection_ikon_bg.release();
                                                                                 connection_ikon_cms.release();
+                                                                                res.status(500).json(err.message);
+                                                                                console.log(err)
                                                                             }
                                                                             else {
                                                                                 /**
@@ -151,8 +170,7 @@ exports.addeditalacart = function (req, res, next) {
                             res.status(500).json(err.message);
                         }
                         else {
-                            var query = connection_ikon_plan.query('select cd.* from catalogue_detail as cd join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("content type")', function (err, ContentTypes) {
-
+                            var query = connection_ikon_plan.query('select cm.* from catalogue_master as cm WHERE cm.cm_name in("Channel Distribution")', function (err, DistributionChannel) {
                                 if (result.length > 0) {
                                     if (result[0].ap_id == req.body.alacartplanid) {
                                         if (req.body.planid) {
@@ -176,9 +194,9 @@ exports.addeditalacart = function (req, res, next) {
                                 }
 
                                 var count = req.body.OperatorDetails.length;
-
                                 function addEditOperators(cnt) {
                                     var j = cnt;
+
                                     var query = connection_ikon_plan.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
                                         if (err) {
                                             connection_ikon_plan.release();
@@ -186,7 +204,15 @@ exports.addeditalacart = function (req, res, next) {
                                         }
                                         else {
                                             if (disclaimer.length > 0) {
-                                                var query = connection_ikon_plan.query('UPDATE icn_disclaimer SET dcl_disclaimer = ?, dcl_modified_on = ?, dcl_modified_by = ? where dcl_id = ?', [req.body.OperatorDetails[j].dcl_disclaimer, new Date(), req.session.UserName, req.body.OperatorDetails[j].dcl_id], function (err, result) {
+                                                var disclaimer = {
+                                                    dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
+                                                    dcl_partner_id: req.body.OperatorDetails[j].partner_id,
+                                                    dcl_st_id: req.session.StoreId,
+                                                    dcl_modified_on: new Date(),
+                                                    dcl_modified_by:  req.session.UserName,
+                                                }
+                                                console.log(req.body.OperatorDetails[j].dcl_id)
+                                                var query = connection_ikon_plan.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimer,req.body.OperatorDetails[j].dcl_id], function (err, result) {
                                                     if (err) {
                                                         connection_ikon_plan.release();
                                                         res.status(500).json(err.message);
@@ -215,7 +241,8 @@ exports.addeditalacart = function (req, res, next) {
                                                             dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                                             dcl_partner_id: req.body.OperatorDetails[j].partner_id,
                                                             dcl_st_id: req.session.StoreId,
-                                                            dcl_created_by: req.session.UserName
+                                                            dcl_created_by: req.session.UserName,
+                                                            dcl_created_on: new Date(),
                                                         }
                                                         var query = connection_ikon_plan.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
                                                             if (err) {
@@ -237,20 +264,20 @@ exports.addeditalacart = function (req, res, next) {
                                 }
 
                                 function EditALacart() {
-                                    var query = connection_ikon_plan.query('select * from icn_alacart_plan where ap_id = ?', [req.body.planid], function (err, results) {
+                                    var query = connection_ikon_plan.query('select * from icn_alacart_plan where ap_id = ?', [req.body.planid], function (err, alacart) {
                                         if (err) {
                                             connection_ikon_plan.release();
                                             res.status(500).json(err.message);
                                         }
                                         else {
-                                            if (results.length > 0) {
+                                            if (alacart.length > 0) {
                                                 if (req.body.OperatorDetails.length > 0) {
                                                     var operator = 0;
                                                     addEditOperators(operator);
                                                 }
                                                 var distributionChannellength = req.body.DistributionChannels.length;
                                                 if (distributionChannellength > 0) {
-                                                    var query = connection_ikon_plan.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [results[0].ap_channel_front], function (err, result) {
+                                                    var query = connection_ikon_plan.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [alacart[0].ap_channel_front], function (err, result) {
                                                         if (err) {
                                                             connection_ikon_plan.release();
                                                             res.status(500).json(err.message);
@@ -271,11 +298,11 @@ exports.addeditalacart = function (req, res, next) {
                                                                         }
                                                                         var cmd_data = {
                                                                             cmd_id: cmdID,
-                                                                            cmd_group_id: results[0].ap_channel_front,
-                                                                            cmd_entity_type: ContentTypes.cm_id,
+                                                                            cmd_group_id: alacart[0].ap_channel_front,
+                                                                            cmd_entity_type: DistributionChannel[0].cm_id,
                                                                             cmd_entity_detail: req.body.DistributionChannels[i]
                                                                         };
-                                                                        console.log(cmd_data)
+                                                                        //console.log(cmd_data)
                                                                         var query = connection_ikon_plan.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
                                                                             if (err) {
                                                                                 connection_ikon_plan.end();
@@ -291,6 +318,7 @@ exports.addeditalacart = function (req, res, next) {
                                                                                         ap_jed_id: req.body.JetId,
                                                                                         ap_cty_id: req.body.CountryId,
                                                                                         ap_content_type: req.body.ContentType,
+                                                                                        ap_delivery_type: req.body.DeliveryType,
                                                                                         ap_no_of_stream: req.body.NoOfStream,
                                                                                         ap_stream_duration: req.body.StreamDuration,
                                                                                         ap_stream_dur_type: req.body.StreamDurationType,
@@ -374,10 +402,10 @@ exports.addeditalacart = function (req, res, next) {
                                                             var cmd_data = {
                                                                 cmd_id: cmdID,
                                                                 cmd_group_id: groupID,
-                                                                cmd_entity_type:ContentTypes.cm_id,
+                                                                cmd_entity_type:DistributionChannel[0].cm_id,
                                                                 cmd_entity_detail: req.body.DistributionChannels[i]
                                                             };
-                                                            console.log(cmd_data)
+                                                            //console.log(cmd_data)
                                                             var query = connection_ikon_plan.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
                                                                 if (err) {
                                                                     connection_ikon_plan.end();

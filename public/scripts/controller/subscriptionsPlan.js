@@ -15,12 +15,12 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.errorvisible = false;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
-
+    $scope.distributionChannelArray = [];
     $scope.contentType = 'Subscription';
 
     // get subscription  & jet events 
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
-        $scope.distributionChannelList = GetDistributionChannel(angular.copy(SubscriptionData.DistributionChannel));
+        $scope.distributionChannelList = angular.copy(SubscriptionData.DistributionChannel);
         $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
         $scope.AllOperatorDetails = angular.copy(SubscriptionData.OpeartorDetail);
         $scope.PlanData = angular.copy(SubscriptionData.PlanData);
@@ -34,20 +34,23 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             $scope.numContentOffer = value.ssp_tnb_free_cnt_limit;
             $scope.limitSingleDay = value.ssp_single_day_cnt_limit;
             $scope.fullSubDuration = value.ssp_full_sub_cnt_limit;
+            Alacarts.selectedDistributionChannel.forEach(function(data){
+                $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
+                $scope.distributionChannelArray[data.cmd_entity_detail] = true;
+            })
             $scope.displayOperators();
         });
     });
 
-    $scope.selectedDistributionChannel = [];
-    $scope.toggleDistributionChannelSelection = function toggleSelection(distributionChannel) {
-        var idx = $scope.selectedDistributionChannel.indexOf(distributionChannel);
-        if (idx > -1) {
+    $scope.stateChanged = function (id) {
+        if($scope.distributionChannelArray[id] === true){
+            $scope.selectedDistributionChannel.push(id);
+        }
+        if($scope.distributionChannelArray[id] === false){
+            var idx = $scope.selectedDistributionChannel.indexOf($scope.distributionChannelArray[id]);
             $scope.selectedDistributionChannel.splice(idx, 1);
-        }else {
-            $scope.selectedDistributionChannel.push(distributionChannel);
         }
     };
-
     // operator display on change of jet event id
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
@@ -140,7 +143,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         {cd_id:2,cd_name:'Single FS @ 6 INR'},
         {cd_id:3,cd_name:'Single FS @ 8 INR'}
     ];
-    $scope.geoLocationChange = function(){
+    /*$scope.geoLocationChange = function(){
         var currency = '';
         $scope.GeoLoction.forEach(function (value) {
             if ($scope.SelectedGeoLocation == value.cd_id) {
@@ -148,7 +151,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             }
         });
         $scope.selectedCurrency = currency;
-    }
+    }*/
     $scope.durationOptions = [
         { cd_id: 'Min', cd_name: 'Min' },
         { cd_id: 'Hours', cd_name: 'Hours' },

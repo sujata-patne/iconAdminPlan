@@ -20,7 +20,8 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     ngProgress.height('3px');
     $scope.selectedDistributionChannel = [];
     $scope.distributionChannelArray = [];
-    $scope.streamingLimitType = 1;
+    //$scope.streamingLimitType = 1;
+
     // get alacart data & jetpay id
     AlaCarts.GetAlacartData({ planid: $stateParams.id }, function (Alacarts) {
         $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
@@ -35,7 +36,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.distributionChannelArray[data.cmd_entity_detail] = true;
         })
         $scope.PlanData.forEach(function (value) {
-            console.log(value)
             $scope.PlanId = value.ap_id;
             $scope.PlanName = value.ap_plan_name;
             $scope.Caption = value.ap_caption;
@@ -126,6 +126,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 $scope.OperatorDetails.push(value);
             }
         })
+        console.log($scope.OperatorDetails)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -165,7 +166,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             StreamSetting: $scope.streamingLimitType
         };
 
-        //console.log(Alacart)
         if (isValid) {
             ngProgress.start();
             AlaCarts.AddEditAlacart(Alacart, function (data) {

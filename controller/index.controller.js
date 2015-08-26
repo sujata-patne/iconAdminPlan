@@ -18,16 +18,21 @@ exports.pages = function (req, res, next) {
         { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-          { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+        { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
     ];
 
     if (req.session) {
         if (req.session.UserName) {
-            role = req.session.UserRole;
-            var pageData = getPages(role);
-            res.render('index', { title: 'Express', username: req.session.UserName, Pages: pageData, userrole: req.session.UserRole });
+            if (req.session.StoreId) {
+                role = req.session.UserRole;
+                var pageData = getPages(role);
+                res.render('index', { title: 'Express', username: req.session.UserName, Pages: pageData, userrole: req.session.UserRole });
+            }
+            else {
+                res.redirect('/accountlogin');
+            }
         }
         else {
             res.redirect('/accountlogin');
@@ -48,7 +53,12 @@ exports.pages = function (req, res, next) {
 exports.login = function (req, res, next) {
     if (req.session) {
         if (req.session.UserName) {
-            res.redirect("/plan-list");
+            if (req.session.StoreId) {
+                res.redirect("/plan-list");
+            }
+            else {
+                res.redirect("/plan-list");
+            }
         }
         else {
             res.render('account-login', { error: '' });
@@ -69,10 +79,14 @@ exports.logout = function (req, res, next) {
     try {
         if (req.session) {
             if (req.session.UserName) {
-                req.session = null;
-                res.redirect('/accountlogin');
-            }
-            else {
+                if (req.session.StoreId) {
+                    req.session = null;
+                    res.redirect('/accountlogin');
+                }
+                else {
+                    res.redirect('/accountlogin');
+                }
+            }else{
                 res.redirect('/accountlogin');
             }
         }
@@ -94,7 +108,7 @@ exports.logout = function (req, res, next) {
 exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
-            var query = connection_central.query('SELECT * FROM icn_login_detail where BINARY ld_user_id= ? and BINARY ld_user_pwd = ? ', [req.body.username, req.body.password], function (err, row, fields) {
+            var query = connection_central.query('SELECT * FROM icn_login_detail AS user JOIN icn_store_user AS store_user ON user.ld_id = store_user.su_ld_id where BINARY ld_user_id= ? and BINARY ld_user_pwd = ? ', [req.body.username, req.body.password], function (err, row, fields) {
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection.' });
                 } else {
@@ -105,7 +119,7 @@ exports.authenticate = function (req, res, next) {
                             session.UserRole = row[0].ld_role;
                             session.UserName = req.body.username;
                             session.Password = req.body.password;
-                            session.StoreId = 1;//coming from new store's user table.
+                            session.StoreId = row[0].su_st_id;//coming from new store's user table.
                             connection_central.release();
                             res.redirect('/');
                         }
