@@ -10,5 +10,5 @@ module.exports = function (app) {
     app.route('/deleteplan')
      .post(plan.deleteplan)
     app.route('/exportplan')
-    .post(plan.exportplan)
+    .post(plan.exportplan);
 }

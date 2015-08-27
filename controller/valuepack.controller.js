@@ -21,6 +21,7 @@ exports.getvaluepack = function (req, res, next) {
                             console.log(err)
                         }
                         else {
+                            /* Get Operator Details */
                             var query = connection_ikon_plan.query('SELECT dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
                                 'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
                                 'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
@@ -41,6 +42,7 @@ exports.getvaluepack = function (req, res, next) {
                                             console.log(err)
                                         }
                                         else {
+                                            /* get countries based on store */
                                             var query = connection_ikon_plan.query('SELECT DISTINCT(`cmd_entity_detail`) as geoID, UCASE(`cd_name`) as geoName FROM `multiselect_metadata_detail` AS m ' +
                                                 'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                                                 'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +

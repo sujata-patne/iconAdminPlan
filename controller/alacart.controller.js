@@ -21,7 +21,7 @@ exports.getalacartadata = function (req, res, next) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
-                            console.log(err)
+                            console.log(err);
                         }
                         else {
                             /**
@@ -39,7 +39,7 @@ exports.getalacartadata = function (req, res, next) {
                                 }
                                 else {
                                     /**
-                                     * Get content type list
+                                     * Get Delivery type list
                                      */
                                     var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Delivery Type")', function (err, DeliveryTypes) {
                                         if (err) {
@@ -122,6 +122,9 @@ exports.getalacartadata = function (req, res, next) {
                                                                                                 res.status(500).json(err.message);
                                                                                             }
                                                                                             else {
+                                                                                                connection_ikon_bg.release();
+                                                                                                connection_ikon_cms.release();
+                                                                                                
                                                                                                 res.send({
                                                                                                     ContentTypes: ContentTypes,
                                                                                                     GeoLocations: GeoLocations,
@@ -213,7 +216,6 @@ exports.addeditalacart = function (req, res, next) {
                                 var count = req.body.OperatorDetails.length;
                                 function addEditOperators(cnt) {
                                     var j = cnt;
-
                                     var query = connection_ikon_plan.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
                                         if (err) {
                                             connection_ikon_plan.release();
