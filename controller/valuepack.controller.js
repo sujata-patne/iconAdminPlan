@@ -22,10 +22,18 @@ exports.getvaluepack = function (req, res, next) {
                         }
                         else {
                             /* Get Operator Details */
-                            var query = connection_ikon_plan.query('SELECT dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
+                            var query = connection_ikon_plan.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id ' +
+                                'FROM billing_gateway.billing_ef_bgw_event as bge JOIN billing_gateway.billing_event_family AS bef ON bef.ef_id = bge.ebe_ef_id ' +
+                                'JOIN billing_gateway.billing_telco_master_event_index AS master ON bef.ef_tmi_id = master.tmi_id ' +
+                                'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
+                                'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
+                                'GROUP BY master.tmi_parent_id ', function (err, OperatorDetails) {
+                                console.log(OperatorDetails)
+                            /*var query = connection_ikon_plan.query('SELECT dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
                                 'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
                                 'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
                                 'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = alacart.bta_ef_id AND dis.dcl_partner_id = alacart.bta_partner_id', function (err, OperatorDetails) {
+                                */
                                 if (err) {
                                     connection_ikon_plan.release();
                                     res.status(500).json(err.message);
@@ -54,8 +62,11 @@ exports.getvaluepack = function (req, res, next) {
                                                 }
                                                 else {
                                                     mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                                                        var query = connection_ikon_bg.query('select * from billing_ef_bgw_event where ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
-                                                            //var query = connection_ikon_plan.query('select * from jetpay_event_detail where jed_is_valid = 1 and jed_content_type is null', function (err, JetEvents) {
+                                                        var query = connection_ikon_bg.query('select bge.* FROM billing_telco_master_event_index AS master ' +
+                                                            'JOIN billing_event_family AS bef ON bef.ef_tmi_id = master.tmi_id ' +
+                                                            'JOIN billing_ef_bgw_event AS bge ON bef.ef_id = bge.ebe_ef_id ' +
+                                                            'WHERE ebe_is_valid = 1 and ebe_ai_bgw_id is not null ' +
+                                                            'GROUP BY master.tmi_parent_id', function (err, JetEvents) {
                                                             if (err) {
                                                                 connection_ikon_plan.release();
                                                                 connection_ikon_bg.release();

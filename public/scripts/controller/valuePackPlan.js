@@ -58,7 +58,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.bta_ef_id) {
+            if ($scope.SelectedEventId == value.ebe_ef_id) {
                 $scope.OperatorDetails.push(value);
             }
         })

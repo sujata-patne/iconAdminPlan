@@ -119,6 +119,7 @@ exports.authenticate = function (req, res, next) {
                             session.UserRole = row[0].ld_role;
                             session.UserName = req.body.username;
                             session.Password = req.body.password;
+                            session.Email = row[0].ld_email_id;
                             session.StoreId = row[0].su_st_id;//coming from new store's user table.
                             connection_central.release();
                             res.redirect('/');
@@ -196,7 +197,7 @@ exports.forgotPassword = function (req, res, next) {
                             }
                         });
                         var mailOptions = {
-                            to: 'sujata.patne@jetsynthesys.com',
+                            to: session.Email,//'sujata.patne@jetsynthesys.com',
                             subject: 'Forgot Password',
                             html: "<p>Hi, " + row[0].ld_user_id + " <br />This is your password: " + row[0].ld_user_pwd + "</p>"
                         }
@@ -254,9 +255,32 @@ exports.changePassword = function (req, res) {
                                 res.status(500).json(err.message);
                             }
                             else {
-                                connection_central.release();
                                 session.Password = req.body.newpassword;
-                                res.send({ success: true, message: 'Password updated successfully.' });
+                                var smtpTransport = nodemailer.createTransport({
+                                    service: "Gmail",
+                                    auth: {
+                                        user: "jetsynthesis@gmail.com",
+                                        pass: "j3tsynthes1s"
+                                    }
+                                });
+                                var mailOptions = {
+                                    to: session.Email,
+                                    subject: 'Change Password',
+                                    html: "<p>Hi, " + session.UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
+                                }
+                                smtpTransport.sendMail(mailOptions, function (error, response) {
+                                    if (error) {
+                                        connection_central.release();
+                                        console.log(error);
+                                        res.end("error");
+                                    } else {
+                                        connection_central.release();
+                                        res.send({ success: true, message: 'Password updated successfully. Please check your mail.' });
+
+                                        //res.render('changepassword', { success: true, message: 'Password updated successfully. Please check your mail.' });
+                                        //res.end("sent");
+                                    }
+                                });
                             }
                         });
                     }
