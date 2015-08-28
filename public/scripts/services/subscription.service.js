@@ -16,6 +16,11 @@ myApp.service('Subscriptions', ['$http', function ($http) {
         });
     }
 
+    service.getContentTypeData = function (success) {
+        $http.get(service.baseRestUrl + '/contentTypeData').success(function (items) {
+            success(items);
+        });
+    }
 
     return service;
 }]);

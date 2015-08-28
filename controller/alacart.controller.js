@@ -89,7 +89,9 @@ exports.getalacartadata = function (req, res, next) {
                                                                      * connect to Billing Gateway DB
                                                                      */
                                                                     mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                                                                        var query = connection_ikon_bg.query('select * from billing_ef_bgw_event where ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
+                                                                        var query = connection_ikon_bg.query('select bge.* FROM billing_ef_bgw_event AS bge ' +
+                                                                        'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = bge.ebe_ef_id ' +
+                                                                        'WHERE ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
                                                                             if (err) {
                                                                                 connection_ikon_bg.release();
                                                                                 connection_ikon_cms.release();

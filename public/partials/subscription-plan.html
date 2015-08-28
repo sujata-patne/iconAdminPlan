@@ -61,7 +61,6 @@
                                 </span>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
                             <div class="col-md-9">
@@ -90,7 +89,7 @@
                             <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
                                 <td class="col-md-2 col-xs-2">{{$index+1}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.partner_name}}</td>
-                                <td class="col-md-2 col-xs-2">{{operators.bta_amt}}</td>
+                                <td class="col-md-2 col-xs-2">{{operators.tmi_amt}}</td>
                                 <td class="col-md-6 col-xs-6">
                                     <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.dcl_disclaimer">
                                 </td>
@@ -294,80 +293,76 @@
                                 </div>
                                 <div class="row" >
                                     <div class="col-md-2">
-                                        <div class="row"><div class="form-group col-md-12">
+                                        <div class="row" ng-show="(ContentTypes|filter:'Wallpaper':true).length > 0"><div class="form-group col-md-12">
                                             <label for="wallpaper" class="col-md-12 control-label" style="margin: 1px;">Wallpapers</label>
                                         </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <label for="animation" class="col-md-12 control-label" style="margin: 1px;">Animation</label>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <label for="ringTone" class="col-md-12 control-label" style="margin: 1px;">Ring Tone</label>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <label for="textArtical" class="col-md-12 control-label" style="margin: 1px;">Text/Artical</label>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <label for="gameApps" class="col-md-12 control-label" style="margin: 1px;">Games/App</label>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
+                                        <div class="row" ng-show="(ContentTypes|filter:'Video':true).length > 0"><div class="form-group col-md-12">
                                             <label for="video" class="col-md-12 control-label" style="margin: 1px;">Video</label>
                                         </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
+                                        <div class="row" ng-show="(ContentTypes|filter:'Audio':true).length > 0"><div class="form-group col-md-12">
                                             <label for="fullSong" class="col-md-12 control-label" style="margin: 1px;">Full Song</label>
                                         </div></div>
+                                        <div class="row"  ng-show="(ContentTypes|filter:'Animation':true).length > 0"><div class="form-group col-md-12">
+                                            <label for="animation" class="col-md-12 control-label" style="margin: 1px;">Animation</label>
+                                        </div></div>
+                                        <div class="row"  ng-show="(ContentTypes|filter:'Ringtone':true).length > 0"><div class="form-group col-md-12">
+                                            <label for="ringTone" class="col-md-12 control-label" style="margin: 1px;">Ring Tone</label>
+                                        </div></div>
+                                        <div class="row" ng-show="(ContentTypes|filter:'Texts':true).length > 0"><div class="form-group col-md-12">
+                                            <label for="textArtical" class="col-md-12 control-label" style="margin: 1px;">Text/Artical</label>
+                                        </div></div>
+                                        <div class="row" ng-show="(ContentTypes|filter:'Games & Apps':true).length > 0"><div class="form-group col-md-12">
+                                            <label for="gameApps" class="col-md-12 control-label" style="margin: 1px;">Games/App</label>
+                                        </div></div>
+
                                     </div>
                                     <div class="col-md-5">
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in WallpaperPlan" class="form-control" name="subscription_plan_Wallpaper" data-ng-model="subscription_plan_Wallpaper"  >
+                                        <div class="row" ng-show="(ContentTypes|filter:'Wallpaper':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in WallpaperPlan" class="form-control" name="subscription_plan_Wallpaper" data-ng-model="subscription_plan_Wallpaper"  >
                                                 <option value="">--Select One Plan for Wallpaper or it's Free--</option>
                                             </select>
                                         </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in AnimationPlan" class="form-control" name="subscription_plan_Animation" data-ng-model="subscription_plan_Animation" >
-                                                <option value="">--Select One Plan for Animation or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in RingTonePlan" class="form-control" name="subscription_plan_RingTone" data-ng-model="subscription_plan_RingTone" >
-                                                <option value="">--Select One Plan for Ring Tone or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in TextArticalPlan" class="form-control" name="subscription_plan_TextArtical" data-ng-model="subscription_plan_TextArtical" >
-                                                <option value="">--Select One Plan for Text / Artical or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in GameAppPlan" class="form-control" name="subscription_plan_GamesApps" data-ng-model="subscription_plan_GamesApps"  >
-                                                <option value="">--N.A.--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in VideoPlan" class="form-control" name="subscription_plan_Video" data-ng-model="subscription_plan_Video" >
+                                        <div class="row" ng-show="(ContentTypes|filter:'Video':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in VideoPlan" class="form-control" name="subscription_plan_Video" data-ng-model="subscription_plan_Video" >
                                                 <option value="">--Select One Plan for Video or it's Free--</option>
                                             </select>
                                         </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in SongsPlan" class="form-control" name="subscription_plan_FullSong" data-ng-model="subscription_plan_FullSong" >
+                                        <div class="row"  ng-show="(ContentTypes|filter:'Audio':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in SongsPlan" class="form-control" name="subscription_plan_FullSong" data-ng-model="subscription_plan_FullSong" >
                                                 <option value="">--Select One Plan for Full song or it's Free--</option>
                                             </select>
                                         </div></div>
+                                        <div class="row" ng-show="(ContentTypes|filter:'Animation':true).length > 0" ><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in AnimationPlan" class="form-control" name="subscription_plan_Animation" data-ng-model="subscription_plan_Animation" >
+                                                <option value="">--Select One Plan for Animation or it's Free--</option>
+                                            </select>
+                                        </div></div>
+                                        <div class="row" ng-show="(ContentTypes|filter:'Ringtone':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in RingTonePlan" class="form-control" name="subscription_plan_RingTone" data-ng-model="subscription_plan_RingTone" >
+                                                <option value="">--Select One Plan for Ring Tone or it's Free--</option>
+                                            </select>
+                                        </div></div>
+                                        <div class="row" ng-show="(ContentTypes|filter:'Texts':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in TextArticalPlan" class="form-control" name="subscription_plan_TextArtical" data-ng-model="subscription_plan_TextArtical" >
+                                                <option value="">--Select One Plan for Text / Artical or it's Free--</option>
+                                            </select>
+                                        </div></div>
+                                        <div class="row" ng-show="(ContentTypes|filter:'Games & Apps':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in GameAppPlan" class="form-control" name="subscription_plan_GamesApps" data-ng-model="subscription_plan_GamesApps"  >
+                                                <option value="">--N.A.--</option>
+                                            </select>
+                                        </div></div>
+
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="row"><div class="form-group col-md-12">&nbsp;</div></div>
-                                        <div class="row"><div class="form-group col-md-12">&nbsp;</div></div>
-                                        <div class="row"><div class="form-group col-md-12">&nbsp;</div></div>
-                                        <div class="row"><div class="form-group col-md-12">&nbsp;</div></div>
-                                        <div class="row"><div class="form-group col-md-12">&nbsp;</div></div>
-                                        <div class="row"><div class="form-group col-md-12">&nbsp;</div></div>
-                                        <div class="row"><div class="col-md-12">&nbsp;</div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in GeoLoction" class="form-control" name="subscription_plan_stream_video" data-ng-model="subscription_plan_stream_video" >
+                                        <div class="row" ng-show="(ContentTypes|filter:'Wallpaper':true).length > 0"><div class="form-group col-md-12">&nbsp;</div></div>
+                                        <div class="row" ng-show="(ContentTypes|filter:'Video':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in VideoStreaming" class="form-control" name="subscription_plan_stream_video" data-ng-model="subscription_plan_stream_video" >
                                                 <option value="">--Select One Plan for Video or it's Free --</option>
                                             </select>
                                         </div></div>
-                                        <div class="row"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.cd_id as item.cd_name for item in GeoLoction" class="form-control" name="subscription_plan_stream_songs" data-ng-model="subscription_plan_stream_songs" >
+                                        <div class="row" ng-show="(ContentTypes|filter:'Audio':true).length > 0"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in AudioStreaming" class="form-control" name="subscription_plan_stream_songs" data-ng-model="subscription_plan_stream_songs" >
                                                 <option value="">--Select One Plan for Full song or it's Free --</option>
                                             </select>
                                         </div></div>

@@ -34,6 +34,7 @@ exports.getsubscriptions = function (req, res, next) {
                                     console.log(err)
                                 }
                                 else {
+
                                     var query = connection_ikon_plan.query('select cd.* FROM catalogue_detail as cd ' +
                                         'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
                                         'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
@@ -52,7 +53,7 @@ exports.getsubscriptions = function (req, res, next) {
                                                 'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                                                 'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
                                                 'LEFT JOIN catalogue_master AS cm ON cm.cm_id = m.cmd_entity_type WHERE s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
-                                                console.log(GeoLocations)
+                                                //console.log(GeoLocations)
                                                 if (err) {
                                                     connection_ikon_plan.release();
                                                     res.status(500).json(err.message);
@@ -69,7 +70,12 @@ exports.getsubscriptions = function (req, res, next) {
                                                             console.log(err)
                                                         } else {
                                                             mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                                                                var query = connection_ikon_bg.query('select * from billing_ef_bgw_event where ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
+                                                                //var query = connection_ikon_bg.query('select * from billing_ef_bgw_event where ebe_is_valid = 1 and ebe_ai_bgw_id is not null', function (err, JetEvents) {
+                                                                var query = connection_ikon_bg.query('select bge.* FROM billing_telco_master_event_index AS master ' +
+                                                                    'JOIN billing_event_family AS bef ON bef.ef_tmi_id = master.tmi_id ' +
+                                                                    'JOIN billing_ef_bgw_event AS bge ON bef.ef_id = bge.ebe_ef_id ' +
+                                                                    'WHERE ebe_is_valid = 1 and ebe_ai_bgw_id is not null ' +
+                                                                    'GROUP BY master.tmi_parent_id', function (err, JetEvents) {
                                                                     if (err) {
                                                                         connection_ikon_bg.release();
                                                                         connection_ikon_plan.release();
@@ -77,10 +83,12 @@ exports.getsubscriptions = function (req, res, next) {
                                                                         console.log(err)
                                                                     }
                                                                     else {
-                                                                        var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
-                                                                            'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
-                                                                            'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
-                                                                            'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = alacart.bta_ef_id AND dis.dcl_partner_id = alacart.bta_partner_id', function (err, OpeartorDetail) {
+                                                                        var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id ' +
+                                                                            'FROM billing_gateway.billing_ef_bgw_event as bge JOIN billing_gateway.billing_event_family AS bef ON bef.ef_id = bge.ebe_ef_id ' +
+                                                                            'JOIN billing_gateway.billing_telco_master_event_index AS master ON bef.ef_tmi_id = master.tmi_id ' +
+                                                                            'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
+                                                                            'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
+                                                                            'GROUP BY master.tmi_parent_id ', function (err, OpeartorDetail) {
                                                                             if (err) {
                                                                                 connection_ikon_plan.release();
                                                                                 connection_ikon_bg.release();
@@ -89,6 +97,7 @@ exports.getsubscriptions = function (req, res, next) {
                                                                             else {
                                                                                 connection_ikon_plan.release();
                                                                                 connection_ikon_bg.release();
+
                                                                                 res.send({
                                                                                     JetEvents: JetEvents,
                                                                                     DistributionChannel: DistributionChannel,
@@ -97,7 +106,8 @@ exports.getsubscriptions = function (req, res, next) {
                                                                                     GeoLocations: GeoLocations,
                                                                                     DurationOptions: DurationOptions,
                                                                                     RoleUser: req.session.UserRole,
-                                                                                    PlanData: subplan
+                                                                                    PlanData: subplan,
+                                                                                    //ContentTypeData: ContentTypeData
                                                                                 });
                                                                             }
                                                                         });
@@ -130,6 +140,34 @@ exports.getsubscriptions = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
+
+/**
+ * get content Type wise alacart data
+ */
+exports.getAlacartContentType = function (req, res, next){
+
+    mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+        /**
+         * Get content type list
+         */
+            var query = connection_ikon_plan.query('SELECT cd.cd_name, plan.*, (SELECT cd_name FROM catalogue_detail WHERE cd_id = plan.ap_delivery_type) AS delivery_type_name ' +
+            'FROM icn_alacart_plan AS plan ' +
+            'join catalogue_detail as cd ON plan.ap_content_type = cd.cd_id ' +
+            'WHERE plan.ap_st_id = ? ', [req.session.StoreId], function (err, alacart) {
+            if (err) {
+                connection_ikon_plan.release();
+                res.status(500).json(err.message);
+                console.log(err)
+            } else {
+                connection_ikon_plan.release();
+                console.log(alacart)
+
+                res.send(alacart);
+            }
+        })
+    })
+}
+
 /**
  * @function addeditsubscriptions
  * @param req
@@ -237,6 +275,23 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             sp_tnb_free_cnt_limit: req.body.LimitTBOffer,
                                             sp_single_day_cnt_limit: req.body.LimitSingleday,
                                             sp_full_sub_cnt_limit: req.body.TotalDuration,
+
+                                            /*sp_full_sub_cnt_limit
+                                            sp_channel_front
+                                            sp_tnb_stream_cnt_limit
+                                            sp_single_day_steam_limit
+
+                                            sp_full_sub_stream_limit
+                                            sp_tnb_stream_duration
+                                            sp_tnb_stream_dur_type
+                                            sp_single_day_stream_dur
+                                            sp_single_day_stream_dur_type
+                                            sp_full_sub_stream_duration
+                                            sp_full_sub_stream_dur_type
+                                            sp_stream_setting
+                                            sp_stream_dur_setting
+                                            sp_cty_id*/
+
                                             sp_is_active: 1,
                                             sp_created_on: new Date(),
                                             sp_created_by: req.session.UserName,
@@ -253,7 +308,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                     var count = req.body.OperatorDetails.length;
                                                     var cnt = 0;
                                                     req.body.OperatorDetails.forEach(function (value) {
-                                                        console.log(value.opd_name, value.opd_id);
+                                                        //console.log(value.opd_name, value.opd_id);
                                                         var query = connection_ikon_plan.query('UPDATE operator_pricepoint_detail SET opd_name = ? where opd_id = ?', [value.opd_name, value.opd_id], function (err, result) {
                                                             if (err) {
                                                                 connection_ikon_plan.release();
