@@ -100,7 +100,7 @@ exports.blockunblockplan = function (req, res, next) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_plan) {
                     if (req.body.ContentType == "Subscription") {
-                        var query = connection_ikon_plan.query('UPDATE icn_sub_plan set ssp_is_active= ? where ssp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('UPDATE icn_sub_plan set sp_is_active= ? where sp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -112,7 +112,7 @@ exports.blockunblockplan = function (req, res, next) {
                         });
                     }
                     else if (req.body.ContentType == "Value Pack") {
-                        var query = connection_ikon_plan.query('UPDATE icn_valuepack_plan set svp_is_active= ? where svp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('UPDATE icn_valuepack_plan set vp_is_active= ? where vp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -136,7 +136,7 @@ exports.blockunblockplan = function (req, res, next) {
                         });
                     }
                     else {
-                        var query = connection_ikon_plan.query('UPDATE icn_alacart_plan set sap_is_active= ? where sap_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('UPDATE icn_alacart_plan set ap_is_active= ? where ap_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -175,7 +175,7 @@ exports.deleteplan = function (req, res, next) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_plan) {
                     if (req.body.ContentType == "Subscription") {
-                        var query = connection_ikon_plan.query('Delete From icn_sub_plan  where ssp_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('Delete From icn_sub_plan  where sp_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -187,7 +187,7 @@ exports.deleteplan = function (req, res, next) {
                         });
                     }
                     else if (req.body.ContentType == "Value Pack") {
-                        var query = connection_ikon_plan.query('Delete From icn_valuepack_plan where svp_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('Delete From icn_valuepack_plan where vp_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);
@@ -211,7 +211,7 @@ exports.deleteplan = function (req, res, next) {
                         });
                     }
                     else {
-                        var query = connection_ikon_plan.query('Delete From icn_alacart_plan where sap_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_plan.query('Delete From icn_alacart_plan where ap_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
                                 connection_ikon_plan.release();
                                 res.status(500).json(err.message);

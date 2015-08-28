@@ -49,12 +49,15 @@
                         <!--</div>-->
                         <!--</div>-->
                         <div class="form-group">
-                            <label for="geoLocation" class="col-md-3 control-label">Geo Location</label>
+                            <label for="geoLocation" class="col-md-3 control-label"><span class="asterisk">*</span> Geo Location </label>
                             <div class="col-md-5">
                                 <span class="ui-select">
                                     <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.geoID as item.geoName for item in GeoLocations" required>
                                         <option value="">-- Select Geo Location --</option>
                                     </select>
+                                </span>
+                                <span style="color: red" ng-show="valuePackForm.$submitted || valuePackForm.geoLocation.$touched">
+                                    <span ng-show="valuePackForm.geoLocation.$error.required">Please Select Geo Location.</span>
                                 </span>
                             </div>
                             <!--<label for="currency" class="col-md-2 control-label">Currency</label>-->
@@ -77,7 +80,7 @@
                         </div>
                         <div class="portlet">
                             <div class="portlet-header">
-                                <h3><i class="fa fa-tasks"></i>Download Settidata-ng</h3>
+                                <h3><i class="fa fa-tasks"></i>Download Setting</h3>
                             </div>
                             <!-- /.portlet-header -->
                             <div class="portlet-content">

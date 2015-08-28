@@ -2,6 +2,7 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
+var async = require("async");
 /**
  * @function getofferdata
  * @param req
@@ -11,13 +12,19 @@ var mysql = require('../config/db').pool;
  */
 
 
+
+
 exports.getofferdata = function (req, res, next) {
     try {
         var v_distibution_channels;
         if (req.session) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    var query = connection_ikon_cms.query("SELECT cd.* FROM catalogue_detail cd, catalogue_master cm WHERE cd.cd_cm_id = cm.cm_id AND cm_name = 'Channel Distribution'", function (err, DistributionChannel) {
+                    var query = connection_ikon_cms.query('select cd.* FROM catalogue_detail as cd ' +
+                                                          'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
+                                                          'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
+                                                          'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
+                                                          'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ',[req.session.StoreId],function (err, DistributionChannel) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
@@ -172,7 +179,7 @@ exports.addOffer = function(req,res,next){
                                                     } //err
                                                  });
                             }
-                       }
+                          }
                   });
            }); 
         }else{
@@ -200,6 +207,16 @@ exports.addOffer = function(req,res,next){
             var v_op_id = req.body.offerplanId;
             if (req.session != undefined && req.session.UserName != undefined) {
                     mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+                                      var query = connection_ikon_plan.query("SELECT op_id as id FROM `icn_offer_plan` WHERE lower(op_plan_name) = ? AND op_id != ?",[req.body.PlanName.toLowerCase(),v_op_id], function (err, result) {
+                                          if(err){
+                                              connection_ikon_plan.release();
+                                              res.status(500).json(err.message);
+                                          }else{
+                                            if(result.length > 0){
+                                              connection_ikon_plan.release();
+                                              res.send({"success" : false,"message" : "Another offer with the same name exists"}); 
+                                            }else{
+
                                         //To check whether id exists : 
                                          var query = connection_ikon_plan.query('select * from icn_offer_plan where op_id = ?', [v_op_id], function (err, result) {
                                             if (err) {
@@ -207,7 +224,7 @@ exports.addOffer = function(req,res,next){
                                                  res.status(500).json(err.message);
                                             }else{
                                                 if (result.length > 0) {
-                                                    v_group_id = result[0].op_channel_front;
+                                                   v_group_id = result[0].op_channel_front;
                                                    //Delete previous records from multiselect :                                                
                                                    var query = connection_ikon_plan.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [v_group_id], function (err, result) {
                                                    if(err){
@@ -279,6 +296,10 @@ exports.addOffer = function(req,res,next){
                                                 }//if
                                              }//else
                                          });
+                                            } 
+                                          }
+
+                                      });
                             }); //conn
                           }else{
                              res.redirect('/accountlogin');

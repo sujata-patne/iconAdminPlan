@@ -61,8 +61,8 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
                         DistributionChannels: $scope.final_selectedDistributionChannel
                   }
                  Offers.EditOffer(offer,function(data){
-                    $scope.success = data.message;
-                    $scope.successvisible = true;
+                    $scope.print_result(data);    
+
                  });
                 ngProgress.complete();
             }else{
@@ -76,18 +76,22 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
                         DistributionChannels: $scope.final_selectedDistributionChannel
                   }
                 Offers.AddOffer(offer,function(data){
-                    if(!data.success){
-                        $scope.error = data.message;
-                        $scope.errorvisible = true;
-                    }else{
-                        $scope.success = data.message;
-                        $scope.successvisible = true;
-                    }
+                   $scope.print_result(data);
                    
                  });
                  ngProgress.complete();
             }
         }
     };
+
+    $scope.print_result = function(data){
+         if(!data.success){
+                        $scope.error = data.message;
+                        $scope.errorvisible = true;
+         }else{
+                        $scope.success = data.message;
+                        $scope.successvisible = true;
+        }
+    }
 
 });
