@@ -2,6 +2,7 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
+var async = require('async');
 /**
  * @function getalacartadata
  * @param req
@@ -9,6 +10,7 @@ var mysql = require('../config/db').pool;
  * @param next
  * @description Get all a-la-cart data with contentType and JetEventIds, operator
  */
+
 exports.getalacartadata = function (req, res, next) {
     try {
         if (req.session) {
@@ -27,11 +29,18 @@ exports.getalacartadata = function (req, res, next) {
                             /**
                              * Get content type list
                              */
-                            var query = connection_ikon_cms.query('select cd.* FROM catalogue_detail as cd ' +
+                            /*var query = connection_ikon_cms.query('select cd.* FROM catalogue_detail as cd ' +
                                 'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
                                 'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
                                 'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_content_type ' +
-                                'WHERE cm.cm_name in ("content type") AND s.st_id = ? ', [req.session.StoreId], function (err, ContentTypes) {
+                                'WHERE cm.cm_name in ("Content Type") AND s.st_id = ? ', [req.session.StoreId], function (err, ContentTypes) {*/
+
+
+                            var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id from icn_store As st ' +
+                                'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
+                                'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
+                                'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
+                                'WHERE st.st_id = ? ', [req.session.StoreId],  function (err, ContentTypes) {
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
@@ -65,7 +74,21 @@ exports.getalacartadata = function (req, res, next) {
                                                         'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                                                         'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
                                                         'LEFT JOIN catalogue_master AS cm ON cm.cm_id = m.cmd_entity_type WHERE s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
-                                                        if (err) {
+
+                                                    /*var query = connection_ikon_cms.query('select ' +
+                                                    'CASE WHEN groupid is null THEN cd_name ELSE country_name  END AS cd_name, ' +
+                                                    'CASE WHEN groupid is null THEN cd_id ELSE countryid  END AS cd_name, groupid ' +
+                                                    'from catalogue_detail as cd inner join ' +
+                                                    'catalogue_master as cm on(cm.cm_id = cd.cd_cm_id) ' +
+                                                    'left outer join (select cm_id as groupid,cm_name as groupname from catalogue_master ) as master ' +
+                                                    'on (master.groupname = cd.cd_name) ' +
+                                                    'left outer join (select cd_id as countryid,cd_name as country_name,cd_cm_id as m_groupid from catalogue_detail) mastercnt ' +
+                                                    'ON master.groupid = mastercnt.m_groupid ' +
+                                                    'JOIN `multiselect_metadata_detail` AS m ON cd.cd_id = m.cmd_entity_detail ' +
+                                                    'JOIN icn_store AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
+                                                    'WHERE cm.cm_name in("icon_geo_location") ' +
+                                                    'AND s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {*/
+                                                    if (err) {
                                                             connection_ikon_cms.release();
                                                             res.status(500).json(err.message);
                                                             console.log(err);

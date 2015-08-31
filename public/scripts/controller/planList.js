@@ -17,11 +17,14 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     // get contenttype
     $scope.getContentName = function (id) {
         var type = '';
+        console.log(id)
+
         $scope.ContentTypes.forEach(function (data) {
             if (data.cd_id == id) {
                 type = data.cd_name;
             }
         });
+        console.log(type)
         return (type) ? type : '';
     }
 
@@ -141,6 +144,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     // get all plan 
     PlanList.GetPlanList(function (PlanList) {
         $scope.ContentTypes = angular.copy(PlanList.ContentTypes);
+        console.log( $scope.ContentTypes)
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Subscription", cd_id: "Subscription", cd_name: "Subscription" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Value Pack", cd_id: "Value Pack", cd_name: "Value Pack" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Offers", cd_id: "Offers", cd_name: "Offers" });

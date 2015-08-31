@@ -4,6 +4,33 @@
 
 var mysql = require('../config/db').pool;
 var nodemailer = require('nodemailer');
+
+
+function getDate(val) {
+    var d = new Date(val);
+    var dt = d.getDate();
+    var month = d.getMonth() + 1;
+    var year = d.getFullYear();
+    var selectdate = Pad("0", month, 2) + '/' + Pad("0", dt, 2) + '/' + year;
+    return selectdate;
+}
+
+function getTime(val) {
+    var d = new Date(val);
+    var minite = d.getMinutes();
+    var hour = d.getHours();
+    var second = d.getSeconds();
+    var selectdate = Pad("0", hour, 2) + ':' + Pad("0", minite, 2) + ':' + Pad("0", second, 2);
+    return selectdate;
+}
+function Pad(padString, value, length) {
+    var str = value.toString();
+    while (str.length < length)
+        str = padString + str;
+
+    return str;
+}
+
 /**
  * @function pages
  * @param req
@@ -28,7 +55,8 @@ exports.pages = function (req, res, next) {
             if (req.session.StoreId) {
                 role = req.session.UserRole;
                 var pageData = getPages(role);
-                res.render('index', { title: 'Express', username: req.session.UserName, Pages: pageData, userrole: req.session.UserRole });
+                //res.render('index', { title: 'Express', username: req.session.UserName, Pages: pageData, userrole: req.session.UserRole });
+                res.render('index', { title: 'Express', username: req.session.FullName, Pages: pageData, userrole: req.session.UserType, lastlogin: " " + getDate(req.session.lastlogin) + " " + getTime(req.session.lastlogin) });
             }
             else {
                 res.redirect('/accountlogin');
@@ -120,6 +148,9 @@ exports.authenticate = function (req, res, next) {
                             session.UserName = req.body.username;
                             session.Password = req.body.password;
                             session.Email = row[0].ld_email_id;
+                            session.FullName = row[0].ld_display_name;
+                            session.lastlogin = row[0].ld_last_login;
+                            session.UserType = row[0].ld_user_type;
                             session.StoreId = row[0].su_st_id;//coming from new store's user table.
                             connection_central.release();
                             res.redirect('/');

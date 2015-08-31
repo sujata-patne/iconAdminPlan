@@ -36,7 +36,7 @@
                             <label for="geoLocation" class="col-md-3 control-label"><span class="asterisk">*</span>Geo Location</label>
                             <div class="col-md-5">
                                 <span class="ui-select">
-                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.geoID as item.geoName for item in GeoLocations" data-ng-change="geoLocationChange()" required>
+                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.geoID as item.geoName for item in GeoLocations" required>
                                         <option value="">-- Select Geo Location --</option>
                                     </select>
                                 </span>
@@ -177,7 +177,7 @@
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.fullSubDuration.$touched">
                                                         <span ng-show="subscriptionForm.fullSubDuration.$error.required">Insert download limit for Full Subscription.</span>
                                                         <span ng-show="subscriptionForm.fullSubDuration.$error.pattern">Insert valid download limit for Full Subscription.</span>
-                                                        <span ng-show="fullSubDuration < limitSingleDay">Value must be greater than For Single Day limit.</span>
+                                                        <span ng-show="parseInt(fullSubDuration) < parseInt(limitSingleDay)">Value must be greater than For Single Day limit.</span>
                                                     </span>
                                                 </div>
                                             </div></div>
@@ -205,7 +205,7 @@
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.slc_full_sub_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.required">Insert content limit for Full Subscription.</span>
                                                         <span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.pattern">Insert valid content limit for Full Subscription.</span>
-                                                        <span ng-show="slc_full_sub_cnt_limit < slc_single_day_cnt_limit">Value must be greater than For Single Day limit.</span>
+                                                        <span ng-show="parseInt(slc_full_sub_cnt_limit) < parseInt(slc_single_day_cnt_limit)">Value must be greater than For Single Day limit.</span>
                                                     </span>
                                                 </div>
                                             </div>
@@ -251,7 +251,7 @@
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_full_sub_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.required">Insert duration limit for Full Subscription.</span>
                                                         <span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.pattern">Insert valid duration limit for Full Subscription.</span>
-                                                        <span ng-show="sld_full_sub_cnt_limit < sld_single_day_cnt_limit">Value must be greater than For Single Day limit.</span>
+                                                        <span ng-show="parseInt(sld_full_sub_cnt_limit) < parseInt(sld_single_day_cnt_limit)">Value must be greater than For Single Day limit.</span>
                                                     </span>
                                                 </div>
                                                 <div class="col-md-1 col-xs-1">&nbsp;</div>

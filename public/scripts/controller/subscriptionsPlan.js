@@ -16,36 +16,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
     $scope.distributionChannelArray = [];
-    $scope.getContentTypeData = Subscriptions.getContentTypeData(function (alacartData) {
-        $scope.WallpaperPlan = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Wallpaper" && alacart.delivery_type_name == "Download";
-        })
-        $scope.VideoPlan  = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Video" && alacart.delivery_type_name == "Download";
-        })
-        $scope.VideoStreaming = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Video" && alacart.delivery_type_name == "Streaming";
-        })
-        $scope.AudioPlan = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Audio";
-        })
-        $scope.AudioStreaming = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Audio" && alacart.delivery_type_name == "Streaming";
-        })
-        $scope.GameAppPlan  = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Games & Apps" && alacart.delivery_type_name == "Download";
-        })
-        $scope.TextsPlan = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Texts" && alacartDaalacartta.delivery_type_name == "Download";
-        })
-        $scope.AnimationPlan = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Animation" && alacart.delivery_type_name == "Download";
-        })
-        $scope.RingTonePlan = alacartData.filter(function (alacart){
-            return alacart.cd_name == "Ringtone" && alacart.delivery_type_name == "Download";
-        })
-    })
-
+    $scope.selectedDistributionChannel = [];
     // get subscription  & jet events 
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
 
@@ -56,27 +27,81 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.durationOptions = angular.copy(SubscriptionData.DurationOptions);
         $scope.GeoLocations = angular.copy(SubscriptionData.GeoLocations);
         $scope.ContentTypes = angular.copy(SubscriptionData.ContentTypes);
+        $scope.alacartData = angular.copy(SubscriptionData.ContentTypeData);
 
+        $scope.WallpaperPlan = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Wallpaper" && alacart.delivery_type_name == "Download";
+        })
+        $scope.VideoPlan  = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Video" && alacart.delivery_type_name == "Download";
+        })
+        $scope.VideoStreaming = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Video" && alacart.delivery_type_name == "Streaming";
+        })
+        $scope.AudioPlan = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Audio";
+        })
+        $scope.AudioStreaming = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Audio" && alacart.delivery_type_name == "Streaming";
+        })
+        $scope.GameAppPlan  = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Games & Apps" && alacart.delivery_type_name == "Download";
+        })
+        $scope.TextsPlan = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Texts" && alacartDaalacartta.delivery_type_name == "Download";
+        })
+        $scope.AnimationPlan = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Animation" && alacart.delivery_type_name == "Download";
+        })
+        $scope.RingTonePlan = $scope.alacartData.filter(function (alacart){
+            return alacart.cd_name == "Ringtone" && alacart.delivery_type_name == "Download";
+        })
+        SubscriptionData.selectedDistributionChannel.forEach(function(data){
+            $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
+            $scope.distributionChannelArray[data.cmd_entity_detail] = true;
+        })
+console.log($scope.distributionChannelArray)
+console.log($scope.selectedDistributionChannel)
         $scope.PlanData.forEach(function (value) {
             $scope.PlanId = value.sp_id;
             $scope.PlanName = value.sp_plan_name;
             $scope.Caption = value.sp_caption;
-            $scope.Description = value.ss_description;
+            $scope.Description = value.sp_description;
             $scope.SelectedEventId = value.sp_jed_id;
             $scope.offerForDays = value.sp_tnb_days;
+
             $scope.numContentOffer = value.sp_tnb_free_cnt_limit;
-            $scope.limitSingleDay = value.ss_single_day_cnt_limit;
+            $scope.limitSingleDay = value.sp_single_day_cnt_limit;
             $scope.fullSubDuration = value.sp_full_sub_cnt_limit;
-            SubscriptionData.selectedDistributionChannel.forEach(function(data){
-                $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
-                $scope.distributionChannelArray[data.cmd_entity_detail] = true;
-            })
+
+            $scope.slc_tnb_free_cnt_limit = value.sp_tnb_stream_cnt_limit;
+            $scope.slc_single_day_cnt_limit = value.sp_single_day_steam_limit;
+            $scope.slc_full_sub_cnt_limit = value.sp_full_sub_stream_limit;
+
+            $scope.sld_tnb_free_cnt_limit = value.sp_tnb_stream_duration;
+            $scope.sld_tnb_free_cnt_duration = value.sp_tnb_stream_dur_type;
+            $scope.sld_single_day_cnt_limit = value.sp_single_day_stream_dur;
+            $scope.sld_single_day_cnt_duration = value.sp_single_day_stream_dur_type;
+            $scope.sld_full_sub_cnt_limit = value.sp_full_sub_stream_duration;
+            $scope.sld_full_sub_cnt_duration = value.sp_full_sub_stream_dur_type;
+            $scope.streamingLimitType = value.sp_stream_setting;
+
+             $scope.subscription_plan_Wallpaper = value.sp_wallpaper_alcrt_id;
+             $scope.subscription_plan_Animation = value.sp_animation_alcrt_id;
+             $scope.subscription_plan_RingTone = value.sp_ringtone_alcrt_id;
+             $scope.subscription_plan_TextArtical = value.sp_text_alcrt_id;
+             $scope.subscription_plan_GamesApps = value.sp_game_alcrt_id;
+             $scope.subscription_plan_Video = value.sp_video_alcrt_id;
+             $scope.subscription_plan_FullSong = value.sp_fullsong_alcrt_id;
+             $scope.subscription_plan_stream_video = value.sp_video_alcrt_stream_id;
+             $scope.subscription_plan_stream_songs = value.sp_fullsong_alcrt_stream_id;
+
+            $scope.planDuration = value.sp_plan_duration;
+            $scope.planDurationOption = value.sp_plan_dur_type;
+            $scope.SelectedGeoLocation = value.sp_cty_id;
 
             $scope.displayOperators();
         });
-
-
-
     });
 
     $scope.stateChanged = function (id) {
@@ -109,11 +134,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.successvisible = false;
         $scope.errorvisible = false;
         if (isValid) {
-            $scope.distributionChannelList.forEach(function (val) {
-                if (val.isactive == true) {
-                    $scope.selectedDistributionChannel.push(val.cd_id);
-                }
-            });
+
             var subscription = {
                 planid: $stateParams.id,
                 subplanId: $scope.PlanId,
@@ -121,13 +142,39 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 Caption: $scope.Caption,
                 Description: $scope.Description,
                 JetId: $scope.SelectedEventId,
-                TryandBuyOffer: $scope.offerForDays,
-                LimitTBOffer: $scope.numContentOffer,
-                LimitSingleday: $scope.limitSingleDay,
-                TotalDuration: $scope.fullSubDuration,
+                offerForDays: $scope.offerForDays,
+                numContentOffer: $scope.numContentOffer,
+                limitSingleDay: $scope.limitSingleDay,
+                fullSubDuration: $scope.fullSubDuration,
+                slc_tnb_free_cnt_limit : $scope.slc_tnb_free_cnt_limit,
+                slc_single_day_cnt_limit : $scope.slc_single_day_cnt_limit,
+                slc_full_sub_cnt_limit : $scope.slc_full_sub_cnt_limit,
+
+                sld_tnb_free_cnt_limit : $scope.sld_tnb_free_cnt_limit,
+                sld_tnb_free_cnt_duration : $scope.sld_tnb_free_cnt_duration,
+                sld_single_day_cnt_limit : $scope.sld_single_day_cnt_limit,
+                sld_single_day_cnt_duration : $scope.sld_single_day_cnt_duration,
+                sld_full_sub_cnt_limit : $scope.sld_full_sub_cnt_limit,
+                sld_full_sub_cnt_duration : $scope.sld_full_sub_cnt_duration,
+                streamingLimitType : $scope.streamingLimitType,
                 OperatorDetails: $scope.OperatorDetails,
-                DistributionChannels: $scope.selectedDistributionChannel
+                DistributionChannelList: $scope.distributionChannelList,
+                DistributionChannels: $scope.selectedDistributionChannel,
+                geoLocationId : $scope.SelectedGeoLocation,
+
+                subscription_plan_Wallpaper: $scope.subscription_plan_Wallpaper,
+                subscription_plan_Animation: $scope.subscription_plan_Animation,
+                subscription_plan_RingTone: $scope.subscription_plan_RingTone,
+                subscription_plan_TextArtical: $scope.subscription_plan_TextArtical,
+                subscription_plan_GamesApps: $scope.subscription_plan_GamesApps,
+                subscription_plan_Video: $scope.subscription_plan_Video,
+                subscription_plan_FullSong: $scope.subscription_plan_FullSong,
+                subscription_plan_stream_video: $scope.subscription_plan_stream_video,
+                subscription_plan_stream_songs: $scope.subscription_plan_stream_songs,
+                planDuration: $scope.planDuration,
+                planDurationOption: $scope.planDurationOption
             }
+            console.log(subscription)
             ngProgress.start();
             Subscriptions.AddEditSubscription(subscription, function (data) {
                 if (data.success) {

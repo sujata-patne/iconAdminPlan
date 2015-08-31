@@ -15,7 +15,12 @@ exports.getplanlist = function (req, res, next) {
         if (req.session) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 2', function (err, ContentTypes) {
+                    var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id from icn_store As st ' +
+                        'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
+                        'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
+                        'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
+                        'WHERE st.st_id = ? ', [req.session.StoreId],  function (err, ContentTypes) {
+                    //var query = connection_ikon_cms.query('SELECT * FROM  catalogue_detail WHERE  cd_cm_id = 2', function (err, ContentTypes) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);

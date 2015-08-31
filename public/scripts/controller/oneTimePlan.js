@@ -23,6 +23,10 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     //$scope.streamingLimitType = 1;
 
     // get alacart data & jetpay id
+    /*AlaCarts.getData({ planid: $stateParams.id }, function (Alacarts) {
+console.log(Alacarts)
+    })*/
+
     AlaCarts.GetAlacartData({ planid: $stateParams.id }, function (Alacarts) {
         $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
@@ -51,7 +55,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.SelectedDurationType = value.ap_stream_dur_type;
             $scope.streamingLimitType = value.ap_stream_setting;
 
-
             $scope.ContentTypeChange();
             $scope.displayOperators();
             $scope.deliveryTypeChange();
@@ -61,7 +64,13 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
 
     //change jetpayid,geoLocation,deliveryType on change of content type
     $scope.ContentTypeChange = function () {
-        if($scope.SelectedContentType == 9 || $scope.SelectedContentType == 10){
+        var contentTypeData = '';
+        $scope.ContentTypes.forEach(function(type) {
+            if($scope.SelectedContentType == type.cd_id){
+                contentTypeData = type;
+            }
+        })
+        if( $scope.SelectedContentType == contentTypeData.cd_id && (contentTypeData.mct_parent_cnt_type_id == 9 || contentTypeData.mct_parent_cnt_type_id == 10)){
             $scope.deliveryType = $scope.AllDeliveryType;
         }else{
             $scope.deliveryType = $scope.AllDeliveryType.filter(function (type){
