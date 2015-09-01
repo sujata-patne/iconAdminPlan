@@ -142,18 +142,24 @@ exports.authenticate = function (req, res, next) {
                 } else {
                     if (row.length > 0) {
                         if (row[0].ld_active == 1) {
-                            var session = req.session;
-                            session.UserId = row[0].ld_id;
-                            session.UserRole = row[0].ld_role;
-                            session.UserName = req.body.username;
-                            session.Password = req.body.password;
-                            session.Email = row[0].ld_email_id;
-                            session.FullName = row[0].ld_display_name;
-                            session.lastlogin = row[0].ld_last_login;
-                            session.UserType = row[0].ld_user_type;
-                            session.StoreId = row[0].su_st_id;//coming from new store's user table.
-                            connection_central.release();
-                            res.redirect('/');
+                            if(row[0].ld_role == 'Store Manager') {
+
+                                var session = req.session;
+                                session.UserId = row[0].ld_id;
+                                session.UserRole = row[0].ld_role;
+                                session.UserName = req.body.username;
+                                session.Password = req.body.password;
+                                session.Email = row[0].ld_email_id;
+                                session.FullName = row[0].ld_display_name;
+                                session.lastlogin = row[0].ld_last_login;
+                                session.UserType = row[0].ld_user_type;
+                                session.StoreId = row[0].su_st_id;//coming from new store's user table.
+                                connection_central.release();
+                                res.redirect('/');
+                            } else {
+                                connection_central.release();
+                                res.render('account-login', { error: 'Only Store Admin/Manager are allowed to login.' });
+                            }
                         }
                         else {
                             connection_central.release();
@@ -179,18 +185,18 @@ exports.authenticate = function (req, res, next) {
  */
 function getPages(role) {
 
-    //if (role == "Super Admin") {
-    var pagesjson = [
-        { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
-    ];
+    if (role == "Super Admin" || role == "Store Manager") {
+        var pagesjson = [
+            { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
+        ];
 
-    return pagesjson;
-    //}
+        return pagesjson;
+    }
 }
 /**
  * @function viewForgotPassword
