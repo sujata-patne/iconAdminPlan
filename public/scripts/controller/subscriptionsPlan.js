@@ -1,6 +1,7 @@
 /**
  * Created by sujata.patne on 15-07-2015.
  */
+
 myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Subscriptions) {
     $('.removeActiveClass').removeClass('active');
     $('#subscriptions').addClass('active');
@@ -17,7 +18,9 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     ngProgress.height('3px');
     $scope.distributionChannelArray = [];
     $scope.selectedDistributionChannel = [];
-    // get subscription  & jet events 
+    $scope.downloadCost = [];
+    $scope.streamingCost = [];
+    // get subscription  & jet events
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
 
         $scope.distributionChannelList = angular.copy(SubscriptionData.DistributionChannel);
@@ -28,6 +31,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.GeoLocations = angular.copy(SubscriptionData.GeoLocations);
         $scope.ContentTypes = angular.copy(SubscriptionData.ContentTypes);
         $scope.alacartData = angular.copy(SubscriptionData.ContentTypeData);
+
+
 
         $scope.WallpaperPlan = $scope.alacartData.filter(function (alacart){
             return alacart.cd_name == "Wallpaper" && alacart.delivery_type_name == "Download";
@@ -56,12 +61,11 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.RingTonePlan = $scope.alacartData.filter(function (alacart){
             return alacart.cd_name == "Ringtone" && alacart.delivery_type_name == "Download";
         })
+
         SubscriptionData.selectedDistributionChannel.forEach(function(data){
             $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
             $scope.distributionChannelArray[data.cmd_entity_detail] = true;
         })
-console.log($scope.distributionChannelArray)
-console.log($scope.selectedDistributionChannel)
         $scope.PlanData.forEach(function (value) {
             $scope.PlanId = value.sp_id;
             $scope.PlanName = value.sp_plan_name;
@@ -109,7 +113,7 @@ console.log($scope.selectedDistributionChannel)
             $scope.selectedDistributionChannel.push(id);
         }
         if($scope.distributionChannelArray[id] === false){
-            var idx = $scope.selectedDistributionChannel.indexOf($scope.distributionChannelArray[id]);
+            var idx = $scope.selectedDistributionChannel.indexOf(id);
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
     };
@@ -122,7 +126,6 @@ console.log($scope.selectedDistributionChannel)
                 $scope.OperatorDetails.push(value);
             }
         })
-        console.log($scope.OperatorDetails)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -133,6 +136,8 @@ console.log($scope.selectedDistributionChannel)
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
+        console.log($scope.downloadCost)
+        console.log($scope.streamingCost)
         if (isValid) {
 
             var subscription = {

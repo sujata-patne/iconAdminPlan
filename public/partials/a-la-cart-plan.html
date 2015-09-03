@@ -128,7 +128,7 @@
                             <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk">*</span>Distribution Channel</label>
                             <div class="col-md-9">
                                 <span data-ng-repeat="i in distributionChannelList ">
-                                    <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)">&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                    <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)">&nbsp;{{i.cd_name}}  &nbsp; &nbsp; &nbsp;
                                 </span>
                                 <br />
                                 <span style="color: red" ng-hide="!aLaCartForm.$submitted || selectedDistributionChannel.length > 0">

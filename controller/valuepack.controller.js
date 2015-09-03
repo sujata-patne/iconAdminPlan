@@ -62,11 +62,18 @@ exports.getvaluepack = function (req, res, next) {
                                                 }
                                                 else {
                                                     mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                                                        var query = connection_ikon_bg.query('select bge.* FROM billing_telco_master_event_index AS master ' +
+                                                        /*var query = connection_ikon_bg.query('select bge.* FROM billing_telco_master_event_index AS master ' +
                                                             'JOIN billing_event_family AS bef ON bef.ef_tmi_id = master.tmi_id ' +
                                                             'JOIN billing_ef_bgw_event AS bge ON bef.ef_id = bge.ebe_ef_id ' +
                                                             'WHERE ebe_is_valid = 1 and ebe_ai_bgw_id is not null ' +
-                                                            'GROUP BY master.tmi_parent_id', function (err, JetEvents) {
+                                                            'GROUP BY master.tmi_parent_id', function (err, JetEvents) {*/
+                                                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
+                                                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
+                                                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id ' +
+                                                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id ' +
+                                                                'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
+                                                                'AND master.tmi_pp_classification = 1 AND info.ai_app_id = ? ' +
+                                                                'GROUP BY event.ebe_ef_id',[req.session.StoreId], function (err, JetEvents) {
                                                             if (err) {
                                                                 connection_ikon_plan.release();
                                                                 connection_ikon_bg.release();

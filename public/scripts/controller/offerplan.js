@@ -75,14 +75,14 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
                     }
                         
             }else{
-                  var offer = {
-                        PlanName: $scope.PlanName,
-                        Caption: $scope.Caption,
-                        Description: $scope.Description,
-                        Buyitems: $scope.Buyitems,
-                        GetFreeItems: $scope.Getfreeitems,
-                        DistributionChannels: $scope.final_selectedDistributionChannel
-                  }
+                var offer = {
+                    PlanName: $scope.PlanName,
+                    Caption: $scope.Caption,
+                    Description: $scope.Description,
+                    Buyitems: $scope.Buyitems,
+                    GetFreeItems: $scope.Getfreeitems,
+                    DistributionChannels: $scope.final_selectedDistributionChannel
+                }
                 Offers.AddOffer(offer,function(data){
                    $scope.print_result(data);
                    
@@ -94,11 +94,11 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
 
     $scope.print_result = function(data){
          if(!data.success){
-                        $scope.error = data.message;
-                        $scope.errorvisible = true;
+            $scope.error = data.message;
+            $scope.errorvisible = true;
          }else{
-                        $scope.success = data.message;
-                        $scope.successvisible = true;
+            $scope.success = data.message;
+            $scope.successvisible = true;
         }
     }
 

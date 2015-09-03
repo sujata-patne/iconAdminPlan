@@ -160,6 +160,8 @@
                                                     <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="numContentOffer" placeholder="Limit for TB offer per day" data-ng-model="numContentOffer" data-ng-disabled="numContentOfferDisabled">
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.numContentOffer.$touched">
                                                         <span ng-show="subscriptionForm.numContentOffer.$error.pattern">Insert valid limit for TB Offer per day.</span>
+                                                        <span ng-show="numContentOffer < limitSingleDay">Value must be greater than or equal to For Single Day limit.</span>
+
                                                     </span>
                                                 </div>
                                             </div></div>
@@ -173,11 +175,11 @@
                                             </div></div>
                                             <div class="row"><div class="col-md-12">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="text" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="fullSubDuration" placeholder="Limit for Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" required>
+                                                    <input type="text" ng-pattern="/^[0-9]*$/" class="form-control" name="fullSubDuration" placeholder="Limit for Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" ><!--required-->
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.fullSubDuration.$touched">
-                                                        <span ng-show="subscriptionForm.fullSubDuration.$error.required">Insert download limit for Full Subscription.</span>
+                                                        <!--<span ng-show="subscriptionForm.fullSubDuration.$error.required">Insert download limit for Full Subscription.</span>-->
                                                         <span ng-show="subscriptionForm.fullSubDuration.$error.pattern">Insert valid download limit for Full Subscription.</span>
-                                                        <span ng-show="parseInt(fullSubDuration) < parseInt(limitSingleDay)">Value must be greater than For Single Day limit.</span>
+                                                        <span ng-show="fullSubDuration < limitSingleDay">Value must be greater than or equal to For Single Day limit.</span>
                                                     </span>
                                                 </div>
                                             </div></div>
@@ -201,11 +203,11 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="text" ng-disabled="streamingLimitType == 2" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="slc_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="slc_full_sub_cnt_limit" ng-required="streamingLimitType == 1">
+                                                    <input type="text" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="slc_full_sub_cnt_limit" ><!--ng-required="streamingLimitType == 1"-->
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.slc_full_sub_cnt_limit.$touched">
-                                                        <span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.required">Insert content limit for Full Subscription.</span>
+                                                        <!--<span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.required">Insert content limit for Full Subscription.</span>-->
                                                         <span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.pattern">Insert valid content limit for Full Subscription.</span>
-                                                        <span ng-show="parseInt(slc_full_sub_cnt_limit) < parseInt(slc_single_day_cnt_limit)">Value must be greater than For Single Day limit.</span>
+                                                        <span ng-show="slc_full_sub_cnt_limit < slc_single_day_cnt_limit">Value must be greater than or equal to For Single Day limit.</span>
                                                     </span>
                                                 </div>
                                             </div>
@@ -247,11 +249,11 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-6 col-xs-6">
-                                                    <input type="text" ng-disabled="streamingLimitType == 1" ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="sld_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="sld_full_sub_cnt_limit" ng-required="streamingLimitType == 2">
+                                                    <input type="text" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="sld_full_sub_cnt_limit" ><!--ng-required="streamingLimitType == 2"-->
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_full_sub_cnt_limit.$touched">
-                                                        <span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.required">Insert duration limit for Full Subscription.</span>
+                                                        <!--<span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.required">Insert duration limit for Full Subscription.</span>-->
                                                         <span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.pattern">Insert valid duration limit for Full Subscription.</span>
-                                                        <span ng-show="parseInt(sld_full_sub_cnt_limit) < parseInt(sld_single_day_cnt_limit)">Value must be greater than For Single Day limit.</span>
+                                                        <span ng-show="sld_full_sub_cnt_limit < sld_single_day_cnt_limit">Value must be greater than For Single Day limit.</span>
                                                     </span>
                                                 </div>
                                                 <div class="col-md-1 col-xs-1">&nbsp;</div>
@@ -291,86 +293,29 @@
                                     <div class="col-md-5" ><legend style="font-size: 12px; font-weight: bold">Download</legend></div>
                                     <div class="col-md-4" ><legend style="font-size: 12px; font-weight: bold">Streaming</legend></div>
                                 </div>
-                                <div class="row" >
+                                <div class="row" ng-repeat="ContentType in ContentTypes">
                                     <div class="col-md-2">
-                                        <div class="row" ng-show="(ContentTypes|filter:'Wallpaper':true).length > 0"><div class="form-group col-md-12">
-                                            <label for="wallpaper" class="col-md-12 control-label" style="margin: 1px;">Wallpapers</label>
+                                        <div class="row"><div class="form-group col-md-12">
+                                        <label for="{{ContentType.cd_name}}" class="col-md-12 control-label" style="margin: 1px;">{{ContentType.cd_name}}</label>
                                         </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Video':true).length > 0"><div class="form-group col-md-12">
-                                            <label for="video" class="col-md-12 control-label" style="margin: 1px;">Video</label>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Audio':true).length > 0"><div class="form-group col-md-12">
-                                            <label for="fullSong" class="col-md-12 control-label" style="margin: 1px;">Full Song</label>
-                                        </div></div>
-                                        <div class="row"  ng-show="(ContentTypes|filter:'Animation':true).length > 0"><div class="form-group col-md-12">
-                                            <label for="animation" class="col-md-12 control-label" style="margin: 1px;">Animation</label>
-                                        </div></div>
-                                        <div class="row"  ng-show="(ContentTypes|filter:'Ringtone':true).length > 0"><div class="form-group col-md-12">
-                                            <label for="ringTone" class="col-md-12 control-label" style="margin: 1px;">Ring Tone</label>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Texts':true).length > 0"><div class="form-group col-md-12">
-                                            <label for="textArtical" class="col-md-12 control-label" style="margin: 1px;">Text/Artical</label>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Games & Apps':true).length > 0"><div class="form-group col-md-12">
-                                            <label for="gameApps" class="col-md-12 control-label" style="margin: 1px;">Games/App</label>
-                                        </div></div>
-
                                     </div>
                                     <div class="col-md-5">
-                                        <div class="row" ng-show="(ContentTypes|filter:'Wallpaper':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in WallpaperPlan" class="form-control" name="subscription_plan_Wallpaper" data-ng-model="subscription_plan_Wallpaper"  >
-                                                <option value="">--Select One Plan for Wallpaper or it's Free--</option>
+                                        <div class="row"><div class="form-group col-md-12">
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in alacartData | filter:{cd_name:'{{ContentType.cd_name}}'} | filter:{delivery_type_name:'Download'}" class="form-control" data-ng-model="downloadCost[ContentType.cd_name]"  >
+                                                <option value="">--Select Download Plan for {{ContentType.cd_name}} or it's Free--</option>
                                             </select>
                                         </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Video':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in VideoPlan" class="form-control" name="subscription_plan_Video" data-ng-model="subscription_plan_Video" >
-                                                <option value="">--Select One Plan for Video or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row"  ng-show="(ContentTypes|filter:'Audio':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in SongsPlan" class="form-control" name="subscription_plan_FullSong" data-ng-model="subscription_plan_FullSong" >
-                                                <option value="">--Select One Plan for Full song or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Animation':true).length > 0" ><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in AnimationPlan" class="form-control" name="subscription_plan_Animation" data-ng-model="subscription_plan_Animation" >
-                                                <option value="">--Select One Plan for Animation or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Ringtone':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in RingTonePlan" class="form-control" name="subscription_plan_RingTone" data-ng-model="subscription_plan_RingTone" >
-                                                <option value="">--Select One Plan for Ring Tone or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Texts':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in TextArticalPlan" class="form-control" name="subscription_plan_TextArtical" data-ng-model="subscription_plan_TextArtical" >
-                                                <option value="">--Select One Plan for Text / Artical or it's Free--</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Games & Apps':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in GameAppPlan" class="form-control" name="subscription_plan_GamesApps" data-ng-model="subscription_plan_GamesApps"  >
-                                                <option value="">--N.A.--</option>
-                                            </select>
-                                        </div></div>
-
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="row" ng-show="(ContentTypes|filter:'Wallpaper':true).length > 0"><div class="form-group col-md-12">&nbsp;</div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Video':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in VideoStreaming" class="form-control" name="subscription_plan_stream_video" data-ng-model="subscription_plan_stream_video" >
-                                                <option value="">--Select One Plan for Video or it's Free --</option>
-                                            </select>
-                                        </div></div>
-                                        <div class="row" ng-show="(ContentTypes|filter:'Audio':true).length > 0"><div class="form-group col-md-12">
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in AudioStreaming" class="form-control" name="subscription_plan_stream_songs" data-ng-model="subscription_plan_stream_songs" >
-                                                <option value="">--Select One Plan for Full song or it's Free --</option>
+                                    <div class="col-md-5">
+                                        <div class="row"><div class="form-group col-md-12"  >
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in alacartData | filter:{cd_name:'{{ContentType.cd_name}}'} | filter:{delivery_type_name:'Streaming'}" class="form-control" data-ng-model="streamingCost[ContentType.cd_name]" >
+                                                <option value="">--Select Streaming Plan for {{item.ap_delivery_type}} {{ContentType.cd_name}} or it's Free--</option>
                                             </select>
                                         </div></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /.row -->
                         </div>
-                        <!-- /.row -->
                     </div>
                 </div>
                 <div class="row">

@@ -91,7 +91,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
                 DurationOptions: $scope.selectedDurationOptions,
                 StreamDurationOptions: $scope.streamDurationOptions
             }
-            console.log(valuepack)
+            //console.log(valuepack)
             ngProgress.start();
             Valuepacks.AddEditValuepack(valuepack, function (data) {
                 if (data.success) {
@@ -106,6 +106,4 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
             });
         }
     };
-
-
 });

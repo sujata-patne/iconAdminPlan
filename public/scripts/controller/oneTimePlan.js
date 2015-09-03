@@ -20,12 +20,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     ngProgress.height('3px');
     $scope.selectedDistributionChannel = [];
     $scope.distributionChannelArray = [];
-    //$scope.streamingLimitType = 1;
-
-    // get alacart data & jetpay id
-    /*AlaCarts.getData({ planid: $stateParams.id }, function (Alacarts) {
-console.log(Alacarts)
-    })*/
 
     AlaCarts.GetAlacartData({ planid: $stateParams.id }, function (Alacarts) {
         $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
@@ -33,7 +27,7 @@ console.log(Alacarts)
         $scope.GeoLocations = angular.copy(Alacarts.GeoLocations);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.durationOptions = angular.copy(Alacarts.DurationOptions);
-        $scope.AllOperatorDetails = angular.copy(Alacarts.OpeartorDetails);
+        $scope.AllOperatorDetails = angular.copy(Alacarts.OperatorDetails);
         $scope.PlanData = angular.copy(Alacarts.PlanData);
         $scope.AllDeliveryType = angular.copy(Alacarts.DeliveryTypes);
         Alacarts.selectedDistributionChannel.forEach(function(data){
@@ -99,13 +93,14 @@ console.log(Alacarts)
 
     // display operator on change of jet pay id 
     $scope.displayOperators = function () {
+        //console.log('##'+$scope.SelectedEventId)
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
+            //console.log(value.bta_ef_id)
             if ($scope.SelectedEventId == value.bta_ef_id) {
                 $scope.OperatorDetails.push(value);
             }
         })
-        //console.log($scope.OperatorDetails)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -117,7 +112,7 @@ console.log(Alacarts)
             $scope.selectedDistributionChannel.push(id);
         }
         if($scope.distributionChannelArray[id] === false){
-            var idx = $scope.selectedDistributionChannel.indexOf($scope.distributionChannelArray[id]);
+            var idx = $scope.selectedDistributionChannel.indexOf(id);
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
     };
