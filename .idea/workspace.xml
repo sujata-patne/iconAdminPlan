@@ -3,16 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="cd482d24-9920-4bd4-9b5f-23687db6ccad" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controller/alacart.controller.js" afterPath="$PROJECT_DIR$/controller/alacart.controller.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controller/offer.controller.js" afterPath="$PROJECT_DIR$/controller/offer.controller.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controller/subscription.controller.js" afterPath="$PROJECT_DIR$/controller/subscription.controller.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controller/index.controller.js" afterPath="$PROJECT_DIR$/controller/index.controller.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controller/valuepack.controller.js" afterPath="$PROJECT_DIR$/controller/valuepack.controller.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/partials/a-la-cart-plan.html" afterPath="$PROJECT_DIR$/public/partials/a-la-cart-plan.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/partials/subscription-plan.html" afterPath="$PROJECT_DIR$/public/partials/subscription-plan.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/scripts/controller/offerplan.js" afterPath="$PROJECT_DIR$/public/scripts/controller/offerplan.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/scripts/controller/oneTimePlan.js" afterPath="$PROJECT_DIR$/public/scripts/controller/oneTimePlan.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js" afterPath="$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/scripts/controller/valuePackPlan.js" afterPath="$PROJECT_DIR$/public/scripts/controller/valuePackPlan.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/assets/css/custom.css" afterPath="$PROJECT_DIR$/public/assets/css/custom.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/assets/css/target-admin.css" afterPath="$PROJECT_DIR$/public/assets/css/target-admin.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/partials/offer-plan.html" afterPath="$PROJECT_DIR$/public/partials/offer-plan.html" />
     </list>
     <ignored path="adminPlan.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -101,11 +96,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="alacart.controller.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="alacart.controller.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/controller/alacart.controller.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24684684">
-              <caret line="212" column="78" selection-start-line="212" selection-start-column="78" selection-end-line="212" selection-end-column="78" />
+            <state vertical-scroll-proportion="-5.8965516">
+              <caret line="214" column="81" selection-start-line="214" selection-start-column="81" selection-end-line="214" selection-end-column="81" />
               <folding>
                 <element signature="e#15093#17126#0" expanded="false" />
                 <element signature="e#17175#21411#0" expanded="false" />
@@ -116,40 +111,42 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="index.controller.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/controller/index.controller.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.4482758">
+              <caret line="305" column="107" selection-start-line="305" selection-start-column="107" selection-end-line="305" selection-end-column="107" />
+              <folding>
+                <element signature="e#2820#3222#0" expanded="false" />
+                <element signature="e#3369#3946#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="valuepack.controller.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/controller/valuepack.controller.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.6936937">
+              <caret line="39" column="33" selection-start-line="39" selection-start-column="33" selection-end-line="41" selection-end-column="39" />
+              <folding>
+                <element signature="e#10867#15756#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="subscription.controller.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/controller/subscription.controller.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.793103">
-              <caret line="156" column="62" selection-start-line="156" selection-start-column="62" selection-end-line="156" selection-end-column="62" />
+            <state vertical-scroll-proportion="-15.24138">
+              <caret line="71" column="109" selection-start-line="65" selection-start-column="28" selection-end-line="71" selection-end-column="109" />
               <folding>
-                <element signature="e#346#8746#0" expanded="false" />
                 <element signature="e#15725#17819#0" expanded="false" />
                 <element signature="e#17874#24055#0" expanded="false" />
                 <element signature="e#19953#23115#0" expanded="false" />
                 <element signature="e#24109#31122#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="valuepack.controller.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controller/valuepack.controller.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="68" column="122" selection-start-line="68" selection-start-column="122" selection-end-line="68" selection-end-column="122" />
-              <folding>
-                <element signature="e#10956#15845#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="a-la-cart-plan.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/partials/a-la-cart-plan.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.0">
-              <caret line="126" column="48" selection-start-line="126" selection-start-column="48" selection-end-line="126" selection-end-column="48" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -211,11 +208,9 @@
         <option value="$PROJECT_DIR$/env.json" />
         <option value="$PROJECT_DIR$/public/scripts/controller/planList.js" />
         <option value="$PROJECT_DIR$/controller/planlist.controller.js" />
-        <option value="$PROJECT_DIR$/controller/index.controller.js" />
         <option value="$PROJECT_DIR$/controller/offer.controller.js" />
         <option value="E:/iconPdf/bgw_db_create.sql" />
         <option value="$PROJECT_DIR$/public/scripts/controller/offerplan.js" />
-        <option value="$PROJECT_DIR$/controller/valuepack.controller.js" />
         <option value="$PROJECT_DIR$/public/partials/a-la-cart-plan.html" />
         <option value="$PROJECT_DIR$/public/scripts/controller/oneTimePlan.js" />
         <option value="$PROJECT_DIR$/controller/subscription.controller.js" />
@@ -223,6 +218,8 @@
         <option value="$PROJECT_DIR$/public/scripts/controller/valuePackPlan.js" />
         <option value="$PROJECT_DIR$/public/partials/subscription-plan.html" />
         <option value="$PROJECT_DIR$/controller/alacart.controller.js" />
+        <option value="$PROJECT_DIR$/controller/index.controller.js" />
+        <option value="$PROJECT_DIR$/controller/valuepack.controller.js" />
       </list>
     </option>
   </component>
@@ -791,17 +788,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/controller/index.controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36314362">
-          <caret line="133" column="37" selection-start-line="133" selection-start-column="37" selection-end-line="133" selection-end-column="37" />
-          <folding>
-            <element signature="e#2820#3222#0" expanded="false" />
-            <element signature="e#3369#3946#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://E:/iconPdf/ikon_cms_new.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -839,16 +825,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/controller/valuepack.controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="68" column="122" selection-start-line="68" selection-start-column="122" selection-end-line="68" selection-end-column="122" />
-          <folding>
-            <element signature="e#10956#15845#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/partials/a-la-cart-plan.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-9.0">
@@ -864,20 +840,6 @@
           <folding>
             <element signature="e#276#2882#0" expanded="false" />
             <element signature="e#7430#8654#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/controller/subscription.controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.793103">
-          <caret line="156" column="62" selection-start-line="156" selection-start-column="62" selection-end-line="156" selection-end-column="62" />
-          <folding>
-            <element signature="e#346#8746#0" expanded="false" />
-            <element signature="e#15725#17819#0" expanded="false" />
-            <element signature="e#17874#24055#0" expanded="false" />
-            <element signature="e#19953#23115#0" expanded="false" />
-            <element signature="e#24109#31122#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -898,21 +860,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="122" column="36" selection-start-line="122" selection-start-column="36" selection-end-line="122" selection-end-column="36" />
-          <folding>
-            <element signature="e#872#5602#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/scripts/controller/valuePackPlan.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="86" column="54" selection-start-line="86" selection-start-column="54" selection-end-line="86" selection-end-column="54" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller/alacart.controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.8965516">
+          <caret line="214" column="81" selection-start-line="214" selection-start-column="81" selection-end-line="214" selection-end-column="81" />
+          <folding>
+            <element signature="e#15093#17126#0" expanded="false" />
+            <element signature="e#17175#21411#0" expanded="false" />
+            <element signature="e#21459#26619#0" expanded="false" />
+            <element signature="e#23966#25610#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -927,15 +892,46 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/controller/alacart.controller.js">
+    <entry file="file://$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24684684">
-          <caret line="212" column="78" selection-start-line="212" selection-start-column="78" selection-end-line="212" selection-end-column="78" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="122" column="36" selection-start-line="122" selection-start-column="36" selection-end-line="122" selection-end-column="36" />
           <folding>
-            <element signature="e#15093#17126#0" expanded="false" />
-            <element signature="e#17175#21411#0" expanded="false" />
-            <element signature="e#21459#26619#0" expanded="false" />
-            <element signature="e#23966#25610#0" expanded="false" />
+            <element signature="e#872#5602#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller/subscription.controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-15.24138">
+          <caret line="71" column="109" selection-start-line="65" selection-start-column="28" selection-end-line="71" selection-end-column="109" />
+          <folding>
+            <element signature="e#15725#17819#0" expanded="false" />
+            <element signature="e#17874#24055#0" expanded="false" />
+            <element signature="e#19953#23115#0" expanded="false" />
+            <element signature="e#24109#31122#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller/index.controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.4482758">
+          <caret line="305" column="107" selection-start-line="305" selection-start-column="107" selection-end-line="305" selection-end-column="107" />
+          <folding>
+            <element signature="e#2820#3222#0" expanded="false" />
+            <element signature="e#3369#3946#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controller/valuepack.controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6936937">
+          <caret line="39" column="33" selection-start-line="39" selection-start-column="33" selection-end-line="41" selection-end-column="39" />
+          <folding>
+            <element signature="e#10867#15756#0" expanded="false" />
           </folding>
         </state>
       </provider>

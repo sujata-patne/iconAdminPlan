@@ -1104,11 +1104,11 @@ input[type="checkbox"] {
     height: 150px;
   }
   .mainbar .mainbar-nav > li {
-    margin-right: 10px;
+    margin-right: 4px;
   }
   .mainbar .mainbar-nav > li > a {
-    padding: 12px 12px;
-    font-size: 14px;
+    padding: 12px 5px;
+    font-size: 13px;
   }
   .mainbar .mainbar-nav > li > a > i {
     font-size: 21px;
@@ -2851,9 +2851,34 @@ html .fc,
   }
 }
 @media (min-width: 1200px) {
-  .howl {
-    width: 375px;
-  }
+    .howl {
+        width: 375px;
+    }
+}
+@media (min-width: 1301px) {
+.mainbar .mainbar-nav > li > a {
+  padding: 12px 8px !important;
+  font-size: 14px !important;
+}
+}
+@media (min-width: 768px) and (max-width:860px) {
+    .mainbar .mainbar-nav > li {
+  margin-right: 1px !important;
+}
+.mainbar .mainbar-nav > li > a {
+  font-size: 11px !important;
+  padding: 10px 0px !important;
+}
+}
+@media (min-width: 768px) and (max-width:1100px) {
+.mainbar .mainbar-nav {
+  text-align: left;
+  float: left;
+width: 100%;
+}
+.mainbar {
+  height: 200px !important;
+}
 }
 /* ==Data Tables [.dataTable]*/
 /* ----------------------------------------------- */
@@ -3182,15 +3207,15 @@ ul.support-list li {
 
 
 .asterisk{
-	color:red;
-	font-weight:bold;
+  color:red;
+  font-weight:bold;
 }
 textarea{
 resize:none;
 }
 .form-group{
-	margin-top:10px;
-	margin-bottom:7px;
+  margin-top:10px;
+  margin-bottom:7px;
 }
 .form-control{
   height: 30px;

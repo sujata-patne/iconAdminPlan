@@ -28,7 +28,6 @@ exports.getvaluepack = function (req, res, next) {
                                 'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
                                 'left JOIN ikon_cms.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
                                 'GROUP BY master.tmi_parent_id ', function (err, OperatorDetails) {
-                                console.log(OperatorDetails)
                             /*var query = connection_ikon_plan.query('SELECT dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id FROM billing_gateway.billing_ef_bgw_event as event ' +
                                 'JOIN billing_gateway.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
                                 'JOIN billing_gateway.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
@@ -67,13 +66,13 @@ exports.getvaluepack = function (req, res, next) {
                                                             'JOIN billing_ef_bgw_event AS bge ON bef.ef_id = bge.ebe_ef_id ' +
                                                             'WHERE ebe_is_valid = 1 and ebe_ai_bgw_id is not null ' +
                                                             'GROUP BY master.tmi_parent_id', function (err, JetEvents) {*/
-                                                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
-                                                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
-                                                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id ' +
-                                                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id ' +
-                                                                'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
-                                                                'AND master.tmi_pp_classification = 1 AND info.ai_app_id = ? ' +
-                                                                'GROUP BY event.ebe_ef_id',[req.session.StoreId], function (err, JetEvents) {
+                                                        var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
+                                                            'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
+                                                            'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id ' +
+                                                            'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id ' +
+                                                            'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
+                                                            'AND master.tmi_pp_classification = 1 AND info.ai_app_id = ? ' +
+                                                            'GROUP BY event.ebe_ef_id',[req.session.StoreId], function (err, JetEvents) {
                                                             if (err) {
                                                                 connection_ikon_plan.release();
                                                                 connection_ikon_bg.release();
