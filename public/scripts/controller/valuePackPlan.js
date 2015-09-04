@@ -21,7 +21,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
     // get valuepack data & jet pay id
     Valuepacks.GetValuepackData({ planid: $stateParams.id }, function (valuepacks) {
         $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
-        $scope.AllOperatorDetails = angular.copy(valuepacks.OpeartorDetail);
+        $scope.AllOperatorDetails = angular.copy(valuepacks.OperatorDetail);
         $scope.durationOptions = angular.copy(valuepacks.DurationOptions);
         $scope.PlanData = angular.copy(valuepacks.PlanData);
         $scope.GeoLocations = angular.copy(valuepacks.GeoLocations);
@@ -58,10 +58,11 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id) {
+            if ($scope.SelectedEventId == value.ebe_ef_id && $scope.SelectedGeoLocation == value.country) {
                 $scope.OperatorDetails.push(value);
             }
         })
+        console.log($scope.OperatorDetails)
     }
 
     $scope.resetForm = function () {

@@ -27,7 +27,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         $scope.GeoLocations = angular.copy(Alacarts.GeoLocations);
         $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.durationOptions = angular.copy(Alacarts.DurationOptions);
-        $scope.AllOperatorDetails = angular.copy(Alacarts.OperatorDetails);
+        $scope.AllOperatorDetails = angular.copy(Alacarts.OperatorDetail);
         $scope.PlanData = angular.copy(Alacarts.PlanData);
         $scope.AllDeliveryType = angular.copy(Alacarts.DeliveryTypes);
         Alacarts.selectedDistributionChannel.forEach(function(data){
@@ -50,6 +50,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.streamingLimitType = value.ap_stream_setting;
 
             $scope.ContentTypeChange();
+            $scope.GeoLocationChange();
             $scope.displayOperators();
             $scope.deliveryTypeChange();
         });
@@ -73,6 +74,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         }
     }
 
+
     $scope.deliveryTypeChange = function(){
         $scope.deliveryType.forEach(function(type) {
             if( $scope.SelectedDeliveryType == type.cd_id && type.cd_name == "Download"){
@@ -93,14 +95,13 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
 
     // display operator on change of jet pay id 
     $scope.displayOperators = function () {
-        //console.log('##'+$scope.SelectedEventId)
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            //console.log(value.bta_ef_id)
-            if ($scope.SelectedEventId == value.bta_ef_id) {
+            if ($scope.SelectedEventId == value.ebe_ef_id && $scope.SelectedGeoLocation == value.country) {
                 $scope.OperatorDetails.push(value);
             }
         })
+        console.log($scope.OperatorDetails)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';

@@ -25,7 +25,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
 
         $scope.distributionChannelList = angular.copy(SubscriptionData.DistributionChannel);
         $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
-        $scope.AllOperatorDetails = angular.copy(SubscriptionData.OpeartorDetail);
+        $scope.AllOperatorDetails = angular.copy(SubscriptionData.OperatorDetail);
         $scope.PlanData = angular.copy(SubscriptionData.PlanData);
         $scope.durationOptions = angular.copy(SubscriptionData.DurationOptions);
         $scope.GeoLocations = angular.copy(SubscriptionData.GeoLocations);
@@ -122,7 +122,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id) {
+            if ($scope.SelectedEventId == value.ebe_ef_id && $scope.SelectedGeoLocation == value.country) {
                 $scope.OperatorDetails.push(value);
             }
         })

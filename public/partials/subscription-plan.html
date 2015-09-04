@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
-                            <label for="planname" class="col-md-3 control-label"><span class="asterisk">*</span>Plan Name</label>
+                            <label for="planname" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>Plan Name</label>
                             <div class="col-md-9">
                                 <input type="text" name="planname" class="form-control" placeholder="Plan Name" data-ng-model="PlanName" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
@@ -23,7 +23,7 @@
                         <div class="form-group">
                             <label for="caption" class="col-md-3 control-label">Caption</label>
                             <div class="col-md-9">
-                                <input type="text" name="u_caption" class="form-control" id="" placeholder="Caption" data-ng-model="Caption">
+                                <input type="text" name="u_caption" class="form-control" placeholder="Caption" data-ng-model="Caption">
                             </div>
                         </div>
                         <div class="form-group">
@@ -33,10 +33,10 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="geoLocation" class="col-md-3 control-label"><span class="asterisk">*</span>Geo Location</label>
+                            <label for="geoLocation" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>Geo Location</label>
                             <div class="col-md-5">
                                 <span class="ui-select">
-                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.geoID as item.geoName for item in GeoLocations" required>
+                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.geoID as item.geoName for item in GeoLocations"  data-ng-change="displayOperators()" required>
                                         <option value="">-- Select Geo Location --</option>
                                     </select>
                                 </span>
@@ -50,7 +50,7 @@
                             <!--</div>-->
                         </div>
                         <div class="form-group">
-                            <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk">*</span>Distribution Channel</label>
+                            <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>Distribution Channel</label>
                             <div class="col-md-9">
                                 <span data-ng-repeat="i in distributionChannelList ">
                                     <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)">&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk">*</span>JetPay Event Id</label>
+                            <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>JetPay Event Id</label>
                             <div class="col-md-9">
                                 <span class="ui-select">
                                     <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.ebe_ef_id as item.ebe_bgw_id_desc for item in AllJetPayEvents" data-ng-change="displayOperators()" required>
@@ -79,16 +79,16 @@
                         <table id="eventOperators" class="table table-striped table-bordered table-checkable">
                             <thead>
                             <tr>
-                                <th class="col-md-2 col-xs-2">Sr.No.</th>
                                 <th class="col-md-2 col-xs-2">Operator</th>
+                                <th class="col-md-2 col-xs-2">Duration</th>
                                 <th class="col-md-2 col-xs-2">Amount</th>
                                 <th class="col-md-6 col-xs-6">Disclaimer Text</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
-                                <td class="col-md-2 col-xs-2">{{$index+1}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.partner_name}}</td>
+                                <td class="col-md-2 col-xs-2">{{operators.duration}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.tmi_amt}}</td>
                                 <td class="col-md-6 col-xs-6">
                                     <input type="text" name="disclaimer" class="form-control" placeholder="Disclaimer Text" data-ng-model="operators.dcl_disclaimer">
@@ -150,7 +150,7 @@
                                             </div></div>
                                             <div class="row"><div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="fullSubDuration" class="col-md-9 control-label"><span class="asterisk">*</span>For Full Subscription Duration</label>
+                                                    <label for="fullSubDuration" class="col-md-9 control-label"><span class="asterisk padding-right-5">*</span>For Full Subscription Duration</label>
                                                 </div>
                                             </div></div>
                                         </div>

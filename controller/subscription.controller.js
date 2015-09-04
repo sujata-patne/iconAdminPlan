@@ -13,7 +13,7 @@ var async = require("async");
  */
 exports.getsubscriptions = function (req, res, next) {
     try {
-        if (req.session != undefined && req.session.UserName != undefined) {
+        if (req.session != undefined && req.session.UserName != undefined && req.session.StoreId != undefined) {
             mysql.getConnection('CMS', function (err, connection_ikon_plan) {
                 mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
@@ -43,10 +43,10 @@ exports.getsubscriptions = function (req, res, next) {
                             })
                         },
                         GeoLocations: function (callback) {
-                            var query = connection_ikon_plan.query('SELECT DISTINCT(`cmd_entity_detail`) as geoID, UCASE(`cd_name`) as geoName FROM `multiselect_metadata_detail` AS m ' +
+                            var query = connection_ikon_plan.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
                                 'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                                 'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = m.cmd_entity_type WHERE s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
+                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
                                 callback(err, GeoLocations)
                             })
                         },
@@ -58,11 +58,6 @@ exports.getsubscriptions = function (req, res, next) {
                             })
                         },
                         JetEvents: function (callback) {
-                            /*var query = connection_ikon_bg.query('select bge.* FROM billing_telco_master_event_index AS master ' +
-                                'JOIN billing_event_family AS bef ON bef.ef_tmi_id = master.tmi_id ' +
-                                'JOIN billing_ef_bgw_event AS bge ON bef.ef_id = bge.ebe_ef_id ' +
-                                'WHERE ebe_is_valid = 1 and ebe_ai_bgw_id is not null ' +
-                                'GROUP BY master.tmi_parent_id', function (err, JetEvents) {*/
                             var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
                                 'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
                                 'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id ' +
@@ -73,14 +68,14 @@ exports.getsubscriptions = function (req, res, next) {
                                 callback(err, JetEvents)
                             })
                         },
-                        OpeartorDetail: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id ' +
+                        OperatorDetail: function (callback) {
+                            var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id, bge.ebe_bgw_id_desc as duration , partner.partner_cty_id as country ' +
                                 'FROM '+config.db_name_ikon_bg+'.billing_ef_bgw_event as bge JOIN '+config.db_name_ikon_bg+'.billing_event_family AS bef ON bef.ef_id = bge.ebe_ef_id ' +
                                 'JOIN '+config.db_name_ikon_bg+'.billing_telco_master_event_index AS master ON bef.ef_tmi_id = master.tmi_id ' +
                                 'JOIN '+config.db_name_ikon_bg+'.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
                                 'LEFT JOIN '+config.db_name_ikon_cms+'.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
-                                'GROUP BY master.tmi_parent_id ', function (err, OpeartorDetail) {
-                                callback(err, OpeartorDetail)
+                                'GROUP BY master.tmi_parent_id ', function (err, OperatorDetails) {
+                                callback(err, OperatorDetails)
                             })
                         },
                         ContentTypeData: function (callback) {
@@ -142,16 +137,20 @@ exports.addeditsubscriptions = function (req, res, next) {
             mysql.getConnection('CMS', function (err, connection_ikon_plan) {
                 async.waterfall([
                     function (callback) {
-                        var query = connection_ikon_plan.query('select * from icn_sub_plan where lower(sp_plan_name) = ?', [req.body.PlanName.toLowerCase()], function (err, result) {
+                        var query = connection_ikon_plan.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
+                            ' UNION ' +
+                            '(select subscription.sp_id as plan_id from icn_sub_plan AS subscription where lower(subscription.sp_plan_name) = ? ) ' +
+                            ' UNION ' +
+                            '(select valupack.vp_id as plan_id from icn_valuepack_plan as valupack where lower(valupack.vp_plan_name) = ? ) ', [req.body.PlanName.toLowerCase(),req.body.PlanName.toLowerCase(),req.body.PlanName.toLowerCase()], function (err, result) {
                             if(result.length > 0){
-                                callback(err, {'exist':true,'subscription':result});
+                                callback(err, {'exist':true,'plans':result});
                             }else{
-                                callback(err, {'exist':false,'subscription':result});
+                                callback(err, {'exist':false,'plans':result});
                             }
                         })
                     },
                     function(data, callback){
-                        if(data.exist == true && data.subscription[0].sp_id != req.body.subplanId){
+                        if(data.exist == true && data.plans[0].plan_id != req.body.subplanId){
                             callback(null, {'exist':data.exist,'message': 'Plan Name Must be Unique'});
                         }else{
                             callback(null, {'exist':data.exist});
@@ -181,7 +180,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 }
                                 else {
                                     if (disclaimer.length > 0) {
-                                        var disclaimer = {
+                                        var disclaimerData = {
                                             dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                             dcl_partner_id: req.body.OperatorDetails[j].partner_id,
                                             dcl_st_id: req.session.StoreId,
@@ -189,7 +188,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             dcl_modified_by:  req.session.UserName
                                         }
 
-                                        var query = connection_ikon_plan.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimer,req.body.OperatorDetails[j].dcl_id], function (err, result) {
+                                        var query = connection_ikon_plan.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
                                             if (err) {
                                                 connection_ikon_plan.release();
                                                 res.status(500).json(err.message);
