@@ -3,7 +3,7 @@
  */
 myApp.service('Offers', ['$http', function ($http) {
     var service = {};
-    service.baseRestUrl = 'http://localhost:3000';
+    service.baseRestUrl = '';
 
     service.GetOfferData = function (data, success) {
         $http.post(service.baseRestUrl + '/getofferdata', data).success(function (items) {

@@ -112,7 +112,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         if($scope.distributionChannelArray[id] === true){
             $scope.selectedDistributionChannel.push(id);
         }
-        if($scope.distributionChannelArray[id] === false){
+        if($scope.distributionChannelArray[id] !== true){
             var idx = $scope.selectedDistributionChannel.indexOf(id);
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
@@ -136,8 +136,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
-        console.log($scope.downloadCost)
-        console.log($scope.streamingCost)
+        //console.log($scope.downloadCost)
+        //console.log($scope.streamingCost)
         if (isValid) {
 
             var subscription = {
@@ -179,7 +179,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 planDuration: $scope.planDuration,
                 planDurationOption: $scope.planDurationOption
             }
-            console.log(subscription)
+            //console.log(subscription)
             ngProgress.start();
             Subscriptions.AddEditSubscription(subscription, function (data) {
                 if (data.success) {

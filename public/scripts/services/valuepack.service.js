@@ -3,7 +3,7 @@
  */
 myApp.service('Valuepacks', ['$http', function ($http) {
     var service = {};
-    service.baseRestUrl = 'http://localhost:3000';
+    service.baseRestUrl = '';
 
     service.GetValuepackData = function (data, success) {
         $http.post(service.baseRestUrl + '/getvaluepack', data).success(function (items) {

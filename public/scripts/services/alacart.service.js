@@ -3,7 +3,7 @@
  */
 myApp.service('AlaCarts', ['$http', function ($http) {
     var service = {};
-    service.baseRestUrl = 'http://localhost:3000';
+    service.baseRestUrl = '';
 	
 	service.GetAlacartData = function(data,success){
 	    $http.post(service.baseRestUrl + '/getalacart', data).success(function (items) {

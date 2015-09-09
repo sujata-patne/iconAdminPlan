@@ -62,7 +62,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
                 $scope.OperatorDetails.push(value);
             }
         })
-        console.log($scope.OperatorDetails)
+        //console.log($scope.OperatorDetails)
     }
 
     $scope.resetForm = function () {

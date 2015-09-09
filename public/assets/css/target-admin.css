@@ -1104,7 +1104,8 @@ input[type="checkbox"] {
     height: 150px;
   }
   .mainbar .mainbar-nav > li {
-    margin-right: 4px;
+    margin-right: 7px;
+    min-width: 10%;
   }
   .mainbar .mainbar-nav > li > a {
     padding: 12px 5px;

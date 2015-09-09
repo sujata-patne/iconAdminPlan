@@ -14,7 +14,7 @@ var config = require('../config')();
 
 exports.getalacartadata = function (req, res, next) {
     try {
-        if (req.session && req.session.UserName && req.session.StoreId != undefined) {
+        if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
@@ -24,11 +24,13 @@ exports.getalacartadata = function (req, res, next) {
                             })
                         },
                         ContentTypes: function (callback) {
-                            var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id from icn_store As st ' +
+                            var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id, ' +
+                                '(SELECT cd_name FROM catalogue_detail as cd1 join catalogue_master as cm1 ON  cm1.cm_id = cd1.cd_cm_id WHERE ct.mct_parent_cnt_type_id = cd1.cd_id) AS parent_name ' +
+                                'from icn_store As st ' +
                                 'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
                                 'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
                                 'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
-                                'WHERE st.st_id = ? ', [req.session.StoreId], function (err, ContentTypes) {
+                                'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, ContentTypes) {
                                 callback(err, ContentTypes)
                             })
                         },
@@ -46,7 +48,7 @@ exports.getalacartadata = function (req, res, next) {
                             var query = connection_ikon_cms.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
                                 'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                                 'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
+                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.Plan_StoreId], function (err, GeoLocations) {
                                 callback(err, GeoLocations)
                             })
                         },
@@ -55,23 +57,23 @@ exports.getalacartadata = function (req, res, next) {
                                 'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
                                 'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
                                 'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
-                                'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.StoreId], function (err, DistributionChannel) {
+                                'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.Plan_StoreId], function (err, DistributionChannel) {
                                 callback(err, DistributionChannel)
                             })
                         },
                         JetEvents: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
-                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
-                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id ' +
-                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id ' +
-                                'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
-                                'AND master.tmi_pp_classification = 1 AND info.ai_app_id = ? ' +
-                                'GROUP BY event.ebe_ef_id',[req.session.StoreId], function (err, JetEvents) {
+                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event '+
+                            'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
+                            'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
+                            'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
+                            'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
+                            'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
+                            'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) {
                             /*var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
                                 'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
                                 'JOIN billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
                                 'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
-                                'AND info.ai_app_id = ? GROUP BY event.ebe_ef_id', [req.session.StoreId], function (err, JetEvents) {*/
+                                'AND info.ai_app_id = ? GROUP BY event.ebe_ef_id', [req.session.Plan_StoreId], function (err, JetEvents) {*/
                                 callback(err, JetEvents)
                             })
                         },
@@ -99,7 +101,7 @@ exports.getalacartadata = function (req, res, next) {
                         },
                         RoleUser: function (callback) {
                             //Get User Role
-                            callback(null, req.session.UserRole);
+                            callback(null, req.session.Plan_UserRole);
                         }
                     },
                     function (err, results) {
@@ -135,11 +137,11 @@ exports.getalacartadata = function (req, res, next) {
  */
 exports.addeditalacart = function (req, res, next) {
     try {
-        if (req.session && req.session.UserName && req.session.StoreId != undefined) {
-            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+        if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.waterfall([
                     function (callback) {
-                        var query = connection_ikon_plan.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
+                        var query = connection_ikon_cms.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
                         ' UNION ' +
                         '(select subscription.sp_id as plan_id from icn_sub_plan AS subscription where lower(subscription.sp_plan_name) = ? ) ' +
                         ' UNION ' +
@@ -161,7 +163,7 @@ exports.addeditalacart = function (req, res, next) {
                 ],
                 function(err, results) {
                     if(results.message){
-                        connection_ikon_plan.release();
+                        connection_ikon_cms.release();
                         res.send({"success" : false,"message" : results.message});
                     }else{
                         if (req.body.planid) {
@@ -173,9 +175,9 @@ exports.addeditalacart = function (req, res, next) {
                         var count = req.body.OperatorDetails.length;
                         function addEditOperators(cnt) {
                             var j = cnt;
-                            var query = connection_ikon_plan.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
+                            var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
                                 if (err) {
-                                    connection_ikon_plan.release();
+                                    connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                 }
                                 else {
@@ -183,13 +185,13 @@ exports.addeditalacart = function (req, res, next) {
                                         var disclaimerData = {
                                             dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                             dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                            dcl_st_id: req.session.StoreId,
+                                            dcl_st_id: req.session.Plan_StoreId,
                                             dcl_modified_on: new Date(),
-                                            dcl_modified_by:  req.session.UserName
+                                            dcl_modified_by:  req.session.Plan_UserName
                                         }
-                                        var query = connection_ikon_plan.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
+                                        var query = connection_ikon_cms.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
@@ -201,9 +203,9 @@ exports.addeditalacart = function (req, res, next) {
                                         });
                                     } else {
                                         var dclID = 1;
-                                        var query = connection_ikon_plan.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
+                                        var query = connection_ikon_cms.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
@@ -215,13 +217,13 @@ exports.addeditalacart = function (req, res, next) {
                                                     dcl_ref_jed_id: req.body.JetId,
                                                     dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                                     dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                                    dcl_st_id: req.session.StoreId,
-                                                    dcl_created_by: req.session.UserName,
+                                                    dcl_st_id: req.session.Plan_StoreId,
+                                                    dcl_created_by: req.session.Plan_UserName,
                                                     dcl_created_on: new Date()
                                                 }
-                                                var query = connection_ikon_plan.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
+                                                var query = connection_ikon_cms.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
                                                     if (err) {
-                                                        connection_ikon_plan.release();
+                                                        connection_ikon_cms.release();
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
@@ -242,9 +244,9 @@ exports.addeditalacart = function (req, res, next) {
                         function addDistributionChannel(cnt,groupID) {
                             var cmdID = 1;
                             var i = cnt;
-                            var query = connection_ikon_plan.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail', function (err, result) {
+                            var query = connection_ikon_cms.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail', function (err, result) {
                                 if (err) {
-                                    connection_ikon_plan.release();
+                                    connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                 }
                                 else {
@@ -258,9 +260,9 @@ exports.addeditalacart = function (req, res, next) {
                                         cmd_entity_detail: req.body.DistributionChannels[i]
                                     };
                                     //console.log(cmd_data)
-                                    var query = connection_ikon_plan.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
+                                    var query = connection_ikon_cms.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
                                         if (err) {
-                                            connection_ikon_plan.end();
+                                            connection_ikon_cms.end();
                                             res.status(500).json(err.message);
                                         }
                                         else {
@@ -278,7 +280,7 @@ exports.addeditalacart = function (req, res, next) {
                             async.waterfall([
                                     function(callback){
                                         //Get alacar plan
-                                        var query = connection_ikon_plan.query('select * from icn_alacart_plan where ap_id = ?', [req.body.planid], function (err, alacart) {
+                                        var query = connection_ikon_cms.query('select * from icn_alacart_plan where ap_id = ?', [req.body.planid], function (err, alacart) {
                                             callback(err,alacart);
                                         });
                                     },
@@ -286,22 +288,22 @@ exports.addeditalacart = function (req, res, next) {
                                         if (req.body.OperatorDetails.length > 0) {
                                             var operator = 0;
                                             addEditOperators(operator);
-                                            callback(null,alacart);
                                         }
+                                        callback(null,alacart);
                                     },
                                     function (alacart,callback){
                                         if (distributionChannellength > 0) {
                                             var distributionChannel = 0;
-                                            var query = connection_ikon_plan.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [alacart[0].ap_channel_front], function (err, result) {
+                                            var query = connection_ikon_cms.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [alacart[0].ap_channel_front], function (err, result) {
                                                 addDistributionChannel(distributionChannel, alacart[0].ap_channel_front);
-                                                callback(err,alacart);
                                             })
                                         }
+                                        callback(err,alacart);
                                     }
                                 ],
                                 function(err, results){
                                     if(err){
-                                        connection_ikon_plan.release();
+                                        connection_ikon_cms.release();
                                         res.status(500).json(err.message);
                                     }else {
                                         var data = {
@@ -317,16 +319,16 @@ exports.addeditalacart = function (req, res, next) {
                                             ap_stream_dur_type: req.body.StreamDurationType,
                                             ap_stream_setting: req.body.StreamSetting,
                                             ap_modified_on: new Date(),
-                                            ap_modified_by: req.session.UserName
+                                            ap_modified_by: req.session.Plan_UserName
                                         };
                                         //console.log(data)
-                                        var query = connection_ikon_plan.query('UPDATE icn_alacart_plan SET ? where ap_id =?', [data, req.body.alacartplanid], function (err, result) {
+                                        var query = connection_ikon_cms.query('UPDATE icn_alacart_plan SET ? where ap_id =?', [data, req.body.alacartplanid], function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.send({
                                                     success: true,
                                                     message: 'A-La-Cart Plan Updated successfully.'
@@ -341,7 +343,7 @@ exports.addeditalacart = function (req, res, next) {
                             async.waterfall([
                                     function(callback){
                                         //Get alacart plan max id
-                                        var query = connection_ikon_plan.query('SELECT MAX(cmd_group_id) AS group_id FROM multiselect_metadata_detail', function (err, group) {
+                                        var query = connection_ikon_cms.query('SELECT MAX(cmd_group_id) AS group_id FROM multiselect_metadata_detail', function (err, group) {
                                             callback(err,group);
                                         });
                                     },
@@ -353,32 +355,32 @@ exports.addeditalacart = function (req, res, next) {
                                             }
                                             var distributionChannel = 0;
                                             addDistributionChannel(distributionChannel,groupID);
-                                            callback(null,groupID);
                                         }
+                                        callback(null,groupID);
                                     },
                                     function (group,callback){
                                         if (req.body.OperatorDetails.length > 0) {
                                             var operator = 0;
                                             addEditOperators(operator);
-                                            callback(null,group);
                                         }
+                                        callback(null,group);
                                     },
                                     function(group,callback){
                                         //Get subscription plan
-                                        var query = connection_ikon_plan.query('select max(ap_id) as ap_id from icn_alacart_plan', function (err, subMaxId) {
+                                        var query = connection_ikon_cms.query('select max(ap_id) as ap_id from icn_alacart_plan', function (err, subMaxId) {
                                             callback(err,{'group_id':group,'ap_id':subMaxId[0].ap_id});
                                         });
                                     }
                                 ],
                                 function(err, results) {
                                     if (err) {
-                                        connection_ikon_plan.release();
+                                        connection_ikon_cms.release();
                                         res.status(500).json(err.message);
                                     } else {
                                         var data = {
                                             ap_id: results.ap_id != null ? parseInt(results.ap_id + 1) : 1,
-                                            ap_ld_id: req.session.UserId,
-                                            ap_st_id: req.session.StoreId,
+                                            ap_ld_id: req.session.Plan_UserId,
+                                            ap_st_id: req.session.Plan_StoreId,
                                             ap_plan_name: req.body.PlanName,
                                             ap_caption: req.body.Caption,
                                             ap_description: req.body.Description,
@@ -393,18 +395,18 @@ exports.addeditalacart = function (req, res, next) {
                                             ap_cty_id: req.body.CountryId,
                                             ap_stream_setting: req.body.StreamSetting,
                                             ap_created_on: new Date(),
-                                            ap_created_by: req.session.UserName,
+                                            ap_created_by: req.session.Plan_UserName,
                                             ap_modified_on: new Date(),
-                                            ap_modified_by: req.session.UserName
+                                            ap_modified_by: req.session.Plan_UserName
                                         }
 
-                                        var query = connection_ikon_plan.query('INSERT INTO icn_alacart_plan SET ?', data, function (err, result) {
+                                        var query = connection_ikon_cms.query('INSERT INTO icn_alacart_plan SET ?', data, function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.send({
                                                     success: true,
                                                     message: 'A-La-Cart Plan added successfully.'
@@ -423,7 +425,7 @@ exports.addeditalacart = function (req, res, next) {
         }
     }
     catch (err) {
-        connection_ikon_plan.release();
+        connection_ikon_cms.release();
         res.status(500).json(err.message);
     }
 }

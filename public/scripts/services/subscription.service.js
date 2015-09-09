@@ -3,7 +3,7 @@
  */
 myApp.service('Subscriptions', ['$http', function ($http) {
     var service = {};
-    service.baseRestUrl = 'http://localhost:3000';
+    service.baseRestUrl = '';
     service.GetSubscriptionData = function (data, success) {
         $http.post(service.baseRestUrl + '/getsubscriptions', data).success(function (items) {
             success(items);

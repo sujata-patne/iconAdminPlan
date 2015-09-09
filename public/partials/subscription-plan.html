@@ -53,13 +53,13 @@
                             <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>Distribution Channel</label>
                             <div class="col-md-9">
                                 <span data-ng-repeat="i in distributionChannelList ">
-                                    <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)">&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                    <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)" ng-required="selectedDistributionChannel.length == 0" >&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
                                 </span>
                                 <br />
-                                <span style="color: red" ng-hide="!subscriptionForm.$submitted || selectedDistributionChannel.length > 0">
-                                    Distribution Channel is required.
+                                <span style="color: red" ng-show="subscriptionForm.$submitted && selectedDistributionChannel.length == 0 ">
+                                     <span ng-show="subscriptionForm.distributionChannel.$error.required">Distribution Channel is required.</span>
                                 </span>
-                            </div>
+                        </div>
                         </div>
                         <div class="form-group">
                             <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>JetPay Event Id</label>
@@ -87,6 +87,7 @@
                             </thead>
                             <tbody>
                             <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
+                                {{operators}}
                                 <td class="col-md-2 col-xs-2">{{operators.partner_name}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.duration}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.tmi_amt}}</td>
@@ -301,15 +302,16 @@
                                     </div>
                                     <div class="col-md-5">
                                         <div class="row"><div class="form-group col-md-12">
+
                                             <select data-ng-options="item.ap_id as item.ap_plan_name for item in alacartData | filter:{cd_name:'{{ContentType.cd_name}}'} | filter:{delivery_type_name:'Download'}" class="form-control" data-ng-model="downloadCost[ContentType.cd_name]"  >
                                                 <option value="">--Select Download Plan for {{ContentType.cd_name}} or it's Free--</option>
                                             </select>
                                         </div></div>
                                     </div>
                                     <div class="col-md-5">
-                                        <div class="row"><div class="form-group col-md-12"  >
-                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in alacartData | filter:{cd_name:'{{ContentType.cd_name}}'} | filter:{delivery_type_name:'Streaming'}" class="form-control" data-ng-model="streamingCost[ContentType.cd_name]" >
-                                                <option value="">--Select Streaming Plan for {{item.ap_delivery_type}} {{ContentType.cd_name}} or it's Free--</option>
+                                        <div class="row"><div class="form-group col-md-12" ng-show="ContentType.parent_name == 'Audio' || ContentType.parent_name == 'Video'" >
+                                            <select data-ng-options="item.ap_id as item.ap_plan_name for item in alacartData  | filter:{cd_name:'{{ContentType.cd_name}}'} | filter:{delivery_type_name:'Streaming'}" class="form-control" data-ng-model="streamingCost[ContentType.cd_name]" >
+                                                <option value="">--Select Streaming Plan for {{ContentType.cd_name}} or it's Free--</option>
                                             </select>
                                         </div></div>
                                     </div>

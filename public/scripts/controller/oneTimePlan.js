@@ -50,7 +50,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.streamingLimitType = value.ap_stream_setting;
 
             $scope.ContentTypeChange();
-            $scope.GeoLocationChange();
             $scope.displayOperators();
             $scope.deliveryTypeChange();
         });
@@ -65,7 +64,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 contentTypeData = type;
             }
         })
-        if( $scope.SelectedContentType == contentTypeData.cd_id && (contentTypeData.mct_parent_cnt_type_id == 9 || contentTypeData.mct_parent_cnt_type_id == 10)){
+        if( $scope.SelectedContentType == contentTypeData.cd_id && (contentTypeData.parent_name == 'Audio' || contentTypeData.parent_name == 'Video')){
             $scope.deliveryType = $scope.AllDeliveryType;
         }else{
             $scope.deliveryType = $scope.AllDeliveryType.filter(function (type){
@@ -101,7 +100,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 $scope.OperatorDetails.push(value);
             }
         })
-        console.log($scope.OperatorDetails)
+        //console.log($scope.OperatorDetails)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -112,7 +111,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
         if($scope.distributionChannelArray[id] === true){
             $scope.selectedDistributionChannel.push(id);
         }
-        if($scope.distributionChannelArray[id] === false){
+        if($scope.distributionChannelArray[id] !== true){
             var idx = $scope.selectedDistributionChannel.indexOf(id);
             $scope.selectedDistributionChannel.splice(idx, 1);
         }

@@ -51,12 +51,12 @@ exports.pages = function (req, res, next) {
     ];
 
     if (req.session) {
-        if (req.session.UserName) {
-            if (req.session.StoreId) {
-                role = req.session.UserRole;
+        if (req.session.Plan_UserName) {
+            if (req.session.Plan_StoreId) {
+                role = req.session.Plan_UserRole;
                 var pageData = getPages(role);
-                //res.render('index', { title: 'Express', username: req.session.UserName, Pages: pageData, userrole: req.session.UserRole });
-                res.render('index', { title: 'Express', username: req.session.FullName, Pages: pageData, userrole: req.session.UserType, lastlogin: " " + getDate(req.session.lastlogin) + " " + getTime(req.session.lastlogin) });
+                //res.render('index', { title: 'Express', username: req.session.Plan_UserName, Pages: pageData, userrole: req.session.Plan_UserRole });
+                res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
             }
             else {
                 res.redirect('/accountlogin');
@@ -80,12 +80,12 @@ exports.pages = function (req, res, next) {
  */
 exports.login = function (req, res, next) {
     if (req.session) {
-        if (req.session.UserName) {
-            if (req.session.StoreId) {
-                res.redirect("/plan-list");
+        if (req.session.Plan_UserName) {
+            if (req.session.Plan_StoreId) {
+                res.redirect("/planlist");
             }
             else {
-                res.redirect("/plan-list");
+                res.redirect("/planlist");
             }
         }
         else {
@@ -106,8 +106,8 @@ exports.login = function (req, res, next) {
 exports.logout = function (req, res, next) {
     try {
         if (req.session) {
-            if (req.session.UserName) {
-                if (req.session.StoreId) {
+            if (req.session.Plan_UserName) {
+                if (req.session.Plan_StoreId) {
                     req.session = null;
                     res.redirect('/accountlogin');
                 }
@@ -145,15 +145,15 @@ exports.authenticate = function (req, res, next) {
                             if(row[0].ld_role == 'Store Manager') {
 
                                 var session = req.session;
-                                session.UserId = row[0].ld_id;
-                                session.UserRole = row[0].ld_role;
-                                session.UserName = req.body.username;
-                                session.Password = req.body.password;
-                                session.Email = row[0].ld_email_id;
-                                session.FullName = row[0].ld_display_name;
-                                session.lastlogin = row[0].ld_last_login;
-                                session.UserType = row[0].ld_user_type;
-                                session.StoreId = row[0].su_st_id;//coming from new store's user table.
+                                session.Plan_UserId = row[0].ld_id;
+                                session.Plan_UserRole = row[0].ld_role;
+                                session.Plan_UserName = req.body.username;
+                                session.Plan_Password = req.body.password;
+                                session.Plan_Email = row[0].ld_email_id;
+                                session.Plan_FullName = row[0].ld_display_name;
+                                session.Plan_lastlogin = row[0].ld_last_login;
+                                session.Plan_UserType = row[0].ld_user_type;
+                                session.Plan_StoreId = row[0].su_st_id;//coming from new store's user table.
                                 connection_central.release();
                                 res.redirect('/');
                             } else {
@@ -233,7 +233,7 @@ exports.forgotPassword = function (req, res, next) {
                             }
                         });
                         var mailOptions = {
-                            to: session.Email,//'sujata.patne@jetsynthesys.com',
+                            to: session.Plan_Email,//'sujata.patne@jetsynthesys.com',
                             subject: 'Forgot Password',
                             html: "<p>Hi, " + row[0].ld_user_id + " <br />This is your password: " + row[0].ld_user_pwd + "</p>"
                         }
@@ -281,17 +281,17 @@ exports.viewChangePassword = function (req, res, next) {
 exports.changePassword = function (req, res) {
     try {
         if (req.session) {
-            if (req.session.UserName) {
+            if (req.session.Plan_UserName) {
                 var session = req.session;
                 mysql.getConnection('CMS', function (err, connection_central) {
-                    if (req.body.oldpassword == session.Password) {
-                        var query = connection_central.query('UPDATE icn_login_detail SET ld_user_pwd=?, ld_modified_on=? WHERE ld_id=?', [req.body.newpassword, new Date(), session.UserId], function (err, result) {
+                    if (req.body.oldpassword == session.Plan_Password) {
+                        var query = connection_central.query('UPDATE icn_login_detail SET ld_user_pwd=?, ld_modified_on=? WHERE ld_id=?', [req.body.newpassword, new Date(), session.Plan_UserId], function (err, result) {
                             if (err) {
                                 connection_central.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                session.Password = req.body.newpassword;
+                                session.Plan_Password = req.body.newpassword;
                                 var smtpTransport = nodemailer.createTransport({
                                     service: "Gmail",
                                     auth: {
@@ -300,9 +300,9 @@ exports.changePassword = function (req, res) {
                                     }
                                 });
                                 var mailOptions = {
-                                    to: session.Email,
+                                    to: session.Plan_Email,
                                     subject: 'Change Password',
-                                    html: "<p>Hi, " + session.UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
+                                    html: "<p>Hi, " + session.Plan_UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
                                 }
                                 smtpTransport.sendMail(mailOptions, function (error, response) {
                                     if (error) {

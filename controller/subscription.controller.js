@@ -13,58 +13,60 @@ var async = require("async");
  */
 exports.getsubscriptions = function (req, res, next) {
     try {
-        if (req.session != undefined && req.session.UserName != undefined && req.session.StoreId != undefined) {
-            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+        if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId ) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
                         PlanData: function (callback) {
                             //Get subscription plan data
-                            var query = connection_ikon_plan.query('SELECT * FROM icn_sub_plan where sp_id =? ', [req.body.planid], function (err, subplan) {
+                            var query = connection_ikon_cms.query('SELECT * FROM icn_sub_plan where sp_id =? ', [req.body.planid], function (err, subplan) {
                                 callback(err, subplan);
                             });
                         },
                         ContentTypes: function (callback) {
-                            var query = connection_ikon_plan.query('select cd.*, ct.mct_parent_cnt_type_id from icn_store As st ' +
-                                'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
-                                'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
+                            var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id, ' +
+                                '(SELECT cd_name FROM catalogue_detail as cd1 join catalogue_master as cm1 ON  cm1.cm_id = cd1.cd_cm_id WHERE ct.mct_parent_cnt_type_id = cd1.cd_id) AS parent_name ' +
+                                'FROM icn_store As st ' +
+                                'INNER JOIN multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
+                                'INNER JOIN catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
                                 'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
-                                'WHERE st.st_id = ? ', [req.session.StoreId],  function (err, ContentTypes) {
+                                'WHERE st.st_id = ? ', [req.session.Plan_StoreId],  function (err, ContentTypes) {
                                 callback(err, ContentTypes);
                             })
                         },
                         DistributionChannel: function (callback) {
                             //Get distribution channels
-                            var query = connection_ikon_plan.query('select cd.* FROM catalogue_detail as cd ' +
+                            var query = connection_ikon_cms.query('select cd.* FROM catalogue_detail as cd ' +
                                 'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
                                 'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
                                 'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
-                                'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.StoreId], function (err, DistributionChannel) {
+                                'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.Plan_StoreId], function (err, DistributionChannel) {
                                 callback(err, DistributionChannel)
                             })
                         },
                         GeoLocations: function (callback) {
-                            var query = connection_ikon_plan.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
+                            var query = connection_ikon_cms.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
                                 'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                                 'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
+                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.Plan_StoreId], function (err, GeoLocations) {
                                 callback(err, GeoLocations)
                             })
                         },
                         DurationOptions: function (callback) {
                             /** get stream duration list  */
-                            var query = connection_ikon_plan.query('select cd.* from catalogue_detail as cd ' +
+                            var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd ' +
                                 'join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Stream Duration")', function (err, DurationOptions) {
                                 callback(err, DurationOptions)
                             })
                         },
                         JetEvents: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
-                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
-                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id ' +
-                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id ' +
-                                'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
-                                'AND master.tmi_pp_classification = 1 AND info.ai_app_id = ? ' +
-                                'GROUP BY event.ebe_ef_id',[req.session.StoreId], function (err, JetEvents) {
+                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event '+
+                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
+                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
+                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
+                                'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
+                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "Subscriptions" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
+                                'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) {
                                 callback(err, JetEvents)
                             })
                         },
@@ -79,16 +81,16 @@ exports.getsubscriptions = function (req, res, next) {
                             })
                         },
                         ContentTypeData: function (callback) {
-                            var query = connection_ikon_plan.query('SELECT cd.cd_name, plan.*, (SELECT cd_name FROM catalogue_detail WHERE cd_id = plan.ap_delivery_type) AS delivery_type_name ' +
+                            var query = connection_ikon_cms.query('SELECT cd.cd_name, plan.*, (SELECT cd_name FROM catalogue_detail WHERE cd_id = plan.ap_delivery_type) AS delivery_type_name ' +
                                 'FROM icn_alacart_plan AS plan ' +
                                 'join catalogue_detail as cd ON plan.ap_content_type = cd.cd_id ' +
-                                'WHERE plan.ap_st_id = ? ', [req.session.StoreId], function (err, alacart) {
+                                'WHERE plan.ap_st_id = ? ', [req.session.Plan_StoreId], function (err, alacart) {
                                 callback(err, alacart)
                             })
                         },
                         selectedDistributionChannel: function (callback) {
                             /** get list of selected distribution channels */
-                            var query = connection_ikon_plan.query('SELECT mmd.* FROM multiselect_metadata_detail AS mmd ' +
+                            var query = connection_ikon_cms.query('SELECT mmd.* FROM multiselect_metadata_detail AS mmd ' +
                                 'JOIN icn_sub_plan AS subplan ON mmd.cmd_group_id = subplan.sp_channel_front ' +
                                 'WHERE subplan.sp_id =? ', [req.body.planid], function (err, selectedDistributionChannel) {
                                 callback(err, selectedDistributionChannel)
@@ -96,17 +98,17 @@ exports.getsubscriptions = function (req, res, next) {
                         },
                         RoleUser: function (callback) {
                             //Get User Role
-                            callback(null, req.session.UserRole);
+                            callback(null, req.session.Plan_UserRole);
                         }
                     },
                     function (err, results) {
                         if (err) {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             connection_ikon_bg.release();
                             res.status(500).json(err.message);
                             console.log(err.message)
                         } else {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             connection_ikon_bg.release();
                             res.send(results);
                         }
@@ -133,11 +135,11 @@ exports.getsubscriptions = function (req, res, next) {
  */
 exports.addeditsubscriptions = function (req, res, next) {
     try {
-        if (req.session && req.session.UserName) {
-            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+        if (req.session && req.session.Plan_UserName) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.waterfall([
                     function (callback) {
-                        var query = connection_ikon_plan.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
+                        var query = connection_ikon_cms.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
                             ' UNION ' +
                             '(select subscription.sp_id as plan_id from icn_sub_plan AS subscription where lower(subscription.sp_plan_name) = ? ) ' +
                             ' UNION ' +
@@ -159,7 +161,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                 ],
                 function(err, results) {
                     if (results.message) {
-                        connection_ikon_plan.release();
+                        connection_ikon_cms.release();
                         res.send({"success": false, "message": results.message});
                     } else {
                         if (req.body.planid) {
@@ -171,10 +173,13 @@ exports.addeditsubscriptions = function (req, res, next) {
 
                         var count = req.body.OperatorDetails.length;
                         function addEditOperators(cnt) {
+                            console.log(cnt)
                             var j = cnt;
-                            var query = connection_ikon_plan.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
+                            console.log(req.body.JetId)
+                            console.log(req.body.OperatorDetails[j].partner_id)
+                            var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
                                 if (err) {
-                                    connection_ikon_plan.release();
+                                    connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                     console.log(err.message)
                                 }
@@ -183,14 +188,14 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         var disclaimerData = {
                                             dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                             dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                            dcl_st_id: req.session.StoreId,
+                                            dcl_st_id: req.session.Plan_StoreId,
                                             dcl_modified_on: new Date(),
-                                            dcl_modified_by:  req.session.UserName
+                                            dcl_modified_by:  req.session.Plan_UserName
                                         }
 
-                                        var query = connection_ikon_plan.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
+                                        var query = connection_ikon_cms.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                                 console.log(err.message)
                                             }
@@ -203,9 +208,9 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         });
                                     } else {
                                         var dclID = 1;
-                                        var query = connection_ikon_plan.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
+                                        var query = connection_ikon_cms.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                                 console.log(err.message)
                                             }
@@ -213,18 +218,18 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                 if (result[0].id != null) {
                                                     dclID = parseInt(result[0].id) + 1;
                                                 }
-                                                var disclaimer = {
+                                                var disclaimerData = {
                                                     dcl_id: dclID,
                                                     dcl_ref_jed_id: req.body.JetId,
                                                     dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                                     dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                                    dcl_st_id: req.session.StoreId,
-                                                    dcl_created_by: req.session.UserName,
+                                                    dcl_st_id: req.session.Plan_StoreId,
+                                                    dcl_created_by: req.session.Plan_UserName,
                                                     dcl_created_on: new Date()
                                                 }
-                                                var query = connection_ikon_plan.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
+                                                var query = connection_ikon_cms.query('INSERT INTO icn_disclaimer SET ?', disclaimerData, function (err, result) {
                                                     if (err) {
-                                                        connection_ikon_plan.release();
+                                                        connection_ikon_cms.release();
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
@@ -245,9 +250,9 @@ exports.addeditsubscriptions = function (req, res, next) {
                         function addDistributionChannel(cnt,groupID) {
                             var cmdID = 1;
                             var i = cnt;
-                            var query = connection_ikon_plan.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail', function (err, result) {
+                            var query = connection_ikon_cms.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail', function (err, result) {
                                 if (err) {
-                                    connection_ikon_plan.release();
+                                    connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                     console.log(err.message)
                                 }
@@ -261,9 +266,10 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         cmd_entity_type: req.body.DistributionChannelList[0].cd_cm_id,
                                         cmd_entity_detail: req.body.DistributionChannels[i]
                                     };
-                                    var query = connection_ikon_plan.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
+
+                                    var query = connection_ikon_cms.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
                                         if (err) {
-                                            connection_ikon_plan.end();
+                                            connection_ikon_cms.release();
                                             res.status(500).json(err.message);
                                             console.log(err.message)
                                         }
@@ -280,190 +286,192 @@ exports.addeditsubscriptions = function (req, res, next) {
 
                         function EditSubscriptions() {
                             async.waterfall([
-                                    function(callback){
-                                        //Get subscription plan
-                                        var query = connection_ikon_plan.query('select * from icn_sub_plan where sp_id = ?', [req.body.subplanId], function (err, subscription) {
-                                            callback(err,subscription);
-                                        });
-                                    },
-                                    function (subscription,callback){
-                                        if (req.body.OperatorDetails.length > 0) {
-                                            var operator = 0;
-                                            addEditOperators(operator);
-                                            callback(null,subscription);
-                                        }
-                                    },
-                                    function (subscription,callback){
-                                        if (distributionChannellength > 0) {
-                                            var distributionChannel = 0;
-                                            var query = connection_ikon_plan.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [subscription[0].sp_channel_front], function (err, result) {
-                                                addDistributionChannel(distributionChannel, subscription[0].sp_channel_front);
-                                                callback(err,subscription);
-                                            })
-                                        }
+                                function(callback){
+                                    //Get subscription plan
+                                    var query = connection_ikon_cms.query('select * from icn_sub_plan where sp_id = ?', [req.body.subplanId], function (err, subscription) {
+                                        callback(err,subscription);
+                                    });
+                                },
+                                function (subscription,callback){
+                                    if (req.body.OperatorDetails.length > 0) {
+                                        var operator = 0;
+                                        addEditOperators(operator);
                                     }
-                                ],
-                                function(err, results){
-                                    if(err){
-                                        connection_ikon_plan.release();
-                                        res.status(500).json(err.message);
-                                    }else{
-                                        var data = {
-                                            sp_plan_name: req.body.PlanName,
-                                            sp_caption: req.body.Caption,
-                                            sp_description: req.body.Description,
-                                            sp_jed_id: req.body.JetId,
-                                            sp_tnb_days: req.body.offerForDays,
-
-                                            sp_tnb_free_cnt_limit: req.body.numContentOffer,
-                                            sp_single_day_cnt_limit: req.body.limitSingleDay,
-                                            sp_full_sub_cnt_limit: req.body.fullSubDuration,
-                                            sp_tnb_stream_cnt_limit: req.body.slc_tnb_free_cnt_limit,
-                                            sp_single_day_steam_limit: req.body.slc_single_day_cnt_limit,
-                                            sp_single_day_stream_dur: req.body.sld_single_day_cnt_limit,
-                                            sp_single_day_stream_dur_type: req.body.sld_single_day_cnt_duration,
-
-                                            sp_tnb_stream_duration: req.body.sld_tnb_free_cnt_limit,
-                                            sp_tnb_stream_dur_type: req.body.sld_tnb_free_cnt_duration,
-
-                                            sp_full_sub_stream_limit: req.body.slc_full_sub_cnt_limit,
-                                            sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
-                                            sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
-                                            sp_stream_setting: req.body.streamingLimitType,
-
-                                            sp_cty_id: req.body.geoLocationId,
-                                            sp_is_active: 1,
-                                            sp_plan_duration: req.body.planDuration,
-                                            sp_plan_dur_type: req.body.planDurationOption,
-
-                                            sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
-                                            sp_animation_alcrt_id: req.body.subscription_plan_Animation,
-                                            sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
-                                            sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
-                                            sp_game_alcrt_id: req.body.subscription_plan_GamesApps,
-                                            sp_video_alcrt_id: req.body.subscription_plan_Video,
-                                            sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
-                                            sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
-                                            sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,
-                                            sp_modified_on: new Date(),
-                                            sp_modified_by: req.session.UserName
-                                        }
-                                        var query = connection_ikon_plan.query(' UPDATE icn_sub_plan SET ?' +
-                                            'WHERE sp_id =?', [data, req.body.subplanId], function (err, result) {
-                                            if (err) {
-                                                connection_ikon_plan.release();
-                                                res.status(500).json(err.message);
-                                            }
-                                            else {
-                                                connection_ikon_plan.release();
-                                                res.send({ success: true, message: 'Subscription Plan Updated successfully.' });
-                                            }
-                                        });
+                                    callback(null,subscription);
+                                },
+                                function (subscription,callback){
+                                    if (distributionChannellength > 0) {
+                                        var distributionChannel = 0;
+                                        var query = connection_ikon_cms.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [subscription[0].sp_channel_front], function (err, result) {
+                                            addDistributionChannel(distributionChannel, subscription[0].sp_channel_front);
+                                        })
                                     }
-                                });
+                                    callback(err,subscription);
+                                }
+                            ],
+                            function(err, results){
+                                console.log(results)
+                                if(err){
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                }else{
+                                    var data = {
+                                        sp_plan_name: req.body.PlanName,
+                                        sp_caption: req.body.Caption,
+                                        sp_description: req.body.Description,
+                                        sp_jed_id: req.body.JetId,
+                                        sp_tnb_days: req.body.offerForDays,
 
+                                        sp_tnb_free_cnt_limit: req.body.numContentOffer,
+                                        sp_single_day_cnt_limit: req.body.limitSingleDay,
+                                        sp_full_sub_cnt_limit: req.body.fullSubDuration,
+                                        sp_tnb_stream_cnt_limit: req.body.slc_tnb_free_cnt_limit,
+                                        sp_single_day_steam_limit: req.body.slc_single_day_cnt_limit,
+                                        sp_single_day_stream_dur: req.body.sld_single_day_cnt_limit,
+                                        sp_single_day_stream_dur_type: req.body.sld_single_day_cnt_duration,
+
+                                        sp_tnb_stream_duration: req.body.sld_tnb_free_cnt_limit,
+                                        sp_tnb_stream_dur_type: req.body.sld_tnb_free_cnt_duration,
+
+                                        sp_full_sub_stream_limit: req.body.slc_full_sub_cnt_limit,
+                                        sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
+                                        sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
+                                        sp_stream_setting: req.body.streamingLimitType,
+
+                                        sp_cty_id: req.body.geoLocationId,
+                                        sp_is_active: 1,
+                                        sp_plan_duration: req.body.planDuration,
+                                        sp_plan_dur_type: req.body.planDurationOption,
+
+                                        sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
+                                        sp_animation_alcrt_id: req.body.subscription_plan_Animation,
+                                        sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
+                                        sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
+                                        sp_game_alcrt_id: req.body.subscription_plan_GamesApps,
+                                        sp_video_alcrt_id: req.body.subscription_plan_Video,
+                                        sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
+                                        sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
+                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,
+                                        sp_modified_on: new Date(),
+                                        sp_modified_by: req.session.Plan_UserName
+                                    }
+                                    var query = connection_ikon_cms.query(' UPDATE icn_sub_plan SET ?' +
+                                        'WHERE sp_id =?', [data, req.body.subplanId], function (err, result) {
+                                        if (err) {
+                                            connection_ikon_cms.release();
+                                            res.status(500).json(err.message);
+                                        }
+                                        else {
+                                            connection_ikon_cms.release();
+                                            res.send({ success: true, message: 'Subscription Plan Updated successfully.' });
+                                        }
+                                    });
+                                }
+                            });
                         }
 
                         function AddSubscriptions() {
-
                             async.waterfall([
-                                    function(callback){
-                                        //Get subscription plan
-                                        var query = connection_ikon_plan.query('SELECT MAX(cmd_group_id) AS group_id FROM multiselect_metadata_detail', function (err, group) {
-                                            callback(err,group);
-                                        });
-                                    },
-                                    function (group,callback){
-                                        if (distributionChannellength > 0) {
-                                            var groupID = 1;
-                                            if (group[0].group_id != null) {
-                                                groupID = parseInt(group[0].group_id) + 1;
-                                            }
-                                            var distributionChannel = 0;
-                                            addDistributionChannel(distributionChannel,groupID);
-                                            callback(null,groupID);
-                                        }
-                                    },
-                                    function (group,callback){
-                                        if (req.body.OperatorDetails.length > 0) {
-                                            var operator = 0;
-                                            addEditOperators(operator);
-                                            callback(null,group);
-                                        }
-                                    },
-                                    function(group,callback){
-                                        //Get subscription plan
-                                        var query = connection_ikon_plan.query('SELECT MAX(sp_id) AS sp_id FROM icn_sub_plan', function (err, subMaxId) {
-                                            callback(err,{'group_id':group,'sp_id':subMaxId[0].sp_id});
-                                        });
+                                function(callback){
+                                    //Get subscription plan
+                                    var query = connection_ikon_cms.query('SELECT MAX(cmd_group_id) AS group_id FROM multiselect_metadata_detail', function (err, group) {
+                                        callback(err,group);
+                                    });
+                                },
+                                function (group,callback){
+                                    console.log(req.body.OperatorDetails)
+
+                                    if (req.body.OperatorDetails.length > 0) {
+                                        var operator = 0;
+                                        addEditOperators(operator);
                                     }
-                                ],
-                                function(err, results) {
-                                    if (err) {
-                                        connection_ikon_plan.release();
-                                        res.status(500).json(err.message);
-                                    } else {
-                                        var data = {
-                                            sp_id: results.sp_id != null ? parseInt(results.sp_id + 1) : 1,
-                                            sp_ld_id: req.session.UserId,
-                                            sp_st_id: req.session.StoreId,
-                                            sp_plan_name: req.body.PlanName,
-                                            sp_caption: req.body.Caption,
-                                            sp_description: req.body.Description,
-                                            sp_jed_id: req.body.JetId,
-                                            sp_tnb_days: req.body.offerForDays,
-
-                                            sp_tnb_free_cnt_limit: req.body.numContentOffer,
-                                            sp_single_day_cnt_limit: req.body.limitSingleDay,
-                                            sp_full_sub_cnt_limit: req.body.fullSubDuration,
-
-                                            sp_channel_front : results.group_id,
-                                            sp_tnb_stream_cnt_limit: req.body.slc_tnb_free_cnt_limit,
-                                            sp_single_day_steam_limit: req.body.slc_single_day_cnt_limit,
-                                            sp_single_day_stream_dur: req.body.sld_single_day_cnt_limit,
-                                            sp_single_day_stream_dur_type: req.body.sld_single_day_cnt_duration,
-
-                                            sp_tnb_stream_duration: req.body.sld_tnb_free_cnt_limit,
-                                            sp_tnb_stream_dur_type: req.body.sld_tnb_free_cnt_duration,
-
-                                            sp_full_sub_stream_limit: req.body.slc_full_sub_cnt_limit,
-                                            sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
-                                            sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
-                                            sp_stream_setting: req.body.streamingLimitType,
-
-                                            sp_cty_id: req.body.geoLocationId,
-                                            sp_is_active: 1,
-                                            sp_plan_duration: req.body.planDuration,
-                                            sp_plan_dur_type: req.body.planDurationOption,
-
-                                            sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
-                                            sp_animation_alcrt_id: req.body.subscription_plan_Animation,
-                                            sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
-                                            sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
-                                            sp_game_alcrt_id: req.body.subscription_plan_GamesApps,
-                                            sp_video_alcrt_id: req.body.subscription_plan_Video,
-                                            sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
-                                            sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
-                                            sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,
-
-                                            sp_created_on: new Date(),
-                                            sp_created_by: req.session.UserName,
-                                            sp_modified_on: new Date(),
-                                            sp_modified_by: req.session.UserName
+                                    callback(null,group);
+                                },
+                                function (group,callback){
+                                    if (distributionChannellength > 0) {
+                                        var groupID = 1;
+                                        if (group[0].group_id != null) {
+                                            groupID = parseInt(group[0].group_id) + 1;
                                         }
-
-                                        var query = connection_ikon_plan.query('INSERT INTO icn_sub_plan SET ?', data, function (err, result) {
-                                            if (err) {
-                                                connection_ikon_plan.release();
-                                                res.status(500).json(err.message);
-                                            }
-                                            else {
-                                                connection_ikon_plan.release();
-                                                res.send({ success: true, message: 'Sunscription Plan added successfully.' });
-                                            }
-                                        });
+                                        var distributionChannel = 0;
+                                        addDistributionChannel(distributionChannel,groupID);
                                     }
-                                });
+                                    callback(null,groupID);
+                                },
+
+                                function(group,callback){
+                                    //Get subscription plan
+                                    var query = connection_ikon_cms.query('SELECT MAX(sp_id) AS sp_id FROM icn_sub_plan', function (err, subMaxId) {
+                                        callback(err,{'group_id':group,'sp_id':subMaxId[0].sp_id});
+                                    });
+                                }
+                            ],
+                            function(err, results) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                } else {
+                                    var data = {
+                                        sp_id: results.sp_id != null ? parseInt(results.sp_id + 1) : 1,
+                                        sp_ld_id: req.session.Plan_UserId,
+                                        sp_st_id: req.session.Plan_StoreId,
+                                        sp_plan_name: req.body.PlanName,
+                                        sp_caption: req.body.Caption,
+                                        sp_description: req.body.Description,
+                                        sp_jed_id: req.body.JetId,
+                                        sp_tnb_days: req.body.offerForDays,
+
+                                        sp_tnb_free_cnt_limit: req.body.numContentOffer,
+                                        sp_single_day_cnt_limit: req.body.limitSingleDay,
+                                        sp_full_sub_cnt_limit: req.body.fullSubDuration,
+
+                                        sp_channel_front : results.group_id,
+                                        sp_tnb_stream_cnt_limit: req.body.slc_tnb_free_cnt_limit,
+                                        sp_single_day_steam_limit: req.body.slc_single_day_cnt_limit,
+                                        sp_single_day_stream_dur: req.body.sld_single_day_cnt_limit,
+                                        sp_single_day_stream_dur_type: req.body.sld_single_day_cnt_duration,
+
+                                        sp_tnb_stream_duration: req.body.sld_tnb_free_cnt_limit,
+                                        sp_tnb_stream_dur_type: req.body.sld_tnb_free_cnt_duration,
+
+                                        sp_full_sub_stream_limit: req.body.slc_full_sub_cnt_limit,
+                                        sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
+                                        sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
+                                        sp_stream_setting: req.body.streamingLimitType,
+
+                                        sp_cty_id: req.body.geoLocationId,
+                                        sp_is_active: 1,
+                                        sp_plan_duration: req.body.planDuration,
+                                        sp_plan_dur_type: req.body.planDurationOption,
+
+                                        sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
+                                        sp_animation_alcrt_id: req.body.subscription_plan_Animation,
+                                        sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
+                                        sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
+                                        sp_game_alcrt_id: req.body.subscription_plan_GamesApps,
+                                        sp_video_alcrt_id: req.body.subscription_plan_Video,
+                                        sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
+                                        sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
+                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,
+
+                                        sp_created_on: new Date(),
+                                        sp_created_by: req.session.Plan_UserName,
+                                        sp_modified_on: new Date(),
+                                        sp_modified_by: req.session.Plan_UserName
+                                    }
+
+                                    var query = connection_ikon_cms.query('INSERT INTO icn_sub_plan SET ?', data, function (err, result) {
+                                        if (err) {
+                                            connection_ikon_cms.release();
+                                            res.status(500).json(err.message);
+                                        }
+                                        else {
+                                            connection_ikon_cms.release();
+                                            res.send({ success: true, message: 'Sunscription Plan added successfully.' });
+                                        }
+                                    });
+                                }
+                            });
                         }
                     }
                 })

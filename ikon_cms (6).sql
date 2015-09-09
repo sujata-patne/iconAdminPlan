@@ -32,6 +32,7 @@ Manages details for login credentials
 CREATE TABLE icn_login_detail
 (
 	ld_id			int(7) not null,                        -- pk
+--	ld_vd_id		int(7),						-- fk : vd_id , vendor id
 	ld_active		int(1),						-- user is active or not
 	ld_user_id		varchar(50),				-- user id userd for login
 	ld_user_pwd		varchar(50),				-- password for user id
@@ -44,9 +45,9 @@ CREATE TABLE icn_login_detail
 	ld_last_login	datetime,					-- last login date of user
 	ld_created_on		datetime,				-- date and time of creation
 	ld_created_by		varchar(50),				-- created by
-	ld_modified_on		datetime,				-- date and time of modification	
+	ld_modified_on		datetime,				-- date and time of modification
 	ld_modified_by		varchar(50),				-- modified by
-	PRIMARY KEY (ld_id)
+	PRIMARY KEY (ld_id,ld_vd_id)
 )ENGINE = INNODB;
 
 
@@ -86,7 +87,7 @@ CREATE TABLE icn_vendor_detail
 	vd_vendor_of		varchar(50),				-- vendor belogs to which module. e.g. content_ingestion,cms,bgw
 	vd_created_on		datetime,					-- date and time of creation
 	vd_created_by		varchar(50),				-- created by
-	vd_modified_on		datetime,					-- date and time of modification	
+	vd_modified_on		datetime,					-- date and time of modification
 	vd_modified_by		varchar(50),				-- modified by
 	PRIMARY KEY (vd_id)
 )ENGINE = INNODB;
@@ -100,11 +101,11 @@ CREATE TABLE icn_store_user
 (
 	su_st_id							int(10) not null,				-- fk: st_id, store id
 	su_ld_id							int(7),							-- fk: ld_id, id of store super user( table : icn_login_detail)
-	su_created_on						 DATETIME,	
+	su_created_on						 DATETIME,
 	su_modified_on						 DATETIME,
 	su_created_by						 VARCHAR(50),
 	su_modified_by						 VARCHAR(50),
-	PRIMARY KEY (su_ld_id)
+	PRIMARY KEY (su_id,su_ld_id)
 )ENGINE = INNODB;
 
 /*
@@ -121,7 +122,7 @@ CREATE TABLE icn_store
 	st_payment_channel						INT(10),			-- fk: cmd_group_id - payment channel distribution rights e.g voda, airtel
 	st_vendor								INT(10),			-- fk: cmd_group_id - vendor distribution rights e.g t-series
 	st_content_type							INT(10),			-- fk: cmd_group_id - content distribution rights e.g ringtones,wallpaper
-	st_created_on						 DATETIME,	
+	st_created_on						 DATETIME,
 	st_modified_on						 DATETIME,
 	st_created_by						 VARCHAR(50),
 	st_modified_by						 VARCHAR(50),
@@ -149,7 +150,7 @@ CREATE TABLE icn_country
 	cty_unq_id							int(7),								-- newly added
 	cty_region_id								int(7) not null,			-- fk: cd_id
 	cty_name							varchar(100),						-- country name
-	cty_created_on						DATETIME,	
+	cty_created_on						DATETIME,
 	cty_modified_on						DATETIME,
 	cty_created_by						VARCHAR(50),
 	cty_modified_by						VARCHAR(50)
@@ -280,7 +281,7 @@ create table icn_valuepack_plan
 	vp_created_by				varchar(50),
 	vp_modified_on				datetime,
 	vp_modified_by				varchar(50),
-	PRIMARY KEY (vp_id)
+	PRIMARY KEY (svp_id)
 )ENGINE = INNODB;
 
 CREATE TABLE IF NOT EXISTS  icn_user_content_counter(
@@ -317,7 +318,7 @@ CREATE TABLE IF NOT EXISTS  icn_disclaimer(
 
 
 /*Icon Content*/
--- catalogue is the master name i.e. content status, content type name etc. 
+-- catalogue is the master name i.e. content status, content type name etc.
 
 CREATE TABLE IF NOT EXISTS  catalogue_master(
 cm_id		 INT(7),  		-- unique id for the master catalogue
@@ -336,7 +337,7 @@ CONSTRAINT unc_cat_mstr_id UNIQUE (cm_id)
 -- cm_id:4
 -- cm_name: vendor
 
--- catalogue is master details e.g. content status(in process, ready to moderate ) etc. 
+-- catalogue is master details e.g. content status(in process, ready to moderate ) etc.
 CREATE TABLE IF NOT EXISTS  catalogue_detail(
 cd_id 		 	INT(10),  		-- unique id for the detail master
 cd_cm_id	 	INT(7),	 	-- id of the master catalogue
@@ -391,12 +392,12 @@ vp_rights_at_property_level	 INT(1) default 0	-- yes 1/no 0 -- default no
 CREATE TABLE IF NOT EXISTS  rights(
 r_id 								 INT(10),   -- unique id
 r_group_id							 INT(10),   -- group id unique per entity
-r_entity_type						 INT(10),	-- fk: cd_id - e.g. vendor, property : basically for all entities where rights is required. 
+r_entity_type						 INT(10),	-- fk: cd_id - e.g. vendor, property : basically for all entities where rights is required.
 r_allowed_content_type				 INT(10),	-- fk: cmd_group_id - content type
 r_country_distribution_rights		 INT(10),	-- fk: cmd_group_id - country distribution rights
 r_channel_distribution_rights		 INT(10),	-- fk: cmd_group_id - channel distribution rights
 r_rights_at_content_level			 int(1),	-- 0 for no 1; yes
-r_created_on						 DATETIME,	
+r_created_on						 DATETIME,
 r_modified_on						 DATETIME,
 r_created_by						 VARCHAR(50),
 r_modified_by						 VARCHAR(50),
@@ -404,16 +405,16 @@ CONSTRAINT unc_r_group_id UNIQUE (r_group_id)
 
 )ENGINE = InnoDB;
 
--- Example
--- r_id :1
--- r_group_id:
--- r_entity_type:6
--- r_allowed_content_type:
--- r_country_distribution_rights:
--- r_channel_distribution_rights:
+--Example
+--r_id :1
+--r_group_id:
+--r_entity_type:6
+--r_allowed_content_type:
+--r_country_distribution_rights:
+--r_channel_distribution_rights:
 
 
--- typically will be used by the tables where cartesian is required e.g. multiple celebs, multiple tags etc. 
+-- typically will be used by the tables where cartesian is required e.g. multiple celebs, multiple tags etc.
 CREATE TABLE IF NOT EXISTS  multiselect_metadata_detail(
 cmd_id 								 INT(10),		-- unique id per record
 cmd_group_id						 INT(10),		-- unique id per entity
@@ -421,11 +422,11 @@ cmd_entity_type						 INT(10),		-- fk:cd_id - entity type
 cmd_entity_detail					 INT(10),		-- fk:cd_id - entity detail	- e.g. celebrity detail
 CONSTRAINT unc_cmd_id UNIQUE (cmd_id)
 )ENGINE = InnoDB;
-create index idx_cmd_group_id on multiselect_metadata_detail(cmd_group_id) using BTREE;
--- cmd_id : 1
--- cmd_groud_id : 1
--- cmd_entity_type
--- cmd_entity_detail: 4
+create index idx_cmd_group_id on content_metadata_detail(cmd_group_id) using BTREE;
+--cmd_id : 1
+--cmd_groud_id : 1
+--cmd_entity_type
+--cmd_entity_detail: 4
 
 
 
@@ -440,16 +441,16 @@ cm_short_desc						VARCHAR(200),	-- short desc
 cm_release_year						INT,			-- Release YEAR
 cm_starts_from						DATETIME,		-- Agreement start date
 cm_expires_on    					DATETIME,		-- Agreement end date
-cm_property_id						 INT(10),		-- self join, will be null in case of content type is property 
+cm_property_id						 INT(10),		-- self join, will be null in case of content type is property
 cm_display_title					VARCHAR(200),	-- display title
 cm_celebrity						 INT(10),		-- fk: cmd_group_id
 cm_genre							 INT(10),		-- fk:cd_id - genre
 cm_sub_genre						 INT(10),		-- fk:cd_id - sub genre
-cm_protographer						 INT(10),		-- fk:cd_id 
+cm_protographer						 INT(10),		-- fk:cd_id
 cm_mood								 INT(10),		-- fk:cd_id
-cm_language							 INT(10),		-- fk:cd_id	
+cm_language							 INT(10),		-- fk:cd_id
 cm_nudity							 INT(1),		-- yes /no
-cm_parental_advisory				 INT(10),		-- fk:cd_id	
+cm_parental_advisory				 INT(10),		-- fk:cd_id
 cm_location							 INT(10),		-- fk:cd_id
 cm_festival_occasion				 INT(10),		-- fk:cd_id
 cm_religion							 INT(10),		-- fk:cd_id
@@ -464,11 +465,11 @@ cm_instruments						 INT(10),		-- fk: cmd_group_id
 cm_long_description					VARCHAR(800),	-- long description
 cm_mode								 INT(10),		-- fk:cd_id (single player / multiple player)
 cm_is_app_store_purchase			 INT(1),		-- yes /no
-cm_signature						VARCHAR(20),    -- unique id 
+cm_signature						VARCHAR(20),    -- unique id
 cm_state							 INT(10),		-- fk: cd_id - content state
 cm_rank								int(1),			-- content rank
 cm_is_active						int(1),			-- 0. active, 1. inactive content
-cm_thumb_url						varchar(200),	-- thumb url 
+cm_thumb_url						varchar(200),	-- thumb url
 cm_comment							varchar(200),	--  use for commenting
 cm_live_on							datetime,		-- content live date
 cm_created_on						datetime,
@@ -497,19 +498,88 @@ cf_url_base							VARCHAR(200),	-- base resource locator
 cf_url								VARCHAR(200),	-- base + url
 cf_absolute_url						VARCHAR(400),	-- absolute url
 cf_template_id						 INT(10),		-- fk:ct_group_id template id
-FOREIGN KEY (cf_cm_id) REFERENCES catalogue_detail(cd_id),
-FOREIGN KEY (cf_template_id) REFERENCES content_template(ct_group_id),
 CONSTRAINT unc_cf_id UNIQUE (cf_id)
 )ENGINE = InnoDB;
 
 
 -- ------ Vendor will be central module  -----------
 
--- In content_metadata -> cm_vendor							 
+-- In content_metadata -> cm_vendor
 
 
 
+/*
+ ---------------- PACK TABLE ------------------------
+*/
 
-                                 
+CREATE TABLE IF NOT EXISTS  icn_packs
+(
+	pk_id						int(7) not null,		-- unique id
+	pk_name						varchar(200),			-- pack name
+	pk_desc						varchar(500),			-- description
+	pk_cnt_display_opt			int(10),				-- fk : cd_id
+	pk_is_active				int(1),					-- 1. active, 0. inactive
+	pk_pcr_id					int(7),					-- fk : pcr_id
+	pk_pur_id					int(7),					-- fk: pur_id
+	pk_rule_type				int(1),					-- 1. auto, 0. manual
+	pk_nxt_rule_duration		int(5),					-- number of days
+	pk_nxt_rule_exe_date		datetime,				-- when ever the rule is executed, this data gets refreshed
+	pk_created_on				datetime,
+	pk_created_by				varchar(50),
+	pk_modified_on				datetime,
+	pk_modified_by				varchar(50)
 
+)ENGINE = InnoDB;
+
+/*
+Pack Vs Content Type
+*/
+CREATE TABLE IF NOT EXISTS  icn_pack_content_type
+(
+	pct_id						int(7),					-- pk
+	pct_pk_id					int(7),					-- fk: pk_id
+	pct_cnt_type				int(10),				-- fk: cd_id
+	pct_is_active				int(1),					-- 1. active, 0. inactive
+	pct_created_on				datetime,
+	pct_created_by				varchar(50),
+	pct_modified_on				datetime,
+	pct_modified_by				varchar(50)
+)ENGINE = InnoDB;
+
+
+/*
+Pack Vs Content Map
+*/
+CREATE TABLE IF NOT EXISTS  icn_pack_content
+(
+	pc_pct_id				int(7),					-- fk: pct_id
+	pc_cm_id				int(10),				-- fk: cm_id
+	pc_arrange_seq			int(10)					-- arrage sequence of the content vis-a-vis pack
+)ENGINE = InnoDB;
+
+/*
+Pack - Content Rule Map
+*/
+CREATE TABLE IF NOT EXISTS  icn_pack_content_rule
+(
+	pcr_id							int(7),					-- id of the record
+	pcr_rec_type					int(1),					-- 1: manual search criteria , 2: content based rule
+	pcr_pct_id						int(7),					-- fk: pct_id
+	pcr_metadata_type				int(10),				-- fk: cd_id
+	pcr_metadata_search_criteria	varchar(100),
+	pcr_duration					int(5),
+	pcr_start_date					datetime,
+	pcr_end_date					datetime
+)ENGINE = InnoDB;
+
+/*
+Pack - Usage Rule Map
+*/
+CREATE TABLE IF NOT EXISTS  icn_pack_usage_rule
+(
+	pur_id							int(7),					-- pk
+	pur_pct_id						int(7),					-- fk: pct_id
+	pur_usage_rule					int(10),			-- fk: cd_id
+	PRIMARY KEY (pur_id)
+)ENGINE = InnoDB;
 

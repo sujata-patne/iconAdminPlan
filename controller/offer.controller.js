@@ -12,7 +12,7 @@ var async = require("async");
  */
 exports.getofferdata = function (req, res, next) {
     try {
-        if (req.session != undefined && req.session.UserName != undefined) {
+        if (req.session != undefined && req.session.Plan_UserName != undefined) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
                     DistributionChannel: function(callback){
@@ -21,7 +21,7 @@ exports.getofferdata = function (req, res, next) {
                               'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
                               'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
                               'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
-                              'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ',[req.session.StoreId],function (err, DistributionChannel) {
+                              'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ',[req.session.Plan_StoreId],function (err, DistributionChannel) {
                             callback(err,DistributionChannel);
                         });
                     },
@@ -39,7 +39,7 @@ exports.getofferdata = function (req, res, next) {
                     },
                     UserRole: function(callback){
                         //Get User Role :
-                        callback(null, req.session.UserRole);
+                        callback(null, req.session.Plan_UserRole);
                     }
                 },
                 function(err, results){
@@ -70,7 +70,7 @@ exports.addOffer = function(req,res,next){
         var v_group_id;
         var v_master_id;
         var v_distibution_channels = req.body.DistributionChannels;
-        if (req.session != undefined && req.session.UserName != undefined) {
+        if (req.session != undefined && req.session.Plan_UserName != undefined) {
            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
                     //Check Whether Offer Exists :
@@ -138,8 +138,8 @@ exports.addOffer = function(req,res,next){
                                                 //insert into offer plan
                                                 var data = {
                                                     op_id : v_op_id,
-                                                    op_ld_id: req.session.UserId,
-                                                    op_st_id: req.session.StoreId,
+                                                    op_ld_id: req.session.Plan_UserId,
+                                                    op_st_id: req.session.Plan_StoreId,
                                                     op_plan_name : req.body.PlanName,
                                                     op_caption : req.body.Caption,
                                                     op_description : req.body.Description,
@@ -148,9 +148,9 @@ exports.addOffer = function(req,res,next){
                                                     op_channel_front : async_results.MaxGroupId,
                                                     op_is_active : 1,
                                                     op_created_on: new Date(),
-                                                    op_created_by: req.session.UserName,
+                                                    op_created_by: req.session.Plan_UserName,
                                                     op_modified_on: new Date(),
-                                                    op_modified_by: req.session.UserName
+                                                    op_modified_by: req.session.Plan_UserName
                                                 }
                                                 var query = connection_ikon_cms.query('INSERT INTO `icn_offer_plan` SET ?', data, function (err, result) {
                                                     if(err){
@@ -192,11 +192,11 @@ exports.editOffer = function (req, res, next) {
             var v_distibution_channels = req.body.DistributionChannels;
             var v_plan_name = req.body.PlanName.toLowerCase();
             var v_op_id = req.body.offerplanId;
-            if (req.session != undefined && req.session.UserName != undefined) {
-                    mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+            if (req.session != undefined && req.session.Plan_UserName != undefined) {
+                    mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                       async.parallel({
                                  OfferExists: function(callback){
-                                      var query = connection_ikon_plan.query("SELECT op_id as id FROM `icn_offer_plan` WHERE lower(op_plan_name) = ? AND op_id != ?",[req.body.PlanName.toLowerCase(),v_op_id], function (err, result) {
+                                      var query = connection_ikon_cms.query("SELECT op_id as id FROM `icn_offer_plan` WHERE lower(op_plan_name) = ? AND op_id != ?",[req.body.PlanName.toLowerCase(),v_op_id], function (err, result) {
                                             if(result.length > 0){
                                               callback(err,true);
                                             }else{
@@ -205,19 +205,19 @@ exports.editOffer = function (req, res, next) {
                                       });
                                   },
                                   MasterId : function(callback){
-                                                var query = connection_ikon_plan.query("SELECT cm_id as master_id FROM `catalogue_master` WHERE cm_name = 'Channel Distribution' ", function (err, result) {
+                                                var query = connection_ikon_cms.query("SELECT cm_id as master_id FROM `catalogue_master` WHERE cm_name = 'Channel Distribution' ", function (err, result) {
                                                         v_master_id = result[0].cmd_id != null ? parseInt(result[0].cmd_id + 1) : 1;
                                                         callback(err,v_master_id);
                                                 });
                                   },
                                   MaxGroupId : function(callback){
-                                          var query = connection_ikon_plan.query('select * from icn_offer_plan where op_id = ?', [v_op_id], function (err, result) {
+                                          var query = connection_ikon_cms.query('select * from icn_offer_plan where op_id = ?', [v_op_id], function (err, result) {
                                                       if(err){
                                                           callback(err);
                                                       }else{
                                                             if (result.length > 0){
                                                                   v_group_id = result[0].op_channel_front;
-                                                                   var query = connection_ikon_plan.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [v_group_id], function (err, result) {
+                                                                   var query = connection_ikon_cms.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [v_group_id], function (err, result) {
                                                                         if(err){
                                                                             callback(err)
                                                                         }else{
@@ -231,7 +231,7 @@ exports.editOffer = function (req, res, next) {
                                   }
                           },function(err,async_results){
                                       if(err){
-                                              connection_ikon_plan.release();
+                                              connection_ikon_cms.release();
                                               res.status(500).json(err.message);
                                       }else{
                                                 if(async_results.MaxGroupId != null){
@@ -241,9 +241,9 @@ exports.editOffer = function (req, res, next) {
                                                       loop(0);
                                                       function loop(cnt) {
                                                           var i = cnt;
-                                                          var query = connection_ikon_plan.query("SELECT MAX(cmd_id) as cmd_id FROM `multiselect_metadata_detail`", function (err, result) {
+                                                          var query = connection_ikon_cms.query("SELECT MAX(cmd_id) as cmd_id FROM `multiselect_metadata_detail`", function (err, result) {
                                                               if(err){
-                                                                    connection_ikon_plan.release();
+                                                                    connection_ikon_cms.release();
                                                                     res.status(500).json(err.message);
                                                               }else{
                                                                   //Get MAx cmd id for multiselect rows
@@ -255,20 +255,20 @@ exports.editOffer = function (req, res, next) {
                                                                             cmd_entity_detail : v_distibution_channels[i]
                                                                      }
                                                                     //Insert into multiselect
-                                                                     var query = connection_ikon_plan.query('INSERT INTO `multiselect_metadata_detail` SET ?', data, function (err, result) {
+                                                                     var query = connection_ikon_cms.query('INSERT INTO `multiselect_metadata_detail` SET ?', data, function (err, result) {
                                                                             if(err){
-                                                                                connection_ikon_plan.release();
+                                                                                connection_ikon_cms.release();
                                                                                 res.status(500).json(err.message);
                                                                             }else{
                                                                                     cnt = cnt + 1;
                                                                                     if(cnt == count){
                                                                                         //insert into offer plan
-                                                                                         var query = connection_ikon_plan.query('UPDATE icn_offer_plan SET op_plan_name=?,op_caption=?,op_description=?,op_buy_item=?,op_free_item=?,op_is_active=?  WHERE op_id=? ', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.Buyitems,req.body.GetFreeItems, 1, req.body.offerplanId], function (err, result) {
+                                                                                         var query = connection_ikon_cms.query('UPDATE icn_offer_plan SET op_plan_name=?,op_caption=?,op_description=?,op_buy_item=?,op_free_item=?,op_is_active=?  WHERE op_id=? ', [req.body.PlanName, req.body.Caption, req.body.Description, req.body.Buyitems,req.body.GetFreeItems, 1, req.body.offerplanId], function (err, result) {
                                                                                          if(err){
-                                                                                              connection_ikon_plan.release();
+                                                                                              connection_ikon_cms.release();
                                                                                               res.status(500).json(err.message);
                                                                                          }else{
-                                                                                                 connection_ikon_plan.release();
+                                                                                                 connection_ikon_cms.release();
                                                                                                   res.send({
                                                                                                       success: true,
                                                                                                       message: 'Offer Plan Updated successfully.'

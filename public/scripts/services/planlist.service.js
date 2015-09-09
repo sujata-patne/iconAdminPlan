@@ -3,7 +3,7 @@
  */
 myApp.service('PlanList', ['$http', function ($http) {
     var service = {};
-    service.baseRestUrl = 'http://localhost:3000';
+    service.baseRestUrl = '';
     service.GetPlanList = function (success) {
         $http.get(service.baseRestUrl + '/planlist').success(function (items) {
             success(items);

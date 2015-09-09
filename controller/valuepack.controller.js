@@ -14,37 +14,37 @@ var config = require('../config')();
  */
 exports.getvaluepack = function (req, res, next) {
     try {
-        if (req.session && req.session.UserName != undefined && req.session.StoreId != undefined) {
-            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+        if (req.session && req.session.Plan_UserName != undefined && req.session.Plan_StoreId != undefined) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
                         PlanData: function (callback) {
-                            var query = connection_ikon_plan.query('SELECT * FROM icn_valuepack_plan where vp_id =? ', [req.body.planid], function (err, valueplan) {
+                            var query = connection_ikon_cms.query('SELECT * FROM icn_valuepack_plan where vp_id =? ', [req.body.planid], function (err, valueplan) {
                                 callback(err, valueplan)
                             })
                         },
                         DurationOptions: function (callback) {
-                            var query = connection_ikon_plan.query('select cd.* from catalogue_detail as cd ' +
+                            var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd ' +
                                 'JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Stream Duration")', function (err, DurationOptions) {
                                 callback(err, DurationOptions)
                             })
                         },
                         GeoLocations: function (callback) {
-                            var query = connection_ikon_plan.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
+                            var query = connection_ikon_cms.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
                                 'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                                 'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.StoreId], function (err, GeoLocations) {
+                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.Plan_StoreId], function (err, GeoLocations) {
                                 callback(err, GeoLocations)
                             })
                         },
                         JetEvents: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
-                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
-                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id ' +
-                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id ' +
-                                'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
-                                'AND master.tmi_pp_classification = 1 AND info.ai_app_id = ? ' +
-                                'GROUP BY event.ebe_ef_id',[req.session.StoreId], function (err, JetEvents) {
+                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event '+
+                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
+                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
+                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
+                                'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
+                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "Subscriptions" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
+                                'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) {
                                 callback(err, JetEvents)
                             })
                         },
@@ -60,17 +60,17 @@ exports.getvaluepack = function (req, res, next) {
                         },
                         RoleUser: function (callback) {
                             //Get User Role
-                            callback(null, req.session.UserRole);
+                            callback(null, req.session.Plan_UserRole);
                         }
                     },
                     function (err, results) {
                         if (err) {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             connection_ikon_bg.release();
                             res.status(500).json(err.message);
                             console.log(err.message)
                         } else {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             connection_ikon_bg.release();
                             res.send(results);
                         }
@@ -94,11 +94,11 @@ exports.getvaluepack = function (req, res, next) {
  */
 exports.addeditvaluepack = function (req, res, next) {
     try {
-        if (req.session && req.session.UserName && req.session.StoreId) {
-            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+        if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.waterfall([
                     function (callback) {
-                        var query = connection_ikon_plan.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
+                        var query = connection_ikon_cms.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
                             ' UNION ' +
                             '(select subscription.sp_id as plan_id from icn_sub_plan AS subscription where lower(subscription.sp_plan_name) = ? ) ' +
                             ' UNION ' +
@@ -120,7 +120,7 @@ exports.addeditvaluepack = function (req, res, next) {
                 ],
                 function (err, results) {
                     if (results.message) {
-                        connection_ikon_plan.release();
+                        connection_ikon_cms.release();
                         res.send({"success": false, "message": results.message});
                     } else {
                         if (req.body.planid) {
@@ -133,24 +133,23 @@ exports.addeditvaluepack = function (req, res, next) {
 
                         function addEditOperators(cnt) {
                             var j = cnt;
-                            var query = connection_ikon_plan.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
+                            var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
                                 if (err) {
-                                    connection_ikon_plan.release();
+                                    connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                 }
                                 else {
-                                    console.log(disclaimer)
                                     if (disclaimer.length > 0) {
                                         var disclaimerData = {
                                             dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                             dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                            dcl_st_id: req.session.StoreId,
+                                            dcl_st_id: req.session.Plan_StoreId,
                                             dcl_modified_on: new Date(),
-                                            dcl_modified_by: req.session.UserName
+                                            dcl_modified_by: req.session.Plan_UserName
                                         }
-                                        var query = connection_ikon_plan.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData, disclaimer[0].dcl_id], function (err, result) {
+                                        var query = connection_ikon_cms.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData, disclaimer[0].dcl_id], function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
@@ -162,9 +161,9 @@ exports.addeditvaluepack = function (req, res, next) {
                                         });
                                     } else {
                                         var dclID = 1;
-                                        var query = connection_ikon_plan.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
+                                        var query = connection_ikon_cms.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
@@ -176,13 +175,13 @@ exports.addeditvaluepack = function (req, res, next) {
                                                     dcl_ref_jed_id: req.body.JetId,
                                                     dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
                                                     dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                                    dcl_st_id: req.session.StoreId,
-                                                    dcl_created_by: req.session.UserName,
+                                                    dcl_st_id: req.session.Plan_StoreId,
+                                                    dcl_created_by: req.session.Plan_UserName,
                                                     dcl_created_on: new Date(),
                                                 }
-                                                var query = connection_ikon_plan.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
+                                                var query = connection_ikon_cms.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
                                                     if (err) {
-                                                        connection_ikon_plan.release();
+                                                        connection_ikon_cms.release();
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
@@ -200,9 +199,9 @@ exports.addeditvaluepack = function (req, res, next) {
                         }
 
                         function EditValuePack() {
-                            var query = connection_ikon_plan.query('select * from icn_valuepack_plan where vp_id = ?', [req.body.valuepackplanId], function (err, result) {
+                            var query = connection_ikon_cms.query('select * from icn_valuepack_plan where vp_id = ?', [req.body.valuepackplanId], function (err, result) {
                                 if (err) {
-                                    connection_ikon_plan.release();
+                                    connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                 }
                                 else {
@@ -221,16 +220,16 @@ exports.addeditvaluepack = function (req, res, next) {
                                             vp_stream_dur_type: req.body.StreamDurationOptions,
                                             vp_cty_id: req.body.CountryId,
                                             vp_modified_on: new Date(),
-                                            vp_modified_by: req.session.UserName
+                                            vp_modified_by: req.session.Plan_UserName
                                         }
-                                        var query = connection_ikon_plan.query('UPDATE icn_valuepack_plan SET ? WHERE vp_id =?', [data, req.body.valuepackplanId], function (err, result) {
+                                        var query = connection_ikon_cms.query('UPDATE icn_valuepack_plan SET ? WHERE vp_id =?', [data, req.body.valuepackplanId], function (err, result) {
                                             if (err) {
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
 
-                                                connection_ikon_plan.release();
+                                                connection_ikon_cms.release();
                                                 res.send({
                                                     success: true,
                                                     message: 'Value-Pack Plan Updated successfully.'
@@ -240,7 +239,7 @@ exports.addeditvaluepack = function (req, res, next) {
                                         });
                                     }
                                     else {
-                                        connection_ikon_plan.release();
+                                        connection_ikon_cms.release();
                                         res.send({success: false, message: 'Invalid Value-Pack Plan Id.'});
                                     }
                                 }
@@ -248,17 +247,17 @@ exports.addeditvaluepack = function (req, res, next) {
                         }
 
                         function AddValuePack() {
-                            var query = connection_ikon_plan.query('select max(vp_id) as id from icn_valuepack_plan', function (err, result) {
+                            var query = connection_ikon_cms.query('select max(vp_id) as id from icn_valuepack_plan', function (err, result) {
                                 if (err) {
                                     console.log(err.message);
-                                    connection_ikon_plan.release();
+                                    connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                 }
                                 else {
                                     var data = {
                                         vp_id: result[0].id != null ? parseInt(result[0].id + 1) : 1,
-                                        vp_ld_id: req.session.UserId,
-                                        vp_st_id: req.session.StoreId,
+                                        vp_ld_id: req.session.Plan_UserId,
+                                        vp_st_id: req.session.Plan_StoreId,
                                         vp_plan_name: req.body.PlanName,
                                         vp_caption: req.body.Caption,
                                         vp_description: req.body.Description,
@@ -273,26 +272,23 @@ exports.addeditvaluepack = function (req, res, next) {
                                         vp_stream_dur_type: req.body.StreamDurationOptions,
                                         vp_is_active: 1,
                                         vp_created_on: new Date(),
-                                        vp_created_by: req.session.UserName,
+                                        vp_created_by: req.session.Plan_UserName,
                                         vp_modified_on: new Date(),
-                                        vp_modified_by: req.session.UserName
+                                        vp_modified_by: req.session.Plan_UserName
                                     }
-                                    console.log(data)
-                                    var query = connection_ikon_plan.query('INSERT INTO icn_valuepack_plan SET ?', data, function (err, result) {
+                                    var query = connection_ikon_cms.query('INSERT INTO icn_valuepack_plan SET ?', data, function (err, result) {
                                         if (err) {
                                             console.log(err.message);
-                                            connection_ikon_plan.release();
+                                            connection_ikon_cms.release();
                                             res.status(500).json(err.message);
                                             console.log(err)
                                         }
                                         else {
-
-                                            connection_ikon_plan.release();
+                                            connection_ikon_cms.release();
                                             res.send({
                                                 success: true,
                                                 message: 'Value-Pack Plan added successfully.'
                                             });
-
                                         }
                                     });
                                 }

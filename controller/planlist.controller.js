@@ -2,7 +2,6 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
-var config = require('../config')();
 var async = require("async");
 /**
  * @function getplanlist
@@ -13,7 +12,7 @@ var async = require("async");
  */
 exports.getplanlist = function (req, res, next) {
     try {
-        if (req.session != undefined && req.session.UserName != undefined && req.session.StoreId != undefined) {
+        if (req.session != undefined && req.session.Plan_UserName != undefined && req.session.Plan_StoreId != undefined) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
                     ContentTypes: function (callback) {
@@ -21,7 +20,7 @@ exports.getplanlist = function (req, res, next) {
                             'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
                             'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
                             'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
-                            'WHERE st.st_id = ? ', [req.session.StoreId],  function (err, ContentTypes) {
+                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId],  function (err, ContentTypes) {
                             callback(err, ContentTypes);
                         })
                     },
@@ -47,7 +46,7 @@ exports.getplanlist = function (req, res, next) {
                     },
                     RoleUser: function (callback) {
                         //Get User Role
-                        callback(null, req.session.UserRole);
+                        callback(null, req.session.Plan_UserRole);
                     }
                 },
                 function (err, results) {
@@ -67,8 +66,6 @@ exports.getplanlist = function (req, res, next) {
         }
     }
     catch (err) {
-        connection_ikon_plan.release();
-        connection_ikon_cms.release();
         res.status(500).json(err.message);
     }
 }
@@ -81,52 +78,52 @@ exports.getplanlist = function (req, res, next) {
  */
 exports.blockunblockplan = function (req, res, next) {
     try {
-        if (req.session && req.session.UserName != undefined && req.session.StoreId != undefined) {
-            mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+        if (req.session && req.session.Plan_UserName != undefined && req.session.Plan_StoreId != undefined) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 if (req.body.ContentType == "Subscription") {
-                    var query = connection_ikon_plan.query('UPDATE icn_sub_plan set sp_is_active= ? where sp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    var query = connection_ikon_cms.query('UPDATE icn_sub_plan set sp_is_active= ? where sp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                         if (err) {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.send({ success: true, message: 'Plan ' + req.body.Status + ' successfully.' });
                         }
                     });
                 }
                 else if (req.body.ContentType == "Value Pack") {
-                    var query = connection_ikon_plan.query('UPDATE icn_valuepack_plan set vp_is_active= ? where vp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    var query = connection_ikon_cms.query('UPDATE icn_valuepack_plan set vp_is_active= ? where vp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                         if (err) {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.send({ success: true, message: 'Plan ' + req.body.Status + ' successfully.' });
                         }
                     });
                 }
                 else if (req.body.ContentType == "Offers") {
-                    var query = connection_ikon_plan.query('UPDATE icn_offer_plan set op_is_active = ? where op_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    var query = connection_ikon_cms.query('UPDATE icn_offer_plan set op_is_active = ? where op_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                         if (err) {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.send({ success: true, message: 'Plan ' + req.body.Status + ' successfully.' });
                         }
                     });
                 }
                 else {
-                    var query = connection_ikon_plan.query('UPDATE icn_alacart_plan set ap_is_active= ? where ap_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    var query = connection_ikon_cms.query('UPDATE icn_alacart_plan set ap_is_active= ? where ap_id =?', [req.body.active, req.body.PlanId], function (err, result) {
                         if (err) {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.status(500).json(err.message);
                         }
                         else {
-                            connection_ikon_plan.release();
+                            connection_ikon_cms.release();
                             res.send({ success: true, message: 'Plan ' + req.body.Status + ' successfully.' });
                         }
                     });
@@ -137,7 +134,6 @@ exports.blockunblockplan = function (req, res, next) {
         }
     }
     catch (err) {
-        connection_ikon_plan.release();
         res.status(500).json(err.message);
     }
 }
@@ -151,52 +147,52 @@ exports.blockunblockplan = function (req, res, next) {
 exports.deleteplan = function (req, res, next) {
     try {
         if (req.session) {
-            if (req.session.UserName) {
-                mysql.getConnection('CMS', function (err, connection_ikon_plan) {
+            if (req.session.Plan_UserName) {
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     if (req.body.ContentType == "Subscription") {
-                        var query = connection_ikon_plan.query('Delete From icn_sub_plan  where sp_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_cms.query('Delete From icn_sub_plan  where sp_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.send({ success: true, message: 'Subscription Plan deleted successfully.' });
                             }
                         });
                     }
                     else if (req.body.ContentType == "Value Pack") {
-                        var query = connection_ikon_plan.query('Delete From icn_valuepack_plan where vp_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_cms.query('Delete From icn_valuepack_plan where vp_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.send({ success: true, message: 'ValuePack Plan deleted successfully.' });
                             }
                         });
                     }
                     else if (req.body.ContentType == "Offers") {
-                        var query = connection_ikon_plan.query('Delete From icn_offer_plan where op_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_cms.query('Delete From icn_offer_plan where op_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.send({ success: true, message: 'Offer Plan deleted successfully.' });
                             }
                         });
                     }
                     else {
-                        var query = connection_ikon_plan.query('Delete From icn_alacart_plan where ap_id =?', [req.body.PlanId], function (err, result) {
+                        var query = connection_ikon_cms.query('Delete From icn_alacart_plan where ap_id =?', [req.body.PlanId], function (err, result) {
                             if (err) {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                connection_ikon_plan.release();
+                                connection_ikon_cms.release();
                                 res.send({ success: true, message: 'A-La-Cart Plan deleted successfully.' });
                             }
                         });
@@ -212,7 +208,6 @@ exports.deleteplan = function (req, res, next) {
         }
     }
     catch (err) {
-        connection_ikon_plan.release();
         res.status(500).json(err.message);
     }
 }
