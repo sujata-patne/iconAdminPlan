@@ -1,15 +1,18 @@
 /**
  * Created by sujata.patne on 15-07-2015.
  */
-myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngProgress, AlaCarts) {
+myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $stateParams, ngProgress, AlaCarts) {
 
     $('.removeActiveClass').removeClass('active');
     $('#a-la-cart').addClass('active');
+    $scope.CurrentPage = $state.current.name;
+    $scope.PageTitle = $state.current.name == "edit-a-la-cart" ? "Edit " : "Add ";
+
     $scope.PlanId = "";
     $scope.ContentTypes = [];
     $scope.PlanData = [];
     $scope.AllJetPayEvents = [];
-    $scope.JetPayEvent = [];
+
     $scope.AllOperatorDetails = [];
     $scope.OperatorDetails = [];
     $scope.success = "";
@@ -50,6 +53,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             $scope.streamingLimitType = value.ap_stream_setting;
 
             $scope.ContentTypeChange();
+            $scope.displayJetEvents();
             $scope.displayOperators();
             $scope.deliveryTypeChange();
         });
@@ -71,8 +75,8 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                 return type.cd_name == "Download";
             })
         }
-    }
 
+    }
 
     $scope.deliveryTypeChange = function(){
         $scope.deliveryType.forEach(function(type) {
@@ -96,11 +100,22 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id && $scope.SelectedGeoLocation == value.country) {
+            if ($scope.SelectedEventId == value.ebe_ef_id ) { //&& $scope.SelectedGeoLocation == value.country
                 $scope.OperatorDetails.push(value);
             }
         })
         //console.log($scope.OperatorDetails)
+    }
+
+    $scope.displayJetEvents = function () {
+        $scope.JetPayEvent = [];
+        $scope.AllJetPayEvents.forEach(function (value) {
+            //console.log($scope.SelectedContentType +' : '+ value.contentType)
+            if ($scope.SelectedGeoLocation == value.country  ) {
+                $scope.JetPayEvent.push(value);
+            }
+        })
+        //console.log($scope.JetPayEvent)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -145,6 +160,23 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
             ngProgress.start();
             AlaCarts.AddEditAlacart(Alacart, function (data) {
                 if (data.success) {
+                    $scope.PlanId = '';
+                    $scope.PlanName = '';
+                    $scope.SelectedDeliveryType = '';
+                    $scope.Caption = '';
+                    $scope.Description = '';
+                    $scope.SelectedContentType = '';
+                    $scope.SelectedEventId = '';
+                    $scope.OperatorDetails = '';
+
+                    $scope.distributionChannelArray = [];
+                    $scope.selectedDistributionChannel = [];
+                    $scope.streamNoOfContentLimit = '';
+                    $scope.streamDurationLimit = '';
+                    $scope.SelectedDurationType = '';
+                    $scope.SelectedGeoLocation = '';
+                    $scope.streamingLimitType = '';
+
                     $scope.success = data.message;
                     $scope.successvisible = true;
                 }
@@ -152,6 +184,11 @@ myApp.controller('oneTimePlanCtrl', function ($scope, $http, $stateParams, ngPro
                     $scope.error = data.message;
                     $scope.errorvisible = true;
                 }
+                ngProgress.complete();
+            },
+            function (error) {
+                $scope.error = error;
+                $scope.errorvisible = true;
                 ngProgress.complete();
             });
         }
