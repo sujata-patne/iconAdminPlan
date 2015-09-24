@@ -160,28 +160,17 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             ngProgress.start();
             AlaCarts.AddEditAlacart(Alacart, function (data) {
                 if (data.success) {
-                    $scope.PlanId = '';
-                    $scope.PlanName = '';
-                    $scope.SelectedDeliveryType = '';
-                    $scope.Caption = '';
-                    $scope.Description = '';
-                    $scope.SelectedContentType = '';
-                    $scope.SelectedEventId = '';
-                    $scope.OperatorDetails = '';
+                    if ($scope.CurrentPage == "edit-a-la-cart") {
+                        $window.location.href = "#a-la-cart";
+                    }
 
-                    $scope.distributionChannelArray = [];
-                    $scope.selectedDistributionChannel = [];
-                    $scope.streamNoOfContentLimit = '';
-                    $scope.streamDurationLimit = '';
-                    $scope.SelectedDurationType = '';
-                    $scope.SelectedGeoLocation = '';
-                    $scope.streamingLimitType = '';
-
-                    $scope.success = data.message;
+                    toastr.success(data.message)
+                    //$scope.success = data.message;
                     $scope.successvisible = true;
                 }
                 else {
-                    $scope.error = data.message;
+                    toastr.error(data.message)
+                    //$scope.error = data.message;
                     $scope.errorvisible = true;
                 }
                 ngProgress.complete();

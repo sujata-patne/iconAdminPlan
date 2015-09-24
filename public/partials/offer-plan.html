@@ -38,11 +38,11 @@
                         <div class="form-group">
                             <label for="buyitems" class="col-sm-3 control-label"><span class="asterisk padding-right-5">*</span>Buy items</label>
                             <div class="col-sm-9">
-                                <input min="0" max="10000" type="number" name="buyitems" class="form-control" id="" placeholder="Buy items" data-ng-model="Buyitems" data-ng-pattern="/^\d$/" required>
+                                <input min="0" max="10000" type="number" name="buyitems" class="form-control" id="" placeholder="Buy items" data-ng-model="Buyitems"  required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" ng-show="offerplanForm.$submitted || offerplanForm.buyitems.$touched">
-                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Insert valid limit for buy items.</span>
+
                                     <span ng-show="offerplanForm.buyitems.$error.required">Buy items is required.</span>
                                 </span>
                             </div>
@@ -50,11 +50,11 @@
                         <div class="form-group">
                             <label for="getfreeitems" class="col-sm-3 control-label"><span class="asterisk padding-right-5">*</span>Get free items</label>
                             <div class="col-sm-9">
-                                <input min="0" max="10000" type="number" name="getfreeitems" class="form-control" id="" placeholder="Get free items" data-ng-pattern="/^\d+$/" data-ng-model="Getfreeitems" required>
+                                <input min="0"  type="number" name="getfreeitems" class="form-control" id="" placeholder="Get free items"  data-ng-model="Getfreeitems" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" data-ng-show="offerplanForm.$submitted || offerplanForm.getfreeitems.$touched">
-                                    <span data-ng-show="offerplanForm.getfreeitems.$error.pattern">Insert valid limit for free items.</span>
+
                                     <span data-ng-show="offerplanForm.getfreeitems.$error.required">Get free items is required.</span>
                                 </span>
                             </div>

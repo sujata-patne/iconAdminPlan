@@ -69,7 +69,7 @@ exports.getalacartadata = function (req, res, next) {
                             'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
                             'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
                             'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
-                            'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) {
+                            'GROUP BY master.tmi_parent_id',[req.session.Plan_StoreId], function (err, JetEvents) {
                             /*var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
                                 'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
                                 'JOIN billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +

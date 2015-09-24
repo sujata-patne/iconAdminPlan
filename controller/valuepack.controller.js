@@ -38,13 +38,22 @@ exports.getvaluepack = function (req, res, next) {
                             })
                         },
                         JetEvents: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event '+
+                            /*var query = connection_ikon_bg.query('SELECT event.*, master.tmi_content_type as contentType, partner.partner_cty_id as country  FROM billing_ef_bgw_event as event '+
                                 'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
                                 'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
                                 'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
+                                'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
                                 'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
-                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "Subscriptions" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
-                                'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) {
+                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
+                                'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) { //Subscriptions*/
+                            var query = connection_ikon_bg.query('SELECT event.*, master.tmi_content_type as contentType, partner.partner_cty_id as country FROM billing_ef_bgw_event as event '+
+                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
+                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
+                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
+                                'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
+                                'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
+                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
+                                'GROUP BY master.tmi_parent_id',[req.session.Plan_StoreId], function (err, JetEvents) {
                                 callback(err, JetEvents)
                             })
                         },

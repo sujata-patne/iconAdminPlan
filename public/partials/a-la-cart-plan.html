@@ -40,7 +40,7 @@
                                         <option value="">-- Select Content Type --</option>
                                     </select>
                                 </span>
-                                <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.contentType.$dirty">
+                                <span style="color: red" ng-show="aLaCartForm.$submitted || aLaCartForm.contentType.$touched">
                                     <span ng-show="aLaCartForm.contentType.$error.required">Please Select Content Type.</span>
                                 </span>
                             </div>

@@ -20,6 +20,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.selectedDistributionChannel = [];
     $scope.downloadCost = [];
     $scope.streamingCost = [];
+    $scope.alacartPlanIds = {};
     // get subscription  & jet events
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
 
@@ -31,8 +32,6 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.GeoLocations = angular.copy(SubscriptionData.GeoLocations);
         $scope.ContentTypes = angular.copy(SubscriptionData.ContentTypes);
         $scope.alacartData = angular.copy(SubscriptionData.ContentTypeData);
-
-
 
         $scope.WallpaperPlan = $scope.alacartData.filter(function (alacart){
             return alacart.cd_name == "Wallpaper" && alacart.delivery_type_name == "Download";
@@ -90,7 +89,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             $scope.sld_full_sub_cnt_duration = value.sp_full_sub_stream_dur_type;
             $scope.streamingLimitType = value.sp_stream_setting;
 
-             $scope.subscription_plan_Wallpaper = value.sp_wallpaper_alcrt_id;
+            /* $scope.subscription_plan_Wallpaper = value.sp_wallpaper_alcrt_id;
              $scope.subscription_plan_Animation = value.sp_animation_alcrt_id;
              $scope.subscription_plan_RingTone = value.sp_ringtone_alcrt_id;
              $scope.subscription_plan_TextArtical = value.sp_text_alcrt_id;
@@ -98,12 +97,13 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
              $scope.subscription_plan_Video = value.sp_video_alcrt_id;
              $scope.subscription_plan_FullSong = value.sp_fullsong_alcrt_id;
              $scope.subscription_plan_stream_video = value.sp_video_alcrt_stream_id;
-             $scope.subscription_plan_stream_songs = value.sp_fullsong_alcrt_stream_id;
+             $scope.subscription_plan_stream_songs = value.sp_fullsong_alcrt_stream_id;*/
 
             $scope.planDuration = value.sp_plan_duration;
             $scope.planDurationOption = value.sp_plan_dur_type;
             $scope.SelectedGeoLocation = value.sp_cty_id;
 
+            $scope.displayJetEvents();
             $scope.displayOperators();
         });
     });
@@ -122,10 +122,21 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id && $scope.SelectedGeoLocation == value.country) {
+            if ($scope.SelectedEventId == value.ebe_ef_id ) {//&& $scope.SelectedGeoLocation == value.country
                 $scope.OperatorDetails.push(value);
             }
         })
+    }
+    $scope.displayJetEvents = function () {
+        $scope.JetPayEvent = [];
+        //console.log($scope.AllJetPayEvents)
+        $scope.AllJetPayEvents.forEach(function (value) {
+            //console.log($scope.SelectedGeoLocation +' : '+ value.country)
+            if ($scope.SelectedGeoLocation == value.country  ) {
+                $scope.JetPayEvent.push(value);
+            }
+        })
+        //console.log($scope.JetPayEvent)
     }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
@@ -136,8 +147,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
-        //console.log($scope.downloadCost)
-        //console.log($scope.streamingCost)
+        console.log($scope.alacartPlanIds)
         if (isValid) {
 
             var subscription = {
@@ -166,8 +176,9 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 DistributionChannelList: $scope.distributionChannelList,
                 DistributionChannels: $scope.selectedDistributionChannel,
                 geoLocationId : $scope.SelectedGeoLocation,
-
-                subscription_plan_Wallpaper: $scope.subscription_plan_Wallpaper,
+                alacartPlansList: $scope.alacartPlanIds,
+                ContentTypes: $scope.ContentTypes,
+                /*subscription_plan_Wallpaper: $scope.subscription_plan_Wallpaper,
                 subscription_plan_Animation: $scope.subscription_plan_Animation,
                 subscription_plan_RingTone: $scope.subscription_plan_RingTone,
                 subscription_plan_TextArtical: $scope.subscription_plan_TextArtical,
@@ -175,19 +186,25 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 subscription_plan_Video: $scope.subscription_plan_Video,
                 subscription_plan_FullSong: $scope.subscription_plan_FullSong,
                 subscription_plan_stream_video: $scope.subscription_plan_stream_video,
-                subscription_plan_stream_songs: $scope.subscription_plan_stream_songs,
+                subscription_plan_stream_songs: $scope.subscription_plan_stream_songs,*/
                 planDuration: $scope.planDuration,
                 planDurationOption: $scope.planDurationOption
             }
-            //console.log(subscription)
+
+console.log(subscription)
             ngProgress.start();
             Subscriptions.AddEditSubscription(subscription, function (data) {
                 if (data.success) {
-                    $scope.success = data.message;
+                    if ($scope.CurrentPage == "edit-subscriptions") {
+                        $window.location.href = "#subscriptions";
+                    }
+                    toastr.success(data.message)
+                   // $scope.success = data.message;
                     $scope.successvisible = true;
                 }
                 else {
-                    $scope.error = data.message;
+                    toastr.success(data.message)
+                    //$scope.error = data.message;
                     $scope.errorvisible = true;
                 }
                 ngProgress.complete();

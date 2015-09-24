@@ -40,6 +40,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
             $scope.streamingDurationLimit = value.vp_stream_duration;
             $scope.selectedDurationOptions = value.vp_duration_type;
             ;
+            $scope.displayJetEvents();
             $scope.displayOperators();
         });
     });
@@ -58,13 +59,22 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
     $scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id && $scope.SelectedGeoLocation == value.country) {
+            if ($scope.SelectedEventId == value.ebe_ef_id ) { //&& $scope.SelectedGeoLocation == value.country
                 $scope.OperatorDetails.push(value);
             }
         })
         //console.log($scope.OperatorDetails)
     }
-
+    $scope.displayJetEvents = function () {
+        $scope.JetPayEvent = [];
+        $scope.AllJetPayEvents.forEach(function (value) {
+            //console.log($scope.SelectedContentType +' : '+ value.contentType)
+            if ($scope.SelectedGeoLocation == value.country  ) {
+                $scope.JetPayEvent.push(value);
+            }
+        })
+        //console.log($scope.JetPayEvent)
+    }
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';
@@ -96,11 +106,16 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
             ngProgress.start();
             Valuepacks.AddEditValuepack(valuepack, function (data) {
                 if (data.success) {
-                    $scope.success = data.message;
+                    if ($scope.CurrentPage == "edit-value-pack") {
+                        $window.location.href = "#value-pack";
+                    }
+                    toastr.success(data.message)
+                    //$scope.success = data.message;
                     $scope.successvisible = true;
                 }
                 else {
-                    $scope.error = data.message;
+                    toastr.error(data.message)
+                    //$scope.error = data.message;
                     $scope.errorvisible = true;
                 }
                 ngProgress.complete();

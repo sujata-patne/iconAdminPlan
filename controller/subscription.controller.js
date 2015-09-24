@@ -60,13 +60,22 @@ exports.getsubscriptions = function (req, res, next) {
                             })
                         },
                         JetEvents: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event '+
+                            /*var query = connection_ikon_bg.query('SELECT event.*, master.tmi_content_type as contentType, partner.partner_cty_id as country FROM billing_ef_bgw_event as event '+
                                 'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
                                 'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
                                 'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
                                 'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
-                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "Subscriptions" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
-                                'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) {
+                                'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
+                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
+                                'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) { //Subscriptions*/
+                            var query = connection_ikon_bg.query('SELECT event.*, master.tmi_content_type as contentType, partner.partner_cty_id as country FROM billing_ef_bgw_event as event '+
+                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
+                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
+                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
+                                'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
+                                'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
+                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
+                                'GROUP BY master.tmi_parent_id',[req.session.Plan_StoreId], function (err, JetEvents) {
                                 callback(err, JetEvents)
                             })
                         },
@@ -170,13 +179,9 @@ exports.addeditsubscriptions = function (req, res, next) {
                         else {
                             AddSubscriptions();
                         }
-
                         var count = req.body.OperatorDetails.length;
                         function addEditOperators(cnt) {
-                            console.log(cnt)
                             var j = cnt;
-                            console.log(req.body.JetId)
-                            console.log(req.body.OperatorDetails[j].partner_id)
                             var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
                                 if (err) {
                                     connection_ikon_cms.release();
@@ -246,6 +251,36 @@ exports.addeditsubscriptions = function (req, res, next) {
                             });
                         }
 
+                        var plans = req.body.ContentTypes.length;
+                        function addEditPlans(cnt,subPlanId) {
+                            var j = cnt;
+                            var ContentTypeId = req.body.ContentTypes[j].cd_id;
+
+                            var downloadId = req.body.alacartPlansList[ContentTypeId].download;
+                            var streamingId = req.body.alacartPlansList[ContentTypeId].streaming;
+                            var ContentTypePlanData = {
+                                sctp_sp_id: subPlanId,
+                                sctp_content_type_id: ContentTypeId,
+                                sctp_download_id: downloadId,
+                                sctp_stream_id: streamingId
+                            }
+                            var query = connection_ikon_cms.query('INSERT INTO subscription_content_type_plan SET ?', ContentTypePlanData, function (err, result) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                    console.log(err.message)
+                                }
+                                else {
+                                    cnt++;
+                                    console.log(cnt +' : '+ plans)
+                                    if (cnt < plans) {
+                                        addEditPlans(cnt,subPlanId);
+                                    }
+                                }
+                            });
+                        }
+
+
                         var distributionChannellength = req.body.DistributionChannels.length;
                         function addDistributionChannel(cnt,groupID) {
                             var cmdID = 1;
@@ -307,10 +342,19 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         })
                                     }
                                     callback(err,subscription);
+                                },
+                                function (subscription,callback){
+                                    if (plans > 0) {
+                                        var contentType = 0;
+                                        var query = connection_ikon_cms.query('DELETE FROM  subscription_content_type_plan WHERE sctp_sp_id = ? ', [req.body.subplanId], function (err, result) {
+                                            addEditPlans(contentType, req.body.subplanId);
+                                        })
+                                    }
+                                    callback(err,subscription);
                                 }
                             ],
                             function(err, results){
-                                console.log(results)
+                                //console.log(results)
                                 if(err){
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
@@ -343,7 +387,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         sp_plan_duration: req.body.planDuration,
                                         sp_plan_dur_type: req.body.planDurationOption,
 
-                                        sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
+                                        /*sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
                                         sp_animation_alcrt_id: req.body.subscription_plan_Animation,
                                         sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
                                         sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
@@ -351,7 +395,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         sp_video_alcrt_id: req.body.subscription_plan_Video,
                                         sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
                                         sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
-                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,
+                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,*/
                                         sp_modified_on: new Date(),
                                         sp_modified_by: req.session.Plan_UserName
                                     }
@@ -379,8 +423,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     });
                                 },
                                 function (group,callback){
-                                    console.log(req.body.OperatorDetails)
-
                                     if (req.body.OperatorDetails.length > 0) {
                                         var operator = 0;
                                         addEditOperators(operator);
@@ -402,11 +444,20 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 function(group,callback){
                                     //Get subscription plan
                                     var query = connection_ikon_cms.query('SELECT MAX(sp_id) AS sp_id FROM icn_sub_plan', function (err, subMaxId) {
-                                        callback(err,{'group_id':group,'sp_id':subMaxId[0].sp_id});
+                                        callback(err,group,subMaxId);
                                     });
+                                },
+                                function (group,subMaxId,callback){
+                                    if (plans > 0) {
+                                        var contentType = 0;
+                                        var sp_id = subMaxId[0].sp_id != null ?  parseInt(subMaxId[0].sp_id + 1) : 1;
+                                        addEditPlans(contentType, sp_id);
+                                    }
+                                    callback(null,{'group_id':group,'sp_id':subMaxId[0].sp_id});
                                 }
                             ],
                             function(err, results) {
+                                console.log("### "+results.sp_id)
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
@@ -444,7 +495,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         sp_plan_duration: req.body.planDuration,
                                         sp_plan_dur_type: req.body.planDurationOption,
 
-                                        sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
+                                        /*sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
                                         sp_animation_alcrt_id: req.body.subscription_plan_Animation,
                                         sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
                                         sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
@@ -452,14 +503,13 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         sp_video_alcrt_id: req.body.subscription_plan_Video,
                                         sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
                                         sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
-                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,
+                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,*/
 
                                         sp_created_on: new Date(),
                                         sp_created_by: req.session.Plan_UserName,
                                         sp_modified_on: new Date(),
                                         sp_modified_by: req.session.Plan_UserName
                                     }
-
                                     var query = connection_ikon_cms.query('INSERT INTO icn_sub_plan SET ?', data, function (err, result) {
                                         if (err) {
                                             connection_ikon_cms.release();

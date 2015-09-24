@@ -2,6 +2,7 @@
  * Created by sujata.patne on 13-07-2015.
  */
 var mysql = require('../config/db').pool;
+var nodeExcel = require('excel-export');
 var async = require("async");
 /**
  * @function getplanlist

@@ -52,7 +52,7 @@
                             <label for="geoLocation" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span> Geo Location </label>
                             <div class="col-md-5">
                                 <span class="ui-select">
-                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.geoID as item.geoName for item in GeoLocations"  data-ng-change="displayOperators()" required>
+                                    <select name="geoLocation" class="form-control" data-ng-model="SelectedGeoLocation" data-ng-options="item.geoID as item.geoName for item in GeoLocations"  data-ng-change="displayOperators();displayJetEvents()" required>
                                         <option value="">-- Select Geo Location --</option>
                                     </select>
                                 </span>
@@ -69,7 +69,7 @@
                             <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>JetPay Event Id</label>
                             <div class="col-md-9">
                                 <span class="ui-select">
-                                    <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.ebe_ef_id as item.ebe_bgw_id_desc for item in AllJetPayEvents" data-ng-change="displayOperators()" required>
+                                    <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.ebe_ef_id as item.ebe_bgw_id_desc for item in JetPayEvent" data-ng-change="displayOperators()" required>
                                         <option value="">-- Select JetPay Event --</option>
                                     </select>
                                 </span>

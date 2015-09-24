@@ -1,20 +1,21 @@
 
-DROP SCHEMA IF EXISTS ikon_cms ;
-CREATE SCHEMA IF NOT EXISTS ikon_cms DEFAULT CHARACTER SET utf8 ;
-USE ikon_cms ;
+DROP SCHEMA IF EXISTS ikon_cms_new ;
+CREATE SCHEMA IF NOT EXISTS ikon_cms_new DEFAULT CHARACTER SET utf8 ;
+USE ikon_cms_new ;
 
 /*Admin Login Detail*/
 
 /*
-Manages details all types of login pages avalibale in UI for 
+Manages details all types of login pages avalibale in UI for
 jetsynthesys
 */
 CREATE TABLE icn_login_pages
 (
-	lp_id			int(5),					-- unique id
-	lp_pages		varchar(20),			-- Admin pages
-	lp_module		varchar(20),			-- The reference module
-	lp_function		varchar(20)				-- The function of the page
+	lp_id				int(5),					-- unique id
+	lp_pages			varchar(20),			-- Admin pages
+	lp_module			varchar(20),			-- The reference module
+	lp_function			varchar(20),			-- The function of the page
+	lp_crud_isactive 	int(1)					-- 1. Active, 0.Inactive
 )ENGINE = INNODB;
 
 CREATE TABLE icn_user_rights
@@ -22,7 +23,8 @@ CREATE TABLE icn_user_rights
 	ur_lp_id		int(5),					-- fk: lp_id
 	ur_read			int(1),					-- is read right exist : 1 is true, 0 is false
 	ur_write		int(1),					-- is write right exist: 1 is true, 0 is false
-	ur_ld_id		int(7)					-- fk: ld_id, user id
+	ur_ld_id		int(7),					-- fk: ld_id, user id
+	ur_crud_isactive 	int(1)					-- 1. Active, 0.Inactive
 )ENGINE = INNODB;
 
 
@@ -32,7 +34,6 @@ Manages details for login credentials
 CREATE TABLE icn_login_detail
 (
 	ld_id			int(7) not null,                        -- pk
---	ld_vd_id		int(7),						-- fk : vd_id , vendor id
 	ld_active		int(1),						-- user is active or not
 	ld_user_id		varchar(50),				-- user id userd for login
 	ld_user_pwd		varchar(50),				-- password for user id
@@ -47,7 +48,8 @@ CREATE TABLE icn_login_detail
 	ld_created_by		varchar(50),				-- created by
 	ld_modified_on		datetime,				-- date and time of modification
 	ld_modified_by		varchar(50),				-- modified by
-	PRIMARY KEY (ld_id,ld_vd_id)
+	ld_crud_isactive 	int(1),					-- 1. Active, 0.Inactive
+	PRIMARY KEY (ld_id)
 )ENGINE = INNODB;
 
 
@@ -63,6 +65,7 @@ CREATE TABLE icn_admin_log_detail
 	ald_created_by		varchar(50),							-- created by
 	ald_modified_on		datetime,								-- date and time of modification
 	ald_modified_by		varchar(50),							-- modified by
+	ald_crud_isactive 	int(1),									-- 1. Active, 0.Inactive
 	PRIMARY KEY (ald_id)
 )ENGINE = INNODB;
 
@@ -75,7 +78,7 @@ Mannages vendor details
 CREATE TABLE icn_vendor_detail
 (
 	vd_id				int(7) not null,            -- pk
-	vd_ld_id			int(7),						-- fk: ld_id
+-- 	vd_ld_id			int(7),						-- fk: ld_id
 	vd_name				varchar(50),				-- full name of the vendor
 	vd_display_name		varchar(50),				-- display name of vendor
 	vd_email_id         varchar(50),                -- email id of vendor
@@ -89,24 +92,12 @@ CREATE TABLE icn_vendor_detail
 	vd_created_by		varchar(50),				-- created by
 	vd_modified_on		datetime,					-- date and time of modification
 	vd_modified_by		varchar(50),				-- modified by
+	vd_crud_isactive 	int(1),						-- 1. Active, 0.Inactive
 	PRIMARY KEY (vd_id)
 )ENGINE = INNODB;
 
 
 /*Store & Icon Management*/
-/*
-Mannages Store Vs User
-*/
-CREATE TABLE icn_store_user
-(
-	su_st_id							int(10) not null,				-- fk: st_id, store id
-	su_ld_id							int(7),							-- fk: ld_id, id of store super user( table : icn_login_detail)
-	su_created_on						 DATETIME,
-	su_modified_on						 DATETIME,
-	su_created_by						 VARCHAR(50),
-	su_modified_by						 VARCHAR(50),
-	PRIMARY KEY (su_id,su_ld_id)
-)ENGINE = INNODB;
 
 /*
 Mannages Store and its details
@@ -126,7 +117,40 @@ CREATE TABLE icn_store
 	st_modified_on						 DATETIME,
 	st_created_by						 VARCHAR(50),
 	st_modified_by						 VARCHAR(50),
+	st_crud_isactive 					int(1),					-- 1. Active, 0.Inactive
 	PRIMARY KEY (st_id)
+)ENGINE = INNODB;
+
+/*
+Mannages Store Vs User
+one store can have multiple users
+*/
+CREATE TABLE icn_store_user
+(
+	su_st_id							int(10) not null,				-- fk: st_id, store id
+	su_ld_id							int(7),							-- fk: ld_id, id of store user( table : icn_login_detail)
+	su_created_on						 DATETIME,
+	su_modified_on						 DATETIME,
+	su_created_by						 VARCHAR(50),
+	su_modified_by						 VARCHAR(50),
+	su_crud_isactive 					int(1),							-- 1. Active, 0.Inactive
+	PRIMARY KEY (su_ld_id)
+)ENGINE = INNODB;
+
+
+/*
+Vendor Vs User
+One user can have multiple vendors
+*/
+CREATE TABLE icn_vendor_user
+(
+    vu_ld_id							int(7),							-- fk: ld_id, user id ( table : icn_login_detail)
+	vu_vd_id							int(10) not null,				-- fk: vd_id, vendor id (multiple vendors)
+	vu_created_on						DATETIME,
+	vu_modified_on						DATETIME,
+	vu_created_by						VARCHAR(50),
+	vu_modified_by						VARCHAR(50),
+	vu_crud_isactive 					int(1)							-- 1. Active, 0.Inactive
 )ENGINE = INNODB;
 
 
@@ -139,6 +163,7 @@ CREATE TABLE icn_manage_content_type
 	mct_parent_cnt_type_id		int(7),								-- fk: cd_id e.g. Audio, Video, Image (id of parent content type
 	mct_cnt_type_id				int(7),								-- fk: cd_id e.g. song, ringtone, video clips etc
 	mct_delivery_type_id		int(5),								-- fk: cmd_group_id - delivery type group id
+	mct_crud_isactive 			int(1),								-- 1. Active, 0.Inactive
 	PRIMARY KEY (mct_id)
 )ENGINE = INNODB;
 
@@ -153,7 +178,8 @@ CREATE TABLE icn_country
 	cty_created_on						DATETIME,
 	cty_modified_on						DATETIME,
 	cty_created_by						VARCHAR(50),
-	cty_modified_by						VARCHAR(50)
+	cty_modified_by						VARCHAR(50),
+	cty_crud_isactive 					int(1)								-- 1. Active, 0.Inactive
 )ENGINE = INNODB;
 */
 
@@ -183,6 +209,7 @@ create table icn_alacart_plan
 	ap_created_by				varchar(50),
 	ap_modified_on				datetime,
 	ap_modified_by				varchar(50),
+	ap_crud_isactive 			int(1),					-- 1. Active, 0.Inactive
 	PRIMARY KEY (ap_id)
 )ENGINE = INNODB;
 
@@ -204,6 +231,7 @@ create table icn_offer_plan
 	op_created_by				varchar(50),
 	op_modified_on				datetime,
 	op_modified_by				varchar(50),
+	op_crud_isactive 			int(1),				-- 1. Active, 0.Inactive
 	PRIMARY KEY (op_id)
 )ENGINE = INNODB;
 
@@ -252,6 +280,7 @@ create table icn_sub_plan
 	sp_created_by					varchar(50),
 	sp_modified_on					datetime,
 	sp_modified_by					varchar(50),
+	sp_crud_isactive 				int(1),				-- 1. Active, 0.Inactive
 	PRIMARY KEY (sp_id)
 ) ENGINE = INNODB;
 
@@ -281,7 +310,8 @@ create table icn_valuepack_plan
 	vp_created_by				varchar(50),
 	vp_modified_on				datetime,
 	vp_modified_by				varchar(50),
-	PRIMARY KEY (svp_id)
+	vp_crud_isactive 			int(1),
+	PRIMARY KEY (vp_id)
 )ENGINE = INNODB;
 
 CREATE TABLE IF NOT EXISTS  icn_user_content_counter(
@@ -298,6 +328,7 @@ CREATE TABLE IF NOT EXISTS  icn_user_content_counter(
 	ucc_created_by				varchar(50),
 	ucc_modified_on				datetime,
 	ucc_modified_by				varchar(50),
+	ucc_crud_isactive 			int(1),					-- 1. Active, 0.Inactive
 	PRIMARY KEY (ucc_id)
 )ENGINE = INNODB;
 
@@ -312,6 +343,7 @@ CREATE TABLE IF NOT EXISTS  icn_disclaimer(
 	dcl_created_by			varchar(50),
 	dcl_modified_on			datetime,
 	dcl_modified_by			varchar(50),
+	dcl_crud_isactive 		int(1),						-- 1. Active, 0.Inactive
 	PRIMARY KEY (dcl_id)
 )ENGINE = INNODB;
 
@@ -321,21 +353,13 @@ CREATE TABLE IF NOT EXISTS  icn_disclaimer(
 -- catalogue is the master name i.e. content status, content type name etc.
 
 CREATE TABLE IF NOT EXISTS  catalogue_master(
-cm_id		 INT(7),  		-- unique id for the master catalogue
-cm_name		VARCHAR(25), 	-- name of the catalogue
+cm_id				INT(7),  				-- unique id for the master catalogue
+cm_name				VARCHAR(25), 			-- name of the catalogue
+cm_crud_isactive 	int(1),					-- 1. Active, 0.Inactive
 CONSTRAINT unc_cat_mstr_id UNIQUE (cm_id)
 )ENGINE = InnoDB;
 
--- example record 1
--- cm_id :1
--- cm_name :content status
--- example record 2
--- cm_id :2
--- cm_name :content type
--- cm_id :3
--- cm_name: Rights Setting
--- cm_id:4
--- cm_name: vendor
+
 
 -- catalogue is master details e.g. content status(in process, ready to moderate ) etc.
 CREATE TABLE IF NOT EXISTS  catalogue_detail(
@@ -345,39 +369,12 @@ cd_name			VARCHAR(25),  	-- catalogue label name
 cd_display_name	VARCHAR(40),	-- display name
 cd_desc		 	INT(10),		-- self join e.g. celeb role.
 cd_desc1		VARCHAR(40)	,	-- can be any desc eg. alias for celeb
+cd_crud_isactive 	int(1),					-- 1. Active, 0.Inactive
 CONSTRAINT unc_cat_det_id UNIQUE (cd_id)
 )ENGINE = InnoDB;
 
 
--- id 1, cm_name - content status , cd_name - in process
--- id 1, cm_name - content status , cd_name - ready to moderate
--- example record 1
--- cd_id :1
--- cd_cm_id :1
--- cd_name :in process
--- example record 2
--- cd_id :2
--- cd_cm_id :1
--- cd_name :ready to moderate
--- example record 3
--- cd_id :3
--- cd_cm_id :2
--- cd_name :Audio
--- cd_id:4
--- cd_cm_id:3
--- cd_name:Rights_Allowed Content Type
--- cd_display_name:Allowed Content Type
--- cd_id:4
--- cd_cm_id:3
--- cd_name:Rights_Country Disrtibution Rights
--- cd_display_name:Country Disrtibution Rights
--- cd_id:5
--- cd_cm_id:3
--- cd_name:Rights_Channel Distribution Rights
--- cd_display_name:Channel Distribution Rights
--- cd_id :6
--- cd_cm_id :4
--- cd_name :Vendor
+
 
 
 
@@ -385,7 +382,8 @@ CONSTRAINT unc_cat_det_id UNIQUE (cd_id)
 CREATE TABLE IF NOT EXISTS  vendor_profile(
 vp_vendor_id				 INT(5),  -- vendor id
 vp_r_group_id				 INT(10), -- fk:r_group_id ->fK:cmd_group_id
-vp_rights_at_property_level	 INT(1) default 0	-- yes 1/no 0 -- default no
+vp_rights_at_property_level	 INT(1) default 0,	-- yes 1/no 0 -- default no
+vp_crud_isactive 			int(1)
 )ENGINE = InnoDB;
 
 
@@ -401,17 +399,12 @@ r_created_on						 DATETIME,
 r_modified_on						 DATETIME,
 r_created_by						 VARCHAR(50),
 r_modified_by						 VARCHAR(50),
+r_crud_isactive 					int(1),					-- 1. Active, 0.Inactive
 CONSTRAINT unc_r_group_id UNIQUE (r_group_id)
 
 )ENGINE = InnoDB;
 
---Example
---r_id :1
---r_group_id:
---r_entity_type:6
---r_allowed_content_type:
---r_country_distribution_rights:
---r_channel_distribution_rights:
+
 
 
 -- typically will be used by the tables where cartesian is required e.g. multiple celebs, multiple tags etc.
@@ -420,13 +413,10 @@ cmd_id 								 INT(10),		-- unique id per record
 cmd_group_id						 INT(10),		-- unique id per entity
 cmd_entity_type						 INT(10),		-- fk:cd_id - entity type
 cmd_entity_detail					 INT(10),		-- fk:cd_id - entity detail	- e.g. celebrity detail
+cmd_crud_isactive 					 int(1),			-- 1. Active, 0.Inactive
 CONSTRAINT unc_cmd_id UNIQUE (cmd_id)
 )ENGINE = InnoDB;
-create index idx_cmd_group_id on content_metadata_detail(cmd_group_id) using BTREE;
---cmd_id : 1
---cmd_groud_id : 1
---cmd_entity_type
---cmd_entity_detail: 4
+create index idx_cmd_group_id on multiselect_metadata_detail(cmd_group_id) using BTREE;
 
 
 
@@ -476,6 +466,7 @@ cm_created_on						datetime,
 cm_created_by						varchar(50),
 cm_modified_on						datetime,
 cm_modified_by						varchar(50),
+cm_crud_isactive 					int(1),			-- 1. Active, 0.Inactive
 CONSTRAINT unc_con_meta_id UNIQUE (cm_id)
 
 )ENGINE = InnoDB;
@@ -486,6 +477,7 @@ ct_group_id							 INT(10),		-- unique id per entity ( content type i.e. audio, 
 ct_param							 INT(10),		-- content template param e.g. width, height, codec etc.
 ct_param_value						 VARCHAR(10),	-- required content param value
 ct_is_mandatory						 INT(1),		-- yes /no
+ct_crud_isactive 					int(1),			-- 1. Active, 0.Inactive
 CONSTRAINT unc_ct_id UNIQUE (ct_id)
 )ENGINE = InnoDB;
 create index idx_ct_group_id on content_template(ct_group_id) using BTREE;
@@ -498,13 +490,24 @@ cf_url_base							VARCHAR(200),	-- base resource locator
 cf_url								VARCHAR(200),	-- base + url
 cf_absolute_url						VARCHAR(400),	-- absolute url
 cf_template_id						 INT(10),		-- fk:ct_group_id template id
+cf_crud_isactive 					int(1),			-- 1. Active, 0.Inactive
 CONSTRAINT unc_cf_id UNIQUE (cf_id)
 )ENGINE = InnoDB;
 
 
+
+CREATE TABLE IF NOT EXISTS  subscription_content_type_plan(
+	sctp_sp_id					int(7),				    -- fk: sub_id subscription id
+	sctp_content_type_id		int(7),					-- fk:cd_id
+	sctp_download_id			int(7),				    -- fk: ap_id : delivery type
+	sctp_stream_id				int(7),				    -- fk: ap_id : delivery type
+	sctp_crud_isactive 					int(1),			-- 1. Active, 0.Inactive
+)ENGINE = InnoDB;
+
 -- ------ Vendor will be central module  -----------
 
 -- In content_metadata -> cm_vendor
+
 
 
 
@@ -514,20 +517,22 @@ CONSTRAINT unc_cf_id UNIQUE (cf_id)
 
 CREATE TABLE IF NOT EXISTS  icn_packs
 (
-	pk_id						int(7) not null,		-- unique id
-	pk_name						varchar(200),			-- pack name
-	pk_desc						varchar(500),			-- description
-	pk_cnt_display_opt			int(10),				-- fk : cd_id
-	pk_is_active				int(1),					-- 1. active, 0. inactive
-	pk_pcr_id					int(7),					-- fk : pcr_id
-	pk_pur_id					int(7),					-- fk: pur_id
-	pk_rule_type				int(1),					-- 1. auto, 0. manual
-	pk_nxt_rule_duration		int(5),					-- number of days
-	pk_nxt_rule_exe_date		datetime,				-- when ever the rule is executed, this data gets refreshed
-	pk_created_on				datetime,
-	pk_created_by				varchar(50),
-	pk_modified_on				datetime,
-	pk_modified_by				varchar(50)
+ pk_id      int(7) not null,  -- unique id
+ pk_st_id     int(7),        -- fk: st_id store id
+ pk_name      varchar(200),   -- pack name
+ pk_desc      varchar(500),   -- description
+ pk_cnt_display_opt   int(10),    -- fk : cd_id
+ pk_is_active    int(1),     -- 1. active, 0. inactive
+ pk_pcr_id     int(7),     -- fk : pcr_id
+ pk_pur_id     int(7),     -- fk: pur_id
+ pk_rule_type    int(1),     -- 1. auto, 0. manual
+ pk_nxt_rule_duration  int(5),     -- number of days
+ pk_nxt_rule_exe_date  datetime,    -- when ever the rule is executed, this data gets refreshed
+ pk_created_on    datetime,
+ pk_created_by    varchar(50),
+ pk_modified_on    datetime,
+ pk_modified_by    varchar(50),
+ pk_crud_isactive    int(1)     -- 1. Active, 0.Inactive
 
 )ENGINE = InnoDB;
 
@@ -536,14 +541,15 @@ Pack Vs Content Type
 */
 CREATE TABLE IF NOT EXISTS  icn_pack_content_type
 (
-	pct_id						int(7),					-- pk
-	pct_pk_id					int(7),					-- fk: pk_id
-	pct_cnt_type				int(10),				-- fk: cd_id
-	pct_is_active				int(1),					-- 1. active, 0. inactive
-	pct_created_on				datetime,
-	pct_created_by				varchar(50),
-	pct_modified_on				datetime,
-	pct_modified_by				varchar(50)
+ pct_id      int(7),     -- pk
+ pct_pk_id     int(7),     -- fk: pk_id
+ pct_cnt_type    int(10),    -- fk: cd_id
+ pct_is_active    int(1),     -- 1. active, 0. inactive
+ pct_created_on    datetime,
+ pct_created_by    varchar(50),
+ pct_modified_on    datetime,
+ pct_modified_by    varchar(50),
+ pct_crud_isactive    int(1)     -- 1. Active, 0.Inactive
 )ENGINE = InnoDB;
 
 
@@ -552,9 +558,16 @@ Pack Vs Content Map
 */
 CREATE TABLE IF NOT EXISTS  icn_pack_content
 (
-	pc_pct_id				int(7),					-- fk: pct_id
-	pc_cm_id				int(10),				-- fk: cm_id
-	pc_arrange_seq			int(10)					-- arrage sequence of the content vis-a-vis pack
+ pc_pct_id      int(7),     -- fk: pct_id
+ pc_cm_id      int(10),    -- fk: cm_id
+ pc_arrange_seq     int(10),    -- arrage sequence of the content vis-a-vis pack
+ pc_ispublished     boolean,    -- 1. Published, 0. Not Published
+ pc_is_active     int(1),     -- 0 in-active, 1 active
+ pc_created_on     datetime,
+ pc_created_by     varchar(50),
+ pc_modified_on     datetime,
+ pc_modified_by     varchar(50),
+ pc_crud_isactive     int(1)     -- 1. Active, 0.Inactive
 )ENGINE = InnoDB;
 
 /*
@@ -562,14 +575,20 @@ Pack - Content Rule Map
 */
 CREATE TABLE IF NOT EXISTS  icn_pack_content_rule
 (
-	pcr_id							int(7),					-- id of the record
-	pcr_rec_type					int(1),					-- 1: manual search criteria , 2: content based rule
-	pcr_pct_id						int(7),					-- fk: pct_id
-	pcr_metadata_type				int(10),				-- fk: cd_id
-	pcr_metadata_search_criteria	varchar(100),
-	pcr_duration					int(5),
-	pcr_start_date					datetime,
-	pcr_end_date					datetime
+ pcr_id       int(7),     -- id of the record
+ pcr_rec_type     int(1),     -- 1: manual search criteria , 2: content based rule
+ pcr_pct_id      int(7),     -- fk: pct_id
+ pcr_metadata_type    int(10),    -- fk: cd_id
+ pcr_metadata_search_criteria varchar(100),
+ pcr_duration     int(5),
+ pcr_start_year     int(5),
+ pcr_end_year     int(5),
+ pcr_is_active     int(1),     -- 0 in-active, 1 active
+ pcr_created_on     datetime,
+ pcr_created_by     varchar(50),
+ pcr_modified_on     datetime,
+ pcr_modified_by     varchar(50),
+ pcr_crud_isactive     int(1)     -- 1. Active, 0.Inactive
 )ENGINE = InnoDB;
 
 /*
@@ -577,9 +596,160 @@ Pack - Usage Rule Map
 */
 CREATE TABLE IF NOT EXISTS  icn_pack_usage_rule
 (
-	pur_id							int(7),					-- pk
-	pur_pct_id						int(7),					-- fk: pct_id
-	pur_usage_rule					int(10),			-- fk: cd_id
-	PRIMARY KEY (pur_id)
+ pur_id       int(7),     -- pk
+ pur_pct_id      int(7),     -- fk: pct_id
+ pur_usage_rule     int(10),    -- fk: cd_id
+ pur_is_active     int(1),     -- 0 in-active, 1 active
+ pur_created_on     datetime,
+ pur_created_by     varchar(50),
+ pur_modified_on     datetime,
+ pur_modified_by     varchar(50),
+ pur_crud_isactive     int(1),     -- 1. Active, 0.Inactive
+ PRIMARY KEY (pur_id)
+)ENGINE = InnoDB;
+
+/*
+ ---------------- PACKAGE TABLE ------------------------
+*/
+
+CREATE TABLE IF NOT EXISTS icn_package_alacart_offer_site
+(
+	paos_pkg_id						int(7),				-- pk: alacart offer package id
+	paos_pkg_type					int(2),				-- 0: site type, 1: pack dependent
+	paos_st_id                      int(10),            -- store id
+	paos_wallpaper					int(7),				-- wallpaper alacart download
+	paos_animation					int(7),				-- animation alacart download
+	paos_fullsong					int(7),				-- full song alacart download
+	paos_truetone					int(7),				-- ringtone alacart download
+	paos_video			            int(7),				-- video alacart download
+	paos_game				        int(7),				-- games/apps alacart download
+	paos_video_stream		        int(7),				-- video alacart stream
+	paos_video_full_song_stream		int(7),				-- video alacart stream
+	paos_audio_full_song_stream		int(7),				-- full song alacart stream
+	paos_op_id   	          	    int(7),             -- fk: op_id offer plan id
+	paos_is_active					int(1),				-- 0 in-active, 1 active plan
+	paos_created_on					datetime,
+	paos_created_by					varchar(50),
+	paos_modified_on				datetime,
+	paos_modified_by				varchar(50),
+	paos_crud_isactive 				int(1)				-- 1. Active, 0.Inactive
+)ENGINE = InnoDB;
+
+
+
+CREATE TABLE IF NOT EXISTS icn_package_value_pack_site
+(
+	pvs_pkg_id						int(7),				-- unique for the package record set
+	pvs_pkg_type					int(2),				-- 0: site type, 1: pack dependent
+	pvs_vp_id						int(7),				-- fk : vp-id, value plan id (multiselection)
+	pvs_st_id                  		int(10),            -- store id
+	pvs_is_active					int(1),				-- 0 in-active, 1 active plan
+	pvs_created_on					datetime,
+	pvs_created_by					varchar(50),
+	pvs_modified_on					datetime,
+	pvs_modified_by					varchar(50),
+	pvs_crud_isactive 				int(1)				-- 1. Active, 0.Inactive
+)ENGINE = InnoDB;
+
+
+
+CREATE TABLE IF NOT EXISTS icn_package_subscription_site
+(
+	pss_pkg_id						int(7),				-- unique for the package record set
+	pss_pkg_type					int(2),				-- 0: site type, 1: pack dependent
+	pss_sp_id						int(7),				-- fk : sp-id, subscription plan id (multiselection)
+	pss_st_id                	    int(10),            -- store id
+	pss_is_active					int(1),				-- 0 in-active, 1 active plan
+	pss_created_on					datetime,
+	pss_created_by					varchar(50),
+	pss_modified_on					datetime,
+	pss_modified_by					varchar(50),
+	pss_crud_isactive 				int(1)				-- 1. Active, 0.Inactive
+)ENGINE = InnoDB;
+
+/*
+one record is per plan per content type.
+
+*/
+CREATE TABLE IF NOT EXISTS icn_package_advance_setting_site
+(
+	pass_st_id                 	    int(10),            -- store id
+	pass_pkg_type					int(2),				-- 0: site type, 1: pack dependent
+	pass_paos_id             	    int(7),       	    -- fk: package_alacart_offer id
+	pass_pvs_id						int(7),             -- fk: package_value_pack id
+	pass_content_type				int(7),		        -- offer content type
+    pass_buy						int(7),	            -- offer buy : in case of offer plan : in case of BAL use -1
+    pass_get						int(7),	            -- offer get : in case of offer plan : in case of BAL use -1
+	pass_value						int(7),				-- value : in case of value pack plan : in case of BAL use -1
+	pass_cg_img_browse            	varchar(400),       -- CG image source
+	pass_is_active					int(1),				-- 0 in-active, 1 active plan
+	pass_created_on					datetime,
+	pass_created_by				    varchar(50),
+	pass_modified_on				datetime,
+	pass_modified_by				varchar(50),
+	pass_crud_isactive 				int(1)				-- 1. Active, 0.Inactive
+)ENGINE = InnoDB;
+
+
+-- Store vs Package Map
+
+CREATE TABLE IF NOT EXISTS  icn_store_package
+(
+	sp_st_id						int(7),				-- fk: store id
+	sp_pkg_id						int(10),			-- unique id for a package
+	sp_package_type					int(2),				-- 0:alacarte, 1: value pack plans, 2:subscription plan
+	sp_arrange_seq					int(10),			-- arrage sequence of the package vis-a-vis store
+	sp_package_name					varchar(40),		-- name of the package, default: "Site" : "Site" becomes a reserved word
+	sp_package_desc					varchar(200),		-- description of the package
+	sp_is_active					int(1),				-- 0 in-active, 1 active plan
+	sp_created_on					datetime,
+	sp_created_by				    varchar(50),
+	sp_modified_on					datetime,
+	sp_modified_by					varchar(50),
+	sp_crud_isactive 				int(1)				-- 1. Active, 0.Inactive
+)ENGINE = InnoDB;
+
+
+
+CREATE TABLE IF NOT EXISTS icn_package_individual_content
+(
+	pic_id							int(7),				 -- unique key
+	pic_st_id                   	int(10),             -- store id
+	pic_pk_id                       int(10),             -- fk: pack id
+	pic_ap_id						int(7),				-- fk: ap_id
+	pic_pkg_id						int(7),				 -- fk: sp_pkg_id
+	pic_cm_id						int(7),				 -- fk: cm_id
+    pic_valid_till               	datetime,            -- validity of individual content
+	pic_is_active					int(1),				 -- 0 in-active, 1 active plan
+	pic_created_on					datetime,
+	pic_created_by					varchar(50),
+	pic_modified_on					datetime,
+	pic_modified_by					varchar(50),
+	pic_crud_isactive 				int(1)					-- 1. Active, 0.Inactive
+)ENGINE = InnoDB;
+
+
+CREATE TABLE IF NOT EXISTS icn_package_notification
+(
+	pn_id							int(7),				-- unique key
+	pn_st_id                  		int(10),            -- store id
+	pn_site							int(7),             -- stores the selected site
+	pn_plan_start					datetime,			-- start date of notification
+	pn_plan							int(7),				-- select subscription/value plan
+	pn_after_day					int(7),				-- notification after days
+	pn_after_hour					int(7),				-- notification after hour
+	pn_cnt_logical_operator       	int(7),				-- setting up operator i.e. lessthan, greaterthan or equalto
+	pn_cnt_conditional_usage     	int(7),				-- eg. conditional operator 50% : 50 is the value of the field
+	pn_message                   	varchar(400),		-- notification message
+	pn_push_from                 	datetime,			-- push from time
+	pn_push_to                   	datetime,			-- push to time
+	pn_push_type                 	int(3),				-- push category 0: once a day , 1: twice a day
+    pn_action						int(2),				-- action category 0: edit 1:inactive 2:delete
+	pn_is_active					int(1),				-- 0 in-active, 1 active plan
+	pn_created_on					datetime,
+	pn_created_by					varchar(50),
+	pn_modified_on					datetime,
+	pn_modified_by					varchar(50),
+	pn_crud_isactive 				int(1)				-- 1. Active, 0.Inactive
 )ENGINE = InnoDB;
 
