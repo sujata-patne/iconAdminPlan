@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="cd482d24-9920-4bd4-9b5f-23687db6ccad" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controller/subscription.controller.js" afterPath="$PROJECT_DIR$/controller/subscription.controller.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/env.json" afterPath="$PROJECT_DIR$/env.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/partials/subscription-plan.html" afterPath="$PROJECT_DIR$/public/partials/subscription-plan.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js" afterPath="$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js" />
     </list>
     <ignored path="adminPlan.iws" />
@@ -29,8 +27,8 @@
       <file leaf-file-name="subscription.controller.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/controller/subscription.controller.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.3448277">
-              <caret line="99" column="39" selection-start-line="99" selection-start-column="24" selection-end-line="99" selection-end-column="39" />
+            <state vertical-scroll-proportion="-6.6551723">
+              <caret line="269" column="55" selection-start-line="269" selection-start-column="55" selection-end-line="269" selection-end-column="55" />
               <folding>
                 <element signature="e#13022#17871#0" expanded="false" />
               </folding>
@@ -51,14 +49,14 @@
       <file leaf-file-name="subscriptionsPlan.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.44765344">
-              <caret line="39" column="10" selection-start-line="39" selection-start-column="10" selection-end-line="39" selection-end-column="10" />
+            <state vertical-scroll-proportion="0.3628159">
+              <caret line="33" column="76" selection-start-line="33" selection-start-column="76" selection-end-line="33" selection-end-column="76" />
               <folding>
-                <element signature="e#3746#6001#0" expanded="false" />
-                <element signature="e#6053#6386#0" expanded="false" />
-                <element signature="e#6481#6773#0" expanded="false" />
-                <element signature="e#6816#7216#0" expanded="false" />
-                <element signature="e#7252#7331#0" expanded="false" />
+                <element signature="e#3877#6132#0" expanded="false" />
+                <element signature="e#6184#6517#0" expanded="false" />
+                <element signature="e#6612#6904#0" expanded="false" />
+                <element signature="e#6947#7347#0" expanded="false" />
+                <element signature="e#7383#7462#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -67,8 +65,8 @@
       <file leaf-file-name="subscription-plan.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/partials/subscription-plan.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-16.346153">
-              <caret line="311" column="293" selection-start-line="311" selection-start-column="284" selection-end-line="311" selection-end-column="293" />
+            <state vertical-scroll-proportion="-3.2">
+              <caret line="295" column="87" selection-start-line="295" selection-start-column="75" selection-end-line="295" selection-end-column="87" />
               <folding>
                 <element signature="n#style#0;n#label#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#1;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
@@ -142,8 +140,8 @@
         <option value="$PROJECT_DIR$/ikon_cms (6).sql" />
         <option value="$PROJECT_DIR$/public/partials/offer-plan.html" />
         <option value="$PROJECT_DIR$/env.json" />
-        <option value="$PROJECT_DIR$/controller/subscription.controller.js" />
         <option value="$PROJECT_DIR$/public/partials/subscription-plan.html" />
+        <option value="$PROJECT_DIR$/controller/subscription.controller.js" />
         <option value="$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js" />
       </list>
     </option>
@@ -838,6 +836,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.46984926">
           <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -880,36 +879,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/controller/subscription.controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.3448277">
-          <caret line="99" column="39" selection-start-line="99" selection-start-column="24" selection-end-line="99" selection-end-column="39" />
-          <folding>
-            <element signature="e#13022#17871#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/partials/subscription-plan.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.346153">
-          <caret line="311" column="293" selection-start-line="311" selection-start-column="284" selection-end-line="311" selection-end-column="293" />
+        <state vertical-scroll-proportion="-3.2">
+          <caret line="295" column="87" selection-start-line="295" selection-start-column="75" selection-end-line="295" selection-end-column="87" />
           <folding>
             <element signature="n#style#0;n#label#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#1;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/controller/subscription.controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.6551723">
+          <caret line="269" column="55" selection-start-line="269" selection-start-column="55" selection-end-line="269" selection-end-column="55" />
+          <folding>
+            <element signature="e#13022#17871#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/scripts/controller/subscriptionsPlan.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44765344">
-          <caret line="39" column="10" selection-start-line="39" selection-start-column="10" selection-end-line="39" selection-end-column="10" />
+        <state vertical-scroll-proportion="0.3628159">
+          <caret line="33" column="76" selection-start-line="33" selection-start-column="76" selection-end-line="33" selection-end-column="76" />
           <folding>
-            <element signature="e#3746#6001#0" expanded="false" />
-            <element signature="e#6053#6386#0" expanded="false" />
-            <element signature="e#6481#6773#0" expanded="false" />
-            <element signature="e#6816#7216#0" expanded="false" />
-            <element signature="e#7252#7331#0" expanded="false" />
+            <element signature="e#3877#6132#0" expanded="false" />
+            <element signature="e#6184#6517#0" expanded="false" />
+            <element signature="e#6612#6904#0" expanded="false" />
+            <element signature="e#6947#7347#0" expanded="false" />
+            <element signature="e#7383#7462#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -289,7 +289,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                             });
                         }
 
-
                         var distributionChannellength = req.body.DistributionChannels.length;
                         function addDistributionChannel(cnt,groupID) {
                             var cmdID = 1;
