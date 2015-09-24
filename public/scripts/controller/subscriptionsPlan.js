@@ -33,6 +33,12 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
         $scope.ContentTypes = angular.copy(SubscriptionData.ContentTypes);
         $scope.alacartData = angular.copy(SubscriptionData.ContentTypeData);
 
+        $scope.ContentTypeAlacart = angular.copy(SubscriptionData.AlacartaData);
+
+        angular.forEach($scope.ContentTypeAlacart, function(data){
+                $scope.alacartPlanIds[data.sctp_content_type_id] = {download:data.sctp_download_id,streaming:data.sctp_stream_id};
+        })
+        console.log($scope.alacartPlanIds)
         $scope.WallpaperPlan = $scope.alacartData.filter(function (alacart){
             return alacart.cd_name == "Wallpaper" && alacart.delivery_type_name == "Download";
         })
@@ -191,7 +197,6 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 planDurationOption: $scope.planDurationOption
             }
 
-console.log(subscription)
             ngProgress.start();
             Subscriptions.AddEditSubscription(subscription, function (data) {
                 if (data.success) {

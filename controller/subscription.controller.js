@@ -23,6 +23,14 @@ exports.getsubscriptions = function (req, res, next) {
                                 callback(err, subplan);
                             });
                         },
+                        AlacartaData: function (callback) {
+                            var query = connection_ikon_cms.query('SELECT sctp.* ' +
+                                'FROM subscription_content_type_plan AS sctp ' +
+                                'join icn_sub_plan as sp ON sp.sp_id = sctp.sctp_sp_id ' +
+                                'WHERE sp.sp_id = ? ', [req.body.planid], function (err, AlacartaData) {
+                                callback(err, AlacartaData)
+                            })
+                        },
                         ContentTypes: function (callback) {
                             var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id, ' +
                                 '(SELECT cd_name FROM catalogue_detail as cd1 join catalogue_master as cm1 ON  cm1.cm_id = cd1.cd_cm_id WHERE ct.mct_parent_cnt_type_id = cd1.cd_id) AS parent_name ' +
@@ -111,6 +119,7 @@ exports.getsubscriptions = function (req, res, next) {
                         }
                     },
                     function (err, results) {
+                        //console.log(results.AlacartaData)
                         if (err) {
                             connection_ikon_cms.release();
                             connection_ikon_bg.release();
