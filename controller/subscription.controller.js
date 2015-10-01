@@ -265,8 +265,8 @@ exports.addeditsubscriptions = function (req, res, next) {
                             var j = cnt;
                             var ContentTypeId = req.body.ContentTypes[j].cd_id;
 
-                            var downloadId = req.body.alacartPlansList[ContentTypeId].download;
-                            var streamingId = req.body.alacartPlansList[ContentTypeId].streaming;
+                            var downloadId = (ContentTypeId)? req.body.alacartPlansList[ContentTypeId].download:'';
+                            var streamingId = (ContentTypeId)? req.body.alacartPlansList[ContentTypeId].streaming:'';
                             var ContentTypePlanData = {
                                 sctp_sp_id: subPlanId,
                                 sctp_content_type_id: ContentTypeId,

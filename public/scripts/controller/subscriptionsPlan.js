@@ -38,8 +38,6 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             angular.forEach($scope.ContentTypeAlacart, function(data){
                 $scope.alacartPlanIds[data.sctp_content_type_id] = {download:data.sctp_download_id,streaming:data.sctp_stream_id};
             })
-        }else{
-            $scope.alacartPlanIds[data.sctp_content_type_id] = {download:'',streaming:''};
         }
 
         $scope.WallpaperPlan = $scope.alacartData.filter(function (alacart){
