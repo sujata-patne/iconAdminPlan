@@ -352,7 +352,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     callback(err,subscription);
                                 },
                                 function (subscription,callback){
-                                    if (plans > 0) {
+                                    if (plans > 0 && req.body.atCostFreePaid === 'paid') {
                                         var contentType = 0;
                                         var query = connection_ikon_cms.query('DELETE FROM  subscription_content_type_plan WHERE sctp_sp_id = ? ', [req.body.subplanId], function (err, result) {
                                             addEditPlans(contentType, req.body.subplanId);
@@ -456,7 +456,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     });
                                 },
                                 function (group,subMaxId,callback){
-                                    if (plans > 0) {
+                                    if (plans > 0 && req.body.atCostFreePaid === 'paid') {
                                         var contentType = 0;
                                         var sp_id = subMaxId[0].sp_id != null ?  parseInt(subMaxId[0].sp_id + 1) : 1;
                                         addEditPlans(contentType, sp_id);

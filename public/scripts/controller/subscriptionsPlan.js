@@ -185,6 +185,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
                 geoLocationId : $scope.SelectedGeoLocation,
                 alacartPlansList: $scope.alacartPlanIds,
                 ContentTypes: $scope.ContentTypes,
+                atCostFreePaid: $scope.atCostFreePaid,
                 /*subscription_plan_Wallpaper: $scope.subscription_plan_Wallpaper,
                 subscription_plan_Animation: $scope.subscription_plan_Animation,
                 subscription_plan_RingTone: $scope.subscription_plan_RingTone,
