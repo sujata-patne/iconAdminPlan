@@ -265,8 +265,10 @@ exports.addeditsubscriptions = function (req, res, next) {
                             var j = cnt;
                             var ContentTypeId = req.body.ContentTypes[j].cd_id;
 
-                            var downloadId = (ContentTypeId)? req.body.alacartPlansList[ContentTypeId].download:'';
-                            var streamingId = (ContentTypeId)? req.body.alacartPlansList[ContentTypeId].streaming:'';
+                            var downloadId = ('download' in data.alacartPlansList[ContentTypeId]) ? data.alacartPlansList[ContentTypeId].download : '';
+                            var streamingId = ('streaming' in data.alacartPlansList[ContentTypeId]) ? data.alacartPlansList[ContentTypeId].streaming : '';
+
+
                             var ContentTypePlanData = {
                                 sctp_sp_id: subPlanId,
                                 sctp_content_type_id: ContentTypeId,
@@ -395,15 +397,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         sp_plan_duration: req.body.planDuration,
                                         sp_plan_dur_type: req.body.planDurationOption,
 
-                                        /*sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
-                                        sp_animation_alcrt_id: req.body.subscription_plan_Animation,
-                                        sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
-                                        sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
-                                        sp_game_alcrt_id: req.body.subscription_plan_GamesApps,
-                                        sp_video_alcrt_id: req.body.subscription_plan_Video,
-                                        sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
-                                        sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
-                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,*/
                                         sp_modified_on: new Date(),
                                         sp_modified_by: req.session.Plan_UserName
                                     }
@@ -465,8 +458,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 }
                             ],
                             function(err, results) {
-                                console.log("### "+results.sp_id)
-                                if (err) {
+                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                 } else {
