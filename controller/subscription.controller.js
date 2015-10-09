@@ -265,8 +265,8 @@ exports.addeditsubscriptions = function (req, res, next) {
                             var j = cnt;
                             var ContentTypeId = req.body.ContentTypes[j].cd_id;
 
-                            var downloadId = ('download' in data.alacartPlansList[ContentTypeId]) ? data.alacartPlansList[ContentTypeId].download : '';
-                            var streamingId = ('streaming' in data.alacartPlansList[ContentTypeId]) ? data.alacartPlansList[ContentTypeId].streaming : '';
+                            var downloadId = ('download' in  req.body.alacartPlansList[ContentTypeId]) ? req.body.alacartPlansList[ContentTypeId].download : '';
+                            var streamingId = ('streaming' in  req.body.alacartPlansList[ContentTypeId]) ? req.body.alacartPlansList[ContentTypeId].streaming : '';
 
 
                             var ContentTypePlanData = {
