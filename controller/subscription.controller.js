@@ -188,8 +188,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                         else {
                             AddSubscriptions();
                         }
-                        var count = req.body.OperatorDetails.length;
-                        function addEditOperators(cnt) {
+                        /*function addEditOperators(cnt) {
                             var j = cnt;
                             var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
                                 if (err) {
@@ -258,15 +257,15 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     }
                                 }
                             });
-                        }
+                        }*/
 
-                        var contentTypes  = Object.keys(req.body.alacartPlansList)
+                        var contentTypesList  = Object.keys(req.body.alacartPlansList)
                             .map(function (element) {
                                 return parseInt(element)
                             });
+                        var plans = contentTypesList.length;
 
-                        var plans = contentTypes.length;
-                        function addEditPlans(cnt,subPlanId) {
+                        /*function addEditPlans(cnt,subPlanId) {
                             var j = cnt;
                             var ContentTypeId = contentTypes[j];
                             var downloadId = (req.body.alacartPlansList[ContentTypeId].download) ? req.body.alacartPlansList[ContentTypeId].download : '';
@@ -293,10 +292,9 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     }
                                 }
                             });
-                        }
+                        }*/
 
-                        var distributionChannellength = req.body.DistributionChannels.length;
-                        function addDistributionChannel(cnt,groupID) {
+                        /*function addDistributionChannel(cnt,groupID) {
                             var cmdID = 1;
                             var i = cnt;
                             var query = connection_ikon_cms.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail', function (err, result) {
@@ -331,7 +329,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     })
                                 }
                             })
-                        }
+                        }*/
 
                         function EditSubscriptions() {
                             async.waterfall([
@@ -344,26 +342,32 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 function (subscription,callback){
                                     if (req.body.OperatorDetails.length > 0) {
                                         var operator = 0;
-                                        addEditOperators(operator);
+                                       // addEditOperators(operator);
+                                        addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+
                                     }
                                     callback(null,subscription);
                                 },
                                 function (subscription,callback){
+                                    var distributionChannellength = req.body.DistributionChannels.length;
+
                                     if (distributionChannellength > 0) {
                                         var distributionChannel = 0;
                                         var query = connection_ikon_cms.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [subscription[0].sp_channel_front], function (err, result) {
-                                            addDistributionChannel(distributionChannel, subscription[0].sp_channel_front);
-                                        })
+                                            addDistributionChannel(connection_ikon_cms,distributionChannel, subscription[0].sp_channel_front,req.body);
+
+                                            })
                                     }
                                     callback(err,subscription);
                                 },
                                 function (subscription,callback){
-                                    console.log("@@@"+req.body.atCostFreePaid)
 
                                     if (plans > 0 && req.body.atCostFreePaid === 1) {
                                         var contentType = 0;
                                         var query = connection_ikon_cms.query('DELETE FROM  subscription_content_type_plan WHERE sctp_sp_id = ? ', [req.body.subplanId], function (err, result) {
-                                            addEditPlans(contentType, req.body.subplanId);
+                                           // addEditPlans(contentType, req.body.subplanId);
+                                            addEditPlans(connection_ikon_cms,contentType,req.body.subplanId,contentTypesList,req.body);
+
                                         })
                                     }
                                     callback(err,subscription);
@@ -432,7 +436,9 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 function (group,callback){
                                     if (req.body.OperatorDetails.length > 0) {
                                         var operator = 0;
-                                        addEditOperators(operator);
+                                       // addEditOperators(operator);
+                                        addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+
                                     }
                                     callback(null,group);
                                 },
@@ -443,7 +449,8 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             groupID = parseInt(group[0].group_id) + 1;
                                         }
                                         var distributionChannel = 0;
-                                        addDistributionChannel(distributionChannel,groupID);
+
+                                            addDistributionChannel(connection_ikon_cms,distributionChannel,groupID,req.body);
                                     }
                                     callback(null,groupID);
                                 },
@@ -455,11 +462,13 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     });
                                 },
                                 function (group,subMaxId,callback){
-                                    console.log("@@@"+req.body.atCostFreePaid)
+                                    console.log("@@@"+req.body.subplanId)
                                     if (plans > 0 && req.body.atCostFreePaid === 1) {
                                         var contentType = 0;
                                         var sp_id = subMaxId[0].sp_id != null ?  parseInt(subMaxId[0].sp_id + 1) : 1;
-                                        addEditPlans(contentType, sp_id);
+                                       // addEditPlans(contentType, sp_id);
+                                        addEditPlans(connection_ikon_cms,contentType,sp_id,contentTypesList,req.body);
+
                                     }
                                     callback(null,{'group_id':group,'sp_id':subMaxId[0].sp_id});
                                 }
@@ -498,16 +507,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         sp_plan_duration: req.body.planDuration,
                                         sp_plan_dur_type: req.body.planDurationOption,
 
-                                        /*sp_wallpaper_alcrt_id: req.body.subscription_plan_Wallpaper,
-                                        sp_animation_alcrt_id: req.body.subscription_plan_Animation,
-                                        sp_ringtone_alcrt_id: req.body.subscription_plan_RingTone,
-                                        sp_text_alcrt_id: req.body.subscription_plan_TextArtical,
-                                        sp_game_alcrt_id: req.body.subscription_plan_GamesApps,
-                                        sp_video_alcrt_id: req.body.subscription_plan_Video,
-                                        sp_fullsong_alcrt_id: req.body.subscription_plan_FullSong,
-                                        sp_video_alcrt_stream_id: req.body.subscription_plan_stream_video,
-                                        sp_fullsong_alcrt_stream_id: req.body.subscription_plan_stream_songs,*/
-
                                         sp_created_on: new Date(),
                                         sp_created_by: req.session.Plan_UserName,
                                         sp_modified_on: new Date(),
@@ -536,4 +535,149 @@ exports.addeditsubscriptions = function (req, res, next) {
     catch (err) {
         res.status(500).json(err.message);
     }
+}
+
+function addDistributionChannel(connection_ikon_cms,cnt,groupID,data) {
+   // function addDistributionChannel(cnt,groupID) {
+    var distributionChannellength = data.DistributionChannels.length;
+
+    var cmdID = 1;
+        var i = cnt;
+        var query = connection_ikon_cms.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail', function (err, result) {
+            if (err) {
+                connection_ikon_cms.release();
+                res.status(500).json(err.message);
+                console.log(err.message)
+            }
+            else {
+                if (result[0].id != null) {
+                    cmdID = parseInt(result[0].id) + 1;
+                }
+                var cmd_data = {
+                    cmd_id: cmdID,
+                    cmd_group_id: groupID,
+                    cmd_entity_type: data.DistributionChannelList[0].cd_cm_id,
+                    cmd_entity_detail: data.DistributionChannels[i]
+                };
+
+                var query = connection_ikon_cms.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message)
+                    }
+                    else {
+                        cnt++;
+                        if (cnt < distributionChannellength) {
+                            addDistributionChannel(connection_ikon_cms,cnt,groupID,data)
+                            //addDistributionChannel(cnt, groupID);
+                        }
+                    }
+                })
+            }
+        })
+    //}
+}
+
+function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data) {
+    var j = cnt;
+    var ContentTypeId = contentTypes[j];
+    var downloadId = (data.alacartPlansList[ContentTypeId].download) ? data.alacartPlansList[ContentTypeId].download : '';
+    var streamingId = (data.alacartPlansList[ContentTypeId].streaming) ? data.alacartPlansList[ContentTypeId].streaming : '';
+    var plans = contentTypes.length;
+
+    var ContentTypePlanData = {
+        sctp_sp_id: subPlanId,
+        sctp_content_type_id: ContentTypeId,
+        sctp_download_id: downloadId,
+        sctp_stream_id: streamingId
+    }
+
+    var query = connection_ikon_cms.query('INSERT INTO subscription_content_type_plan SET ?', ContentTypePlanData, function (err, result) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            console.log(err.message)
+        }
+        else {
+            cnt++;
+            if (cnt < plans) {
+                addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data);
+                    //addEditPlans(cnt,subPlanId);
+            }
+        }
+    });
+}
+function addEditOperators(connection_ikon_cms, cnt,data,session) {
+    var j = cnt;
+    var count = data.OperatorDetails.length;
+
+    var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [data.JetId, data.OperatorDetails[j].partner_id], function (err, disclaimer) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            console.log(err.message)
+        }
+        else {
+            if (disclaimer.length > 0) {
+                var disclaimerData = {
+                    dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
+                    dcl_partner_id: data.OperatorDetails[j].partner_id,
+                    dcl_st_id: session.Plan_StoreId,
+                    dcl_modified_on: new Date(),
+                    dcl_modified_by:  session.Plan_UserName
+                }
+
+                var query = connection_ikon_cms.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message)
+                    }
+                    else {
+                        cnt++;
+                        if (cnt < count) {
+                            addEditOperators(connection_ikon_cms, cnt,data,session);
+                        }
+                    }
+                });
+            } else {
+                var dclID = 1;
+                var query = connection_ikon_cms.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message)
+                    }
+                    else {
+                        if (result[0].id != null) {
+                            dclID = parseInt(result[0].id) + 1;
+                        }
+                        var disclaimerData = {
+                            dcl_id: dclID,
+                            dcl_ref_jed_id: data.JetId,
+                            dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
+                            dcl_partner_id: data.OperatorDetails[j].partner_id,
+                            dcl_st_id: session.Plan_StoreId,
+                            dcl_created_by: session.Plan_UserName,
+                            dcl_created_on: new Date()
+                        }
+                        var query = connection_ikon_cms.query('INSERT INTO icn_disclaimer SET ?', disclaimerData, function (err, result) {
+                            if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                            }
+                            else {
+                                cnt++;
+                                if (cnt < count) {
+                                    addEditOperators(connection_ikon_cms, cnt,data,session);
+                                    //addEditOperators(cnt);
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+        }
+    });
 }
