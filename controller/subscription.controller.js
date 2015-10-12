@@ -260,13 +260,17 @@ exports.addeditsubscriptions = function (req, res, next) {
                             });
                         }
 
-                        var plans = req.body.ContentTypes.length;
+                        var contentTypes  = Object.keys(req.body.alacartPlansList)
+                            .map(function (element) {
+                                return parseInt(element)
+                            });
+
+                        var plans = contentTypes.length;
                         function addEditPlans(cnt,subPlanId) {
                             var j = cnt;
-                            var ContentTypeId = req.body.ContentTypes[j].cd_id;
-
-                            var downloadId = ('download' in  req.body.alacartPlansList[ContentTypeId]) ? req.body.alacartPlansList[ContentTypeId].download : '';
-                            var streamingId = ('streaming' in  req.body.alacartPlansList[ContentTypeId]) ? req.body.alacartPlansList[ContentTypeId].streaming : '';
+                            var ContentTypeId = contentTypes[j];
+                            var downloadId = (req.body.alacartPlansList[ContentTypeId].download) ? req.body.alacartPlansList[ContentTypeId].download : '';
+                            var streamingId = (req.body.alacartPlansList[ContentTypeId].streaming) ? req.body.alacartPlansList[ContentTypeId].streaming : '';
 
 
                             var ContentTypePlanData = {
@@ -275,6 +279,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 sctp_download_id: downloadId,
                                 sctp_stream_id: streamingId
                             }
+
                             var query = connection_ikon_cms.query('INSERT INTO subscription_content_type_plan SET ?', ContentTypePlanData, function (err, result) {
                                 if (err) {
                                     connection_ikon_cms.release();
@@ -283,7 +288,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 }
                                 else {
                                     cnt++;
-                                    console.log(cnt +' : '+ plans)
                                     if (cnt < plans) {
                                         addEditPlans(cnt,subPlanId);
                                     }
@@ -354,7 +358,9 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     callback(err,subscription);
                                 },
                                 function (subscription,callback){
-                                    if (plans > 0 && req.body.atCostFreePaid === 'paid') {
+                                    console.log("@@@"+req.body.atCostFreePaid)
+
+                                    if (plans > 0 && req.body.atCostFreePaid === 1) {
                                         var contentType = 0;
                                         var query = connection_ikon_cms.query('DELETE FROM  subscription_content_type_plan WHERE sctp_sp_id = ? ', [req.body.subplanId], function (err, result) {
                                             addEditPlans(contentType, req.body.subplanId);
@@ -391,7 +397,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
                                         sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
                                         sp_stream_setting: req.body.streamingLimitType,
-
+                                        sp_is_cnt_free: req.body.atCostFreePaid,
                                         sp_cty_id: req.body.geoLocationId,
                                         sp_is_active: 1,
                                         sp_plan_duration: req.body.planDuration,
@@ -449,7 +455,8 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     });
                                 },
                                 function (group,subMaxId,callback){
-                                    if (plans > 0 && req.body.atCostFreePaid === 'paid') {
+                                    console.log("@@@"+req.body.atCostFreePaid)
+                                    if (plans > 0 && req.body.atCostFreePaid === 1) {
                                         var contentType = 0;
                                         var sp_id = subMaxId[0].sp_id != null ?  parseInt(subMaxId[0].sp_id + 1) : 1;
                                         addEditPlans(contentType, sp_id);
@@ -484,11 +491,7 @@ exports.addeditsubscriptions = function (req, res, next) {
 
                                         sp_tnb_stream_duration: req.body.sld_tnb_free_cnt_limit,
                                         sp_tnb_stream_dur_type: req.body.sld_tnb_free_cnt_duration,
-
-                                        sp_full_sub_stream_limit: req.body.slc_full_sub_cnt_limit,
-                                        sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
-                                        sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
-                                        sp_stream_setting: req.body.streamingLimitType,
+                                        sp_is_cnt_free: req.body.atCostFreePaid,
 
                                         sp_cty_id: req.body.geoLocationId,
                                         sp_is_active: 1,

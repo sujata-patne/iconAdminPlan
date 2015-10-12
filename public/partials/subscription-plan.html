@@ -282,11 +282,11 @@
                     <div class="portlet-content">
                         <div class="row">
                             <div class="col-md-12">
-                                <input type="radio" name="atCostFreePaid" value="free" ng-model="atCostFreePaid">Free
-                                <input type="radio" name="atCostFreePaid" value="paid" ng-model="atCostFreePaid">Paid
+                                <input type="radio" name="atCostFreePaid" value="0" ng-model="atCostFreePaid">Free
+                                <input type="radio" name="atCostFreePaid" value="1" ng-model="atCostFreePaid">Paid
                             </div>
                         </div>
-                        <div class="row" ng-show="atCostFreePaid == 'paid'" >
+                        <div class="row" ng-show="atCostFreePaid == 1" >
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-2"></div>

@@ -26,22 +26,30 @@ exports.getplanlist = function (req, res, next) {
                         })
                     },
                     Alacarts: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT * FROM icn_alacart_plan', function (err, Alacarts) {
+                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_alacart_plan AS plan '+
+                            'JOIN icn_store AS st ON st.st_id = plan.ap_st_id ' +
+                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId],  function (err, Alacarts) {
                             callback(err, Alacarts);
                         })
                     },
                     Subscriptions: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT * FROM icn_sub_plan', function (err, Subscriptions) {
+                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_sub_plan AS plan '+
+                            'JOIN icn_store AS st ON st.st_id = plan.sp_st_id ' +
+                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, Subscriptions) {
                             callback(err, Subscriptions);
                         })
                     },
                     ValuePacks: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT * FROM icn_valuepack_plan', function (err, ValuePacks) {
+                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_valuepack_plan AS plan '+
+                            'JOIN icn_store AS st ON st.st_id = plan.vp_st_id ' +
+                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, ValuePacks) {
                             callback(err, ValuePacks);
                         })
                     },
-                        Offers: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT * FROM icn_offer_plan', function (err, Offers) {
+                    Offers: function (callback) {
+                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_offer_plan AS plan '+
+                            'JOIN icn_store AS st ON st.st_id = plan.op_st_id ' +
+                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, Offers) {
                             callback(err, Offers);
                         })
                     },

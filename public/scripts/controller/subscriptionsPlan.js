@@ -21,6 +21,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.downloadCost = [];
     $scope.streamingCost = [];
     $scope.alacartPlanIds = {};
+    $scope.atCostFreePaid = 1;
+    $scope.streamingLimitType = 1;
     // get subscription  & jet events
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
 
@@ -109,6 +111,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             $scope.planDuration = value.sp_plan_duration;
             $scope.planDurationOption = value.sp_plan_dur_type;
             $scope.SelectedGeoLocation = value.sp_cty_id;
+            $scope.atCostFreePaid = value.sp_is_cnt_free;
 
             $scope.displayJetEvents();
             $scope.displayOperators();
@@ -221,6 +224,5 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
 
 
 
-    $scope.atCostFreePaid = 'paid';
-    $scope.streamingLimitType = 1;
+
 })

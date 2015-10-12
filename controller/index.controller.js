@@ -284,14 +284,14 @@ exports.changePassword = function (req, res) {
             if (req.session.Plan_UserName) {
                 var session = req.session;
                 mysql.getConnection('CMS', function (err, connection_central) {
-                    if (req.body.oldpassword == session.Plan_Password) {
-                        var query = connection_central.query('UPDATE icn_login_detail SET ld_user_pwd=?, ld_modified_on=? WHERE ld_id=?', [req.body.newpassword, new Date(), session.Plan_UserId], function (err, result) {
+                    if (req.body.oldpassword == req.session.Plan_Password) {
+                        var query = connection_central.query('UPDATE icn_login_detail SET ld_user_pwd=?, ld_modified_on=? WHERE ld_id=?', [req.body.newpassword, new Date(), req.session.Plan_UserId], function (err, result) {
                             if (err) {
                                 connection_central.release();
                                 res.status(500).json(err.message);
                             }
                             else {
-                                session.Plan_Password = req.body.newpassword;
+                                req.session.Plan_Password = req.body.newpassword;
                                 var smtpTransport = nodemailer.createTransport({
                                     service: "Gmail",
                                     auth: {
@@ -300,9 +300,9 @@ exports.changePassword = function (req, res) {
                                     }
                                 });
                                 var mailOptions = {
-                                    to: session.Plan_Email,
+                                    to: req.session.Plan_Email,
                                     subject: 'Change Password',
-                                    html: "<p>Hi, " + session.Plan_UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
+                                    html: "<p>Hi, " + req.session.Plan_UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
                                 }
                                 smtpTransport.sendMail(mailOptions, function (error, response) {
                                     if (error) {
