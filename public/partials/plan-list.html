@@ -62,7 +62,7 @@
                                 </thead>
                                 <tbody data-ng-repeat="plan in planList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
                                     <tr>
-                                        <td class="col-md-1 col-xs-1 text-center">{{$index+1}}</td>
+                                        <td class="col-md-1 col-xs-1 text-center">{{$index+1+(listcurrentPage*listpageSize)}}</td>
                                         <td class="col-md-2 col-xs-2 ">{{plan.type}}:{{plan.planid}}</td>
                                         <td class="col-md-3 col-xs-3">{{plan.planname}}</td>
                                         <td class="col-md-2 col-xs-2">{{plan.contenttype}}</td>

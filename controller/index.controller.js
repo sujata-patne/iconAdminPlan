@@ -41,7 +41,6 @@ function Pad(padString, value, length) {
  */
 exports.pages = function (req, res, next) {
     var role;
-
     if (req.session) {
         if (req.session.Plan_UserName) {
             if (req.session.Plan_StoreId) {
