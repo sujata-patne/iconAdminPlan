@@ -100,9 +100,10 @@ exports.getsubscriptions = function (req, res, next) {
                         ContentTypeData: function (callback) {
                             var query = connection_ikon_cms.query('SELECT cd.cd_name, plan.*, (SELECT cd_name FROM catalogue_detail WHERE cd_id = plan.ap_delivery_type) AS delivery_type_name ' +
                                 'FROM icn_alacart_plan AS plan ' +
-                                'join catalogue_detail as cd ON plan.ap_content_type = cd.cd_id ' +
-                                'WHERE plan.ap_st_id = ? ', [req.session.Plan_StoreId], function (err, alacart) {
-                                callback(err, alacart)
+                                'JOIN catalogue_detail as cd ON plan.ap_content_type = cd.cd_id ' +
+                                'JOIN multiselect_metadata_detail AS mmd ON mmd.cmd_group_id = plan.ap_channel_front '+
+                                'WHERE plan.ap_is_active = 1 AND plan.ap_st_id = ? GROUP BY plan.ap_channel_front ', [req.session.Plan_StoreId], function (err, alacart) {
+                                callback(err, alacart); //mmd.cmd_entity_detail IN () AND
                             })
                         },
                         selectedDistributionChannel: function (callback) {
@@ -264,6 +265,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 return parseInt(element)
                             });
                         var plans = contentTypesList.length;
+                        var distributionChannellength = data.DistributionChannels.length;
 
                         /*function addEditPlans(cnt,subPlanId) {
                             var j = cnt;
