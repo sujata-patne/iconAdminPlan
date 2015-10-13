@@ -131,6 +131,18 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
     };
+    $scope.$watch(function(){
+        return $scope.streamNoOfContentLimit = ($scope.streamingLimitType == 2) ? '': $scope.streamNoOfContentLimit;
+    }, function(newvalue, oldvalue){},true);
+
+    $scope.$watch(function(){
+        return $scope.streamDurationLimit = ($scope.streamingLimitType == 1) ? '': $scope.streamDurationLimit;
+    }, function(newvalue, oldvalue){},true);
+
+    $scope.$watch(function(){
+        return $scope.SelectedDurationType = ($scope.streamingLimitType == 1) ? '': $scope.SelectedDurationType;
+    }, function(newvalue, oldvalue){},true);
+
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
@@ -161,7 +173,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             AlaCarts.AddEditAlacart(Alacart, function (data) {
                 if (data.success) {
                     if ($scope.CurrentPage == "edit-a-la-cart") {
-                        $window.location.href = "#a-la-cart";
+                        $state.go('a-la-cart');// = "#a-la-cart";
                     }
 
                     toastr.success(data.message)

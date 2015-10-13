@@ -64,7 +64,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     //on edit click
     $scope.EditPlan = function (id, contenttype) {
         if (contenttype == "Subscription") {
-            $window.location.href = "/#/edit-subscription/" + id;
+            $window.location.href = "/#/edit-subscriptions/" + id;
         }
         else if (contenttype == "Value Pack") {
             $window.location.href = "/#/edit-value-pack/" + id;

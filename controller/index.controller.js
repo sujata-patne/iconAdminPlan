@@ -3,6 +3,7 @@
  */
 
 var mysql = require('../config/db').pool;
+var config = require('../config')();
 var nodemailer = require('nodemailer');
 
 
@@ -40,23 +41,33 @@ function Pad(padString, value, length) {
  */
 exports.pages = function (req, res, next) {
     var role;
+    var pagesjson = [];
 
-    var pagesjson = [
+    /*var pagesjson = [
         { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
-    ];
+    ];*/
 
     if (req.session) {
         if (req.session.Plan_UserName) {
             if (req.session.Plan_StoreId) {
-                role = req.session.Plan_UserRole;
-                var pageData = getPages(role);
-                //res.render('index', { title: 'Express', username: req.session.Plan_UserName, Pages: pageData, userrole: req.session.Plan_UserRole });
-                res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                    mysql.getConnection('BG', function (err, connection_ikon_bg) {
+                        var query = connection_ikon_bg.query('select bed.* from '+config.db_name_ikon_cms+'.icn_store as st ' +
+                            'inner join '+config.db_name_ikon_cms+'.multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_payment_type) ' +
+                            'inner join '+config.db_name_ikon_bg+'.billing_enum_data AS bed ON bed.en_id = mlm.cmd_entity_detail AND bed.en_type in ("payment_type") ' +
+                            'WHERE st.st_id =? ', [req.session.Plan_StoreId], function (err, selectedPaymentType) {
+
+                            role = req.session.Plan_UserRole;
+                            var pageData = getPages(role,selectedPaymentType);
+                            res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
+                        })
+                    })
+                })
             }
             else {
                 res.redirect('/accountlogin');
@@ -183,17 +194,23 @@ exports.authenticate = function (req, res, next) {
  * @returns json array
  * @description get list of pages allowed as per user-role
  */
-function getPages(role) {
+function getPages(role, selectedPaymentType) {
     if (role == "Super Admin" || role == "Store Manager") {
-
-        var pagesjson = [
+        var pagesjson = [];
+        selectedPaymentType.forEach(function(paymentType){
+            if(paymentType.en_display_name === 'One Time'){
+                pagesjson.push({ 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
+            }
+            if(paymentType.en_display_name === 'Subscriptions'){
+                pagesjson.push({ 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
+            }
+        })
+        pagesjson.push(
             { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
-        ];
+        );
         return pagesjson;
     }
 }

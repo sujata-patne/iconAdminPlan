@@ -49,7 +49,7 @@ myApp.config(function ($stateProvider) {
         .state('edit-subscriptions', {
             templateUrl: 'partials/subscription-plan.html',
             controller: 'subscriptionsPlanCtrl',
-            url: '/edit-subscription/:id'
+            url: '/edit-subscriptions/:id'
         })
         .state('value-pack', {
             templateUrl: 'partials/value-pack-plan.html',

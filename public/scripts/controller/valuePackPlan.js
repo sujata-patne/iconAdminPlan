@@ -1,7 +1,7 @@
 /**
 * Created by sujata.patne on 15-07-2015.
 */
-myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Valuepacks) {
+myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $stateParams, Valuepacks) {
     $('.removeActiveClass').removeClass('active');
     $('#value-pack').addClass('active');
     $scope.contentType = 'Value Pack';
@@ -17,12 +17,21 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
     ngProgress.height('3px');
     $scope.isCheckboxSelected = "";
     //$scope.SelectedStreamType = 1;
+    $scope.setDurationLimit = 1;
+    $scope.CurrentPage = $state.current.name;
+    $scope.PageTitle = $state.current.name == "edit-value-pack" ? "Edit " : "Add ";
 
     // get valuepack data & jet pay id
     Valuepacks.GetValuepackData({ planid: $stateParams.id }, function (valuepacks) {
         $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
         $scope.AllOperatorDetails = angular.copy(valuepacks.OperatorDetail);
         $scope.durationOptions = angular.copy(valuepacks.DurationOptions);
+
+        $scope.durationOptions.forEach(function(option){
+            if(option.cd_name === 'Months'){
+                $scope.selectedDurationOptions = option.cd_id;
+            }
+        })
         $scope.PlanData = angular.copy(valuepacks.PlanData);
         $scope.GeoLocations = angular.copy(valuepacks.GeoLocations);
         $scope.PlanData.forEach(function (value) {
@@ -38,12 +47,24 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
             $scope.SelectedGeoLocation = value.vp_cty_id;
             $scope.numberOfContent = value.vp_stream_limit;
             $scope.streamingDurationLimit = value.vp_stream_duration;
-            $scope.selectedDurationOptions = value.vp_duration_type;
-            ;
+            $scope.selectedDurationOptions = value.vp_duration_type;            ;
             $scope.displayJetEvents();
             $scope.displayOperators();
         });
     });
+
+    $scope.$watch(function(){
+        return $scope.numberOfContent = ($scope.SelectedStreamType == 2) ? '': $scope.numberOfContent;
+    }, function(newvalue, oldvalue){},true);
+
+    $scope.$watch(function(){
+        return $scope.streamingDurationLimit = ($scope.SelectedStreamType == 1) ? '': $scope.streamingDurationLimit;
+    }, function(newvalue, oldvalue){},true);
+
+    $scope.$watch(function(){
+        return $scope.streamDurationOptions = ($scope.SelectedStreamType == 1) ? '': $scope.streamDurationOptions;
+    }, function(newvalue, oldvalue){},true);
+
 
     /*$scope.geoLocationChange = function () {
         var currency = '';
@@ -106,8 +127,9 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $http, ngProgress, $stat
             ngProgress.start();
             Valuepacks.AddEditValuepack(valuepack, function (data) {
                 if (data.success) {
+
                     if ($scope.CurrentPage == "edit-value-pack") {
-                        $window.location.href = "#value-pack";
+                        $state.go('value-pack'); //"#subscriptions";
                     }
                     toastr.success(data.message)
                     //$scope.success = data.message;

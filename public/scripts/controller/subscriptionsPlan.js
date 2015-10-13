@@ -2,7 +2,7 @@
  * Created by sujata.patne on 15-07-2015.
  */
 
-myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Subscriptions) {
+myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, $stateParams, Subscriptions) {
     $('.removeActiveClass').removeClass('active');
     $('#subscriptions').addClass('active');
     $scope.PlanId = "";
@@ -23,6 +23,9 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.alacartPlanIds = {};
     $scope.atCostFreePaid = 1;
     $scope.streamingLimitType = 1;
+    $scope.CurrentPage = $state.current.name;
+    $scope.PageTitle = $state.current.name == "edit-subscriptions" ? "Edit " : "Add ";
+
     // get subscription  & jet events
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
 
@@ -74,6 +77,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
             $scope.distributionChannelArray[data.cmd_entity_detail] = true;
         })
+
+
         $scope.PlanData.forEach(function (value) {
             $scope.PlanId = value.sp_id;
             $scope.PlanName = value.sp_plan_name;
@@ -157,7 +162,15 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
     $scope.submitForm = function (isValid) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
-        console.log($scope.alacartPlanIds)
+
+        $scope.$watch(function(){
+            $scope.ContentTypes.forEach(function(contentType){
+                if($scope.alacartPlanIds[contentType.cd_id]){
+                    return $scope.alacartPlanIds[contentType.cd_id] = ($scope.atCostFreePaid != 1) ? '': $scope.alacartPlanIds[contentType.cd_id];
+                }
+            })
+        }, function(newvalue, oldvalue){},true);
+
         if (isValid) {
 
             var subscription = {
@@ -205,8 +218,9 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             ngProgress.start();
             Subscriptions.AddEditSubscription(subscription, function (data) {
                 if (data.success) {
+
                     if ($scope.CurrentPage == "edit-subscriptions") {
-                        $window.location.href = "#subscriptions";
+                        $state.go('subscriptions'); //"#subscriptions";
                     }
                     toastr.success(data.message)
                    // $scope.success = data.message;
@@ -221,8 +235,5 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $http, ngProgress, $
             });
         }
     };
-
-
-
 
 })

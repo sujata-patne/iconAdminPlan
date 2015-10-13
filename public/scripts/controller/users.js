@@ -224,14 +224,16 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     };
 
     $scope.Passwordvisible = function (val) {
+        console.log(val)
+        console.log($scope.passwordtype)
         if (val == 1) {
             $scope.passwordtype = $scope.passwordtype == "password" ? "text" : "password";
         }
         else if (val == 2) {
-            $scope.newpasswordtype = $scope.passwordtype == "password" ? "text" : "password";
+            $scope.newpasswordtype = $scope.newpasswordtype == "password" ? "text" : "password";
         }
         else {
-            $scope.confirmpasswordtype = $scope.passwordtype == "password" ? "text" : "password";
+            $scope.confirmpasswordtype = $scope.confirmpasswordtype == "password" ? "text" : "password";
         }
     }
 });
