@@ -265,7 +265,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 return parseInt(element)
                             });
                         var plans = contentTypesList.length;
-                        var distributionChannellength = data.DistributionChannels.length;
+                        var distributionChannellength = req.body.DistributionChannels.length;
 
                         /*function addEditPlans(cnt,subPlanId) {
                             var j = cnt;
