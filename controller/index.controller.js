@@ -41,16 +41,6 @@ function Pad(padString, value, length) {
  */
 exports.pages = function (req, res, next) {
     var role;
-    var pagesjson = [];
-
-    /*var pagesjson = [
-        { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
-    ];*/
 
     if (req.session) {
         if (req.session.Plan_UserName) {
@@ -60,7 +50,7 @@ exports.pages = function (req, res, next) {
                         var query = connection_ikon_bg.query('select bed.* from '+config.db_name_ikon_cms+'.icn_store as st ' +
                             'inner join '+config.db_name_ikon_cms+'.multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_payment_type) ' +
                             'inner join '+config.db_name_ikon_bg+'.billing_enum_data AS bed ON bed.en_id = mlm.cmd_entity_detail AND bed.en_type in ("payment_type") ' +
-                            'WHERE st.st_id =? ', [req.session.Plan_StoreId], function (err, selectedPaymentType) {
+                            'WHERE st.st_id =? ORDER BY bed.en_id ', [req.session.Plan_StoreId], function (err, selectedPaymentType) {
 
                             role = req.session.Plan_UserRole;
                             var pageData = getPages(role,selectedPaymentType);
@@ -197,7 +187,10 @@ exports.authenticate = function (req, res, next) {
 function getPages(role, selectedPaymentType) {
     if (role == "Super Admin" || role == "Store Manager") {
         var pagesjson = [];
+        pagesjson.push( { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] } );
+
         selectedPaymentType.forEach(function(paymentType){
+
             if(paymentType.en_display_name === 'One Time'){
                 pagesjson.push({ 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
             }
@@ -206,7 +199,6 @@ function getPages(role, selectedPaymentType) {
             }
         })
         pagesjson.push(
-            { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }

@@ -127,7 +127,6 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
             ngProgress.start();
             Valuepacks.AddEditValuepack(valuepack, function (data) {
                 if (data.success) {
-
                     if ($scope.CurrentPage == "edit-value-pack") {
                         $state.go('value-pack'); //"#subscriptions";
                     }
