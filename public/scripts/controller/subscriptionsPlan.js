@@ -122,6 +122,36 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             $scope.displayOperators();
         });
     });
+    $scope.$watch(function(){
+        return $scope.slc_tnb_free_cnt_limit = ($scope.streamingLimitType == 2) ? '': $scope.slc_tnb_free_cnt_limit;
+    }, function(newvalue, oldvalue){},true);
+    $scope.$watch(function(){
+        return $scope.slc_single_day_cnt_limit = ($scope.streamingLimitType == 2) ? '': $scope.slc_single_day_cnt_limit;
+    }, function(newvalue, oldvalue){},true);
+    $scope.$watch(function(){
+        return $scope.slc_full_sub_cnt_limit = ($scope.streamingLimitType == 2) ? '': $scope.slc_full_sub_cnt_limit;
+    }, function(newvalue, oldvalue){},true);
+
+    $scope.$watch(function(){
+        return $scope.sld_tnb_free_cnt_limit = ($scope.streamingLimitType == 1) ? '': $scope.sld_tnb_free_cnt_limit;
+    }, function(newvalue, oldvalue){},true);
+    $scope.$watch(function(){
+        return $scope.sld_tnb_free_cnt_duration = ($scope.streamingLimitType == 1) ? '': $scope.sld_tnb_free_cnt_duration;
+    }, function(newvalue, oldvalue){},true);
+    $scope.$watch(function(){
+        return $scope.sld_single_day_cnt_limit = ($scope.streamingLimitType == 1) ? '': $scope.sld_single_day_cnt_limit;
+    }, function(newvalue, oldvalue){},true);
+    $scope.$watch(function(){
+        return $scope.sld_single_day_cnt_duration = ($scope.streamingLimitType == 1) ? '': $scope.sld_single_day_cnt_duration;
+    }, function(newvalue, oldvalue){},true);
+    $scope.$watch(function(){
+        return $scope.sld_full_sub_cnt_limit = ($scope.streamingLimitType == 1) ? '': $scope.sld_full_sub_cnt_limit;
+    }, function(newvalue, oldvalue){},true);
+    $scope.$watch(function(){
+        return $scope.sld_full_sub_cnt_duration = ($scope.streamingLimitType == 1) ? '': $scope.sld_full_sub_cnt_duration;
+    }, function(newvalue, oldvalue){},true);
+
+
 
     $scope.stateChanged = function (id) {
         if($scope.distributionChannelArray[id] === true){
