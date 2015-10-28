@@ -4,6 +4,7 @@
 var mysql = require('../config/db').pool;
 var nodeExcel = require('excel-export');
 var async = require("async");
+var planListManager = require("../models/planListModel");
 /**
  * @function getplanlist
  * @param req
@@ -17,41 +18,29 @@ exports.getplanlist = function (req, res, next) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
                     ContentTypes: function (callback) {
-                        var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id from icn_store As st ' +
-                            'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
-                            'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
-                            'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
-                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId],  function (err, ContentTypes) {
+                        planListManager.getContentTypesByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, ContentTypes) {
                             callback(err, ContentTypes);
-                        })
+                        });
                     },
                     Alacarts: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_alacart_plan AS plan '+
-                            'JOIN icn_store AS st ON st.st_id = plan.ap_st_id ' +
-                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId],  function (err, Alacarts) {
+                        planListManager.getAlaCartPlansByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, Alacarts) {
                             callback(err, Alacarts);
-                        })
+                        });
                     },
                     Subscriptions: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_sub_plan AS plan '+
-                            'JOIN icn_store AS st ON st.st_id = plan.sp_st_id ' +
-                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, Subscriptions) {
+                        planListManager.getSubscriptionPlansByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, Subscriptions ) {
                             callback(err, Subscriptions);
-                        })
+                        });
                     },
                     ValuePacks: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_valuepack_plan AS plan '+
-                            'JOIN icn_store AS st ON st.st_id = plan.vp_st_id ' +
-                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, ValuePacks) {
+                        planListManager.getValuePackPlansByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, ValuePacks ) {
                             callback(err, ValuePacks);
-                        })
+                        });
                     },
                     Offers: function (callback) {
-                        var query = connection_ikon_cms.query('SELECT plan.* FROM icn_offer_plan AS plan '+
-                            'JOIN icn_store AS st ON st.st_id = plan.op_st_id ' +
-                            'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, Offers) {
+                        planListManager.getOfferPlansByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, Offers ) {
                             callback(err, Offers);
-                        })
+                        });
                     },
                     RoleUser: function (callback) {
                         //Get User Role
@@ -90,7 +79,7 @@ exports.blockunblockplan = function (req, res, next) {
         if (req.session && req.session.Plan_UserName != undefined && req.session.Plan_StoreId != undefined) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 if (req.body.ContentType == "Subscription") {
-                    var query = connection_ikon_cms.query('UPDATE icn_sub_plan set sp_is_active= ? where sp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    planListManager.updateSubscriptionPlan( connection_ikon_cms, req.body.active, req.body.PlanId, function (err, result) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
@@ -102,7 +91,7 @@ exports.blockunblockplan = function (req, res, next) {
                     });
                 }
                 else if (req.body.ContentType == "Value Pack") {
-                    var query = connection_ikon_cms.query('UPDATE icn_valuepack_plan set vp_is_active= ? where vp_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    planListManager.updateValuePackPlan( connection_ikon_cms, req.body.active, req.body.PlanId, function (err, result) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
@@ -114,7 +103,7 @@ exports.blockunblockplan = function (req, res, next) {
                     });
                 }
                 else if (req.body.ContentType == "Offers") {
-                    var query = connection_ikon_cms.query('UPDATE icn_offer_plan set op_is_active = ? where op_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    planListManager.updateOfferPlan( connection_ikon_cms, req.body.active, req.body.PlanId, function (err, result) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
@@ -126,7 +115,7 @@ exports.blockunblockplan = function (req, res, next) {
                     });
                 }
                 else {
-                    var query = connection_ikon_cms.query('UPDATE icn_alacart_plan set ap_is_active= ? where ap_id =?', [req.body.active, req.body.PlanId], function (err, result) {
+                    planListManager.updateAlacartaPlan( connection_ikon_cms, req.body.active, req.body.PlanId, function (err, result) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
@@ -159,7 +148,7 @@ exports.deleteplan = function (req, res, next) {
             if (req.session.Plan_UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     if (req.body.ContentType == "Subscription") {
-                        var query = connection_ikon_cms.query('Delete From icn_sub_plan  where sp_id =?', [req.body.PlanId], function (err, result) {
+                        planListManager.deleteSusbscriptionPlan( connection_ikon_cms, req.body.PlanId, function (err, result) {
                             if (err) {
                                 connection_ikon_cms.release();
                                 res.status(500).json(err.message);
@@ -171,7 +160,7 @@ exports.deleteplan = function (req, res, next) {
                         });
                     }
                     else if (req.body.ContentType == "Value Pack") {
-                        var query = connection_ikon_cms.query('Delete From icn_valuepack_plan where vp_id =?', [req.body.PlanId], function (err, result) {
+                        planListManager.deleteValuePackPlan( connection_ikon_cms, req.body.PlanId, function (err, result) {
                             if (err) {
                                 connection_ikon_cms.release();
                                 res.status(500).json(err.message);
@@ -183,7 +172,7 @@ exports.deleteplan = function (req, res, next) {
                         });
                     }
                     else if (req.body.ContentType == "Offers") {
-                        var query = connection_ikon_cms.query('Delete From icn_offer_plan where op_id =?', [req.body.PlanId], function (err, result) {
+                        planListManager.deleteOfferPlan( connection_ikon_cms, req.body.PlanId, function (err, result) {
                             if (err) {
                                 connection_ikon_cms.release();
                                 res.status(500).json(err.message);
@@ -195,7 +184,7 @@ exports.deleteplan = function (req, res, next) {
                         });
                     }
                     else {
-                        var query = connection_ikon_cms.query('Delete From icn_alacart_plan where ap_id =?', [req.body.PlanId], function (err, result) {
+                        planListManager.deleteAlacartaPlan( connection_ikon_cms, req.body.PlanId, function (err, result) {
                             if (err) {
                                 connection_ikon_cms.release();
                                 res.status(500).json(err.message);

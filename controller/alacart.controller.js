@@ -4,6 +4,8 @@
 var mysql = require('../config/db').pool;
 var async = require('async');
 var config = require('../config')();
+var alacartaManager = require("../models/alacartaModel");
+var planListManager = require("../models/planListModel");
 /**
  * @function getalacartadata
  * @param req
@@ -19,86 +21,49 @@ exports.getalacartadata = function (req, res, next) {
                 mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
                         PlanData: function (callback) {
-                            var query = connection_ikon_cms.query('SELECT * FROM icn_alacart_plan where ap_id =? ', [req.body.planid], function (err, alacart) {
-                                callback(err, alacart)
-                            })
+                            alacartaManager.getPlanData( connection_ikon_cms, req.body.planid, function (err, alacart) {
+                                callback(err, alacart);
+                            });
                         },
                         ContentTypes: function (callback) {
-                            var query = connection_ikon_cms.query('select cd.*, ct.mct_parent_cnt_type_id, ' +
-                                '(SELECT cd_name FROM catalogue_detail as cd1 join catalogue_master as cm1 ON  cm1.cm_id = cd1.cd_cm_id WHERE ct.mct_parent_cnt_type_id = cd1.cd_id) AS parent_name ' +
-                                'from icn_store As st ' +
-                                'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
-                                'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
-                                'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
-                                'WHERE st.st_id = ? ', [req.session.Plan_StoreId], function (err, ContentTypes) {
+                            planListManager.getContentTypesByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, ContentTypes) {
                                 callback(err, ContentTypes)
-                            })
+                            });
                         },
                         DeliveryTypes: function (callback) {
-                            var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Delivery Type")', function (err, DeliveryTypes) {
-                                callback(err, DeliveryTypes)
-                            })
+                            alacartaManager.getDeliveryTypes(connection_ikon_cms,  function (err, DeliveryTypes ) {
+                                callback(err, DeliveryTypes);
+                            });
                         },
                         DurationOptions: function (callback) {
-                            var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Stream Duration")', function (err, DurationOptions) {
-                                callback(err, DurationOptions)
-                            })
+                            alacartaManager.getDurationOptions(connection_ikon_cms,  function (err, DurationOptions ) {
+                                callback(err, DurationOptions);
+                            });
                         },
                         GeoLocations: function (callback) {
-                            var query = connection_ikon_cms.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
-                                'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
-                                'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.Plan_StoreId], function (err, GeoLocations) {
-                                callback(err, GeoLocations)
-                            })
+                            alacartaManager.getGeoLocationsByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, GeoLocations ) {
+                                callback( err, GeoLocations );
+                            });
                         },
                         DistributionChannel: function (callback) {
-                            var query = connection_ikon_cms.query('select cd.* FROM catalogue_detail as cd ' +
-                                'LEFT JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id ' +
-                                'LEFT JOIN multiselect_metadata_detail as m ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN icn_store as s ON m.cmd_group_id = s.st_front_type ' +
-                                'WHERE cm.cm_name in ("Channel Distribution") AND s.st_id = ? ', [req.session.Plan_StoreId], function (err, DistributionChannel) {
-                                callback(err, DistributionChannel)
-                            })
+                            alacartaManager.getDistributionChannelsByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, DistributionChannel ) {
+                                callback( err, DistributionChannel );
+                            });
                         },
                         JetEvents: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT event.*, master.tmi_content_type as contentType, partner.partner_cty_id as country FROM billing_ef_bgw_event as event '+
-                            'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
-                            'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
-                            'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
-                            'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
-                            'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
-                            'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
-                            'GROUP BY master.tmi_parent_id',[req.session.Plan_StoreId], function (err, JetEvents) {
-                            /*var query = connection_ikon_bg.query('SELECT event.* FROM billing_ef_bgw_event as event ' +
-                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid ' +
-                                'JOIN billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
-                                'WHERE event.ebe_is_valid = 1 and event.ebe_ai_bgw_id is not null ' +
-                                'AND info.ai_app_id = ? GROUP BY event.ebe_ef_id', [req.session.Plan_StoreId], function (err, JetEvents) {*/
-                                callback(err, JetEvents)
-                            })
+                            alacartaManager.getJetEventsByStoreId(connection_ikon_bg, req.session.Plan_StoreId, function (err, JetEvents ) {
+                                callback( err, JetEvents );
+                            });
                         },
                         OperatorDetail: function (callback) {
-                            /*var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, alacart.bta_ef_id, alacart.bta_id,alacart.bta_name,alacart.bta_amt, partner.partner_name, partner.partner_id ' +
-                                'FROM ' + config.db_name_ikon_bg + '.billing_ef_bgw_event as event ' +
-                                'JOIN ' + config.db_name_ikon_bg + '.billing_telco_alacarte_detail AS alacart ON alacart.bta_ef_id = event.ebe_ef_id ' +
-                                'JOIN ' + config.db_name_ikon_bg + '.billing_partner AS partner ON partner.partner_id = alacart.bta_partner_id ' +
-                                'left JOIN ' + config.db_name_ikon_cms + '.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = alacart.bta_ef_id AND dis.dcl_partner_id = alacart.bta_partner_id', function (err, OperatorDetails) {*/
-                            var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id, partner.partner_cty_id as country ' +
-                                'FROM '+config.db_name_ikon_bg+'.billing_ef_bgw_event as bge JOIN '+config.db_name_ikon_bg+'.billing_event_family AS bef ON bef.ef_id = bge.ebe_ef_id ' +
-                                'JOIN '+config.db_name_ikon_bg+'.billing_telco_master_event_index AS master ON bef.ef_tmi_id = master.tmi_id ' +
-                                'JOIN '+config.db_name_ikon_bg+'.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
-                                'LEFT JOIN '+config.db_name_ikon_cms+'.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
-                                'GROUP BY master.tmi_parent_id ', function (err, OperatorDetails) {
-                                callback(err, OperatorDetails)
-                            })
+                            alacartaManager.getOperatorDetail( connection_ikon_bg, config.db_name_ikon_bg, config.db_name_ikon_cms, function (err, OperatorDetails) {
+                                callback( err, OperatorDetails );
+                            });
                         },
                         selectedDistributionChannel: function (callback) {
-                            var query = connection_ikon_cms.query('SELECT mmd.* FROM multiselect_metadata_detail AS mmd ' +
-                                'JOIN icn_alacart_plan AS alplan ON mmd.cmd_group_id = alplan.ap_channel_front ' +
-                                'WHERE alplan.ap_id =? ', [req.body.planid], function (err, selectedDistributionChannel) {
-                                callback(err, selectedDistributionChannel)
-                            })
+                            alacartaManager.getSelectedDistributionChannelByPlanId( connection_ikon_cms, req.body.planid, function ( err, selectedDistributionChannel ) {
+                                callback( err, selectedDistributionChannel );
+                            });
                         },
                         RoleUser: function (callback) {
                             //Get User Role
@@ -125,7 +90,7 @@ exports.getalacartadata = function (req, res, next) {
         }
     }
     catch (err) {
-        res.status(500).json(err.message);
+        res.status(500).json(err.messagDistributionChannele);
     }
 }
 
@@ -142,11 +107,7 @@ exports.addeditalacart = function (req, res, next) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.waterfall([
                     function (callback) {
-                        var query = connection_ikon_cms.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
-                        ' UNION ' +
-                        '(select subscription.sp_id as plan_id from icn_sub_plan AS subscription where lower(subscription.sp_plan_name) = ? ) ' +
-                        ' UNION ' +
-                        '(select valupack.vp_id as plan_id from icn_valuepack_plan as valupack where lower(valupack.vp_plan_name) = ? ) ', [req.body.PlanName.toLowerCase(),req.body.PlanName.toLowerCase(),req.body.PlanName.toLowerCase()], function (err, result) {
+                        alacartaManager.getAlacartPlanByName( connection_ikon_cms, req.body.PlanName.toLowerCase(), function( err, result  ) {
                             if(result.length > 0){
                                 callback(err, {'exist':true,'plans':result});
                             }else{
@@ -281,8 +242,8 @@ exports.addeditalacart = function (req, res, next) {
                             async.waterfall([
                                     function(callback){
                                         //Get alacar plan
-                                        var query = connection_ikon_cms.query('select * from icn_alacart_plan where ap_id = ?', [req.body.planid], function (err, alacart) {
-                                            callback(err,alacart);
+                                        alacartaManager.getAlacartPlanByPlanId( connection_ikon_cms, req.body.planid, function (err, alacart) {
+                                            callback( err,alacart );
                                         });
                                     },
                                     function (alacart,callback){
@@ -295,8 +256,8 @@ exports.addeditalacart = function (req, res, next) {
                                     function (alacart,callback){
                                         if (distributionChannellength > 0) {
                                             var distributionChannel = 0;
-                                            var query = connection_ikon_cms.query('DELETE FROM multiselect_metadata_detail WHERE cmd_group_id = ?', [alacart[0].ap_channel_front], function (err, result) {
-                                                addDistributionChannel(distributionChannel, alacart[0].ap_channel_front);
+                                            alacartaManager.deleteDistributionChannel( connection_ikon_cms, alacart[0].ap_channel_front, function( err, result ) {
+                                                addDistributionChannel(distributionChannel, alacart[0].ap_channel_front );
                                             })
                                         }
                                         callback(err,alacart);
@@ -323,7 +284,7 @@ exports.addeditalacart = function (req, res, next) {
                                             ap_modified_by: req.session.Plan_UserName
                                         };
                                         //console.log(data)
-                                        var query = connection_ikon_cms.query('UPDATE icn_alacart_plan SET ? where ap_id =?', [data, req.body.alacartplanid], function (err, result) {
+                                        alacartaManager.updateIcnAlacartPlan( connection_ikon_cms, data, req.body.alacartplanid, function( err , result ) {
                                             if (err) {
                                                 connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
@@ -344,7 +305,7 @@ exports.addeditalacart = function (req, res, next) {
                             async.waterfall([
                                     function(callback){
                                         //Get alacart plan max id
-                                        var query = connection_ikon_cms.query('SELECT MAX(cmd_group_id) AS group_id FROM multiselect_metadata_detail', function (err, group) {
+                                        alacartaManager.getLastInsertedAlacartPlanIdFromMultiSelectMetaDataDetail( connection_ikon_cms, function (err, group) {
                                             callback(err,group);
                                         });
                                     },
@@ -368,7 +329,7 @@ exports.addeditalacart = function (req, res, next) {
                                     },
                                     function(group,callback){
                                         //Get subscription plan
-                                        var query = connection_ikon_cms.query('select max(ap_id) as ap_id from icn_alacart_plan', function (err, subMaxId) {
+                                        alacartaManager.selectLasInsertedSubscriptionPlanIdFromAlacartPlan( connection_ikon_cms, function (err, subMaxId) {
                                             callback(err,{'group_id':group,'ap_id':subMaxId[0].ap_id});
                                         });
                                     }
@@ -401,7 +362,7 @@ exports.addeditalacart = function (req, res, next) {
                                             ap_modified_by: req.session.Plan_UserName
                                         }
 
-                                        var query = connection_ikon_cms.query('INSERT INTO icn_alacart_plan SET ?', data, function (err, result) {
+                                        alacartaManager.createIcnAlacartPlan( connection_ikon_cms, data, function (err, result) {
                                             if (err) {
                                                 connection_ikon_cms.release();
                                                 res.status(500).json(err.message);

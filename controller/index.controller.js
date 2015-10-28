@@ -5,7 +5,7 @@
 var mysql = require('../config/db').pool;
 var config = require('../config')();
 var nodemailer = require('nodemailer');
-
+var userManager = require('../models/userModel');
 
 function getDate(val) {
     var d = new Date(val);
@@ -46,11 +46,7 @@ exports.pages = function (req, res, next) {
             if (req.session.Plan_StoreId) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                        var query = connection_ikon_bg.query('select bed.* from '+config.db_name_ikon_cms+'.icn_store as st ' +
-                            'inner join '+config.db_name_ikon_cms+'.multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_payment_type) ' +
-                            'inner join '+config.db_name_ikon_bg+'.billing_enum_data AS bed ON bed.en_id = mlm.cmd_entity_detail AND bed.en_type in ("payment_type") ' +
-                            'WHERE st.st_id =? ORDER BY bed.en_id ', [req.session.Plan_StoreId], function (err, selectedPaymentType) {
-
+                        userManager.getSelectedPaymentTypeByStoreId( connection_ikon_bg, config.db_name_ikon_cms , config.db_name_ikon_bg, req.session.Plan_StoreId, function (err, selectedPaymentType) {
                             role = req.session.Plan_UserRole;
                             var pageData = getPages(role,selectedPaymentType);
                             res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
@@ -136,7 +132,7 @@ exports.logout = function (req, res, next) {
 exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
-            var query = connection_central.query('SELECT * FROM icn_login_detail AS user JOIN icn_store_user AS store_user ON user.ld_id = store_user.su_ld_id where BINARY ld_user_id= ? and BINARY ld_user_pwd = ? ', [req.body.username, req.body.password], function (err, row, fields) {
+            userManager.getUserDetails( connection_central, req.body.username, req.body.password, function( err, row, fields ) {
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection.' });
                 } else {
@@ -226,7 +222,7 @@ exports.viewForgotPassword = function (req, res, next) {
 exports.forgotPassword = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
-            var query = connection_central.query('SELECT * FROM icn_login_detail where BINARY ld_user_id= ? and BINARY ld_email_id = ? ', [req.body.userid, req.body.emailid], function (err, row, fields) {
+            userManager.getUserDetailsByUserIdByEmail( connection_central, req.body.userid, req.body.emailid, function( err, row, fields ) {
                 if (err) {
                     res.render('account-forgot', { error: 'Error in database connection.', msg: '' });
                 }
@@ -293,7 +289,7 @@ exports.changePassword = function (req, res) {
                 var session = req.session;
                 mysql.getConnection('CMS', function (err, connection_central) {
                     if (req.body.oldpassword == req.session.Plan_Password) {
-                        var query = connection_central.query('UPDATE icn_login_detail SET ld_user_pwd=?, ld_modified_on=? WHERE ld_id=?', [req.body.newpassword, new Date(), req.session.Plan_UserId], function (err, result) {
+                        userManager.updateIcnUserDetails( connection_central, req.body.newpassword, new Date(), req.session.Plan_UserId, function( err, result ) {
                             if (err) {
                                 connection_central.release();
                                 res.status(500).json(err.message);
