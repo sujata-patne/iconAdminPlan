@@ -106,19 +106,19 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                                         $scope.SelectedVendorList = [];
                                         $scope.SelectedUserRole = 0;
                                         $scope.successvisible = true;
-                                        $scope.success = "Record inserted successfully. Temprory Password sent to register email.";
+                                        toastr.success("Record inserted successfully. Temprory Password sent to register email.");
                                     }
                                     if (data.Result == "EmailIdError") {
                                         $scope.errorvisible = true;
-                                        $scope.error = "Email Already Available.";
+                                        toastr.error("Email Already Available.");
                                     }
                                     if (data.Result == "UserNameError") {
                                         $scope.errorvisible = true;
-                                        $scope.error = "UserName  Already Available.";
+                                        toastr.error("UserName  Already Available.");
                                     }
                                     if (data.Result == "MobileNoError") {
                                         $scope.errorvisible = true;
-                                        $scope.error = "MobileNo Already Available.";
+                                        toastr.error("MobileNo Already Available.");
                                     }
                                     ngProgress.complete();
                                 })
@@ -141,19 +141,19 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                                         });
                                         $state.transitionTo('users');
                                         //$window.location.href = "#add-edit";
-                                        $scope.success = "Record Updated successfully.";
+                                    toastr.success("Record Updated successfully.");
                                     }
                                     if (data.Result == "EmailIdError") {
                                         $scope.errorvisible = true;
-                                        $scope.error = "Email Already Available.";
+                                        toastr.error("Email Already Available.");
                                     }
                                     if (data.Result == "UserNameError") {
                                         $scope.errorvisible = true;
-                                        $scope.error = "UserName  Already Available.";
+                                        toastr.error("UserName  Already Available.");
                                     }
                                     if (data.Result == "MobileNoError") {
                                         $scope.errorvisible = true;
-                                        $scope.error = "MobileNo Already Available.";
+                                        toastr.error("MobileNo Already Available.");
                                     }
                                     ngProgress.complete();
                                 });
@@ -203,17 +203,17 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                     $scope.OldPassword = "";
                     $scope.NewPassword = "";
                     $scope.ConfirmPassword = "";
-                    $scope.success = data.message;
+                    toastr.success(data.message);
                     $scope.successvisible = true;
                 }
                 else {
-                    $scope.error = data.message;
+                    toastr.error(data.message);
                     $scope.errorvisible = true;
                 }
             });
         }
         else {
-            $scope.error = "Confirm Password does not match.";
+            toastr.error("Confirm Password does not match.");
             $scope.errorvisible = true;
         }
     };
