@@ -251,7 +251,10 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
 
                     if ($scope.CurrentPage == "edit-subscriptions") {
                         $state.go('subscriptions'); //"#subscriptions";
+                    }else{
+                        $state.reload();
                     }
+                    
                     toastr.success(data.message)
                    // $scope.success = data.message;
                     $scope.successvisible = true;

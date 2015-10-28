@@ -129,7 +129,10 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
                 if (data.success) {
                     if ($scope.CurrentPage == "edit-value-pack") {
                         $state.go('value-pack'); //"#subscriptions";
+                    }else{
+                        $state.reload();
                     }
+
                     toastr.success(data.message)
                     //$scope.success = data.message;
                     $scope.successvisible = true;

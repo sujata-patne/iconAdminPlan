@@ -88,7 +88,7 @@
                         <button type="button" class="btn btn-primary btn-w-xs" title="Previous" data-ng-disabled="listcurrentPage == 0" data-ng-click="listcurrentPage=listcurrentPage-1">Previous</button>
                     </div>
                     <div class="col-xs-6 col-md-6">
-                        <button type="button" class="btn btn-primary btn-w-xs" title="Download" data-ng-click="ExportPlan()">Download in excel</button>
+                        <button type="button" style="margin-left:32%" class="btn btn-primary btn-w-xs" ng-show="planList.length > 0" title="Download" data-ng-click="ExportPlan()">Download in excel</button>
                     </div>
                     <div class="col-xs-3 col-md-3 text-right">
                         <button type="button" class="btn btn-primary btn-w-xs" title="Next" data-ng-disabled="listcurrentPage >= planList.length/listpageSize - 1" data-ng-click="listcurrentPage=listcurrentPage+1">Next</button>

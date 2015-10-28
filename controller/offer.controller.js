@@ -234,6 +234,10 @@ exports.editOffer = function (req, res, next) {
                                               connection_ikon_cms.release();
                                               res.status(500).json(err.message);
                                       }else{
+                                         if(async_results.OfferExists){
+                                              connection_ikon_cms.release();
+                                              res.send({"success" : false,"message" : "Another offer with the same name exists"});
+                                          }else{
                                                 if(async_results.MaxGroupId != null){
                                                       var v_distibution_channels = req.body.DistributionChannels;
                                                       var count = v_distibution_channels.length;
@@ -284,6 +288,7 @@ exports.editOffer = function (req, res, next) {
                                                           });
                                                       }//loop
                                                 }//if
+                                              }//else
                                         }
                                 });//async end
                             }); //conn
