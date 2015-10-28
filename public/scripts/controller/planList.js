@@ -47,11 +47,11 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
                     PlanList.BlockUnBlockPlan(plan, function (data) {
                         if (data.success) {
                             value.active = active;
-                            $scope.success = data.message;
+                            toastr.success( data.message);
                             $scope.successvisible = true;
                         }
                         else {
-                            $scope.error = data.message;
+                            toastr.error(data.message);
                             $scope.errorvisible = true;
                         }
                         ngProgress.complete();
@@ -87,7 +87,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
             ngProgress.start();
             PlanList.DeletePlan(plan, function (data) {
                 if (data.success) {
-                    $scope.success = data.message;
+                    toastr.success(data.message);
                     $scope.successvisible = true;
                     var Plans = [];
                     $scope.AllPlanList.forEach(function (value) {
@@ -101,7 +101,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
                     $scope.FilterContent();
                 }
                 else {
-                    $scope.error = data.message;
+                    toastr.error(data.message);
                     $scope.errorvisible = true;
 
                 }

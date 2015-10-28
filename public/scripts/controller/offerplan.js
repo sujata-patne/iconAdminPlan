@@ -1,7 +1,7 @@
 /**
  * Created by sujata.patne on 15-07-2015.
  */
-myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $stateParams, Offers) {
+myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $stateParams, $state, Offers) {
     $('.removeActiveClass').removeClass('active');
     $('#offer-plan').addClass('active');
     $scope.contentType = 'Offer Plan';
@@ -95,16 +95,25 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
     $scope.print_result = function(data){
         if(data.success){
             if ($scope.CurrentPage == "edit-offer-plan") {
-                $window.location.href = "#offer-plan";
+                $state.go("offer-plan");
+            }else{
+                $state.reload();
             }
+
             toastr.success(data.message)
             //$scope.success = data.message;
             $scope.successvisible = true;
         }else{
-            toastr.error(data.message)
+            toastr.error(data.message);
+            
+
             //$scope.error = data.message;
             $scope.errorvisible = true;
         }
+    }
+
+    $scope.resetForm = function(){
+        $state.reload();
     }
 
 });

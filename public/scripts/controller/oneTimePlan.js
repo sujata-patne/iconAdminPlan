@@ -174,14 +174,20 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
                 if (data.success) {
                     if ($scope.CurrentPage == "edit-a-la-cart") {
                         $state.go('a-la-cart');// = "#a-la-cart";
+                    }else{
+                         $state.reload();
                     }
 
+                   
                     toastr.success(data.message)
                     //$scope.success = data.message;
                     $scope.successvisible = true;
+
+                    
                 }
                 else {
                     toastr.error(data.message)
+
                     //$scope.error = data.message;
                     $scope.errorvisible = true;
                 }
