@@ -150,8 +150,25 @@ exports.selectLasInsertedSubscriptionPlanIdFromAlacartPlan = function( dbConnect
     );
 }
 
+exports.getLastInsertedDistributionChannelId = function( dbConnection, callback ) {
+    dbConnection.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail',
+        function (err, result) {
+            callback( err, result );
+        }
+    );
+}
+
 exports.createIcnAlacartPlan = function( dbConnection, alacartData, callback ) {
     dbConnection.query('INSERT INTO icn_alacart_plan SET ?', alacartData,
+        function (err, result) {
+            callback(err, result);
+        }
+    );
+}
+
+
+exports.createDistributionChannel = function( dbConnection, cmd_data, callback ) {
+    dbConnection.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data,
         function (err, result) {
             callback(err, result);
         }

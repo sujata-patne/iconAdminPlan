@@ -5,6 +5,10 @@
 var mysql = require('../config/db').pool;
 var async = require('async');
 var config = require('../config')();
+var alacartaManager = require("../models/alacartaModel");
+var planListManager = require("../models/planListModel");
+var valuePackManager = require("../models/valuePackModel");
+var subscriptionManager = require("../models/subscriptionModel");
 /**
  * @function getvaluepack
  * @param req
@@ -19,53 +23,29 @@ exports.getvaluepack = function (req, res, next) {
                 mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
                         PlanData: function (callback) {
-                            var query = connection_ikon_cms.query('SELECT * FROM icn_valuepack_plan where vp_id =? ', [req.body.planid], function (err, valueplan) {
-                                callback(err, valueplan)
-                            })
+                            valuePackManager.getPlanData( connection_ikon_cms, req.body.planid, function ( err, valueplan ) {
+                                callback(err, valueplan);
+                            });
                         },
                         DurationOptions: function (callback) {
-                            var query = connection_ikon_cms.query('select cd.* from catalogue_detail as cd ' +
-                                'JOIN catalogue_master as cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name in("Stream Duration")', function (err, DurationOptions) {
-                                callback(err, DurationOptions)
-                            })
+                            alacartaManager.getDurationOptions(connection_ikon_cms,  function (err, DurationOptions ) {
+                                callback(err, DurationOptions);
+                            });
                         },
                         GeoLocations: function (callback) {
-                            var query = connection_ikon_cms.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
-                                'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
-                                'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                                'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [req.session.Plan_StoreId], function (err, GeoLocations) {
-                                callback(err, GeoLocations)
-                            })
+                            alacartaManager.getGeoLocationsByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, GeoLocations ) {
+                                callback( err, GeoLocations );
+                            });
                         },
                         JetEvents: function (callback) {
-                            /*var query = connection_ikon_bg.query('SELECT event.*, master.tmi_content_type as contentType, partner.partner_cty_id as country  FROM billing_ef_bgw_event as event '+
-                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
-                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
-                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
-                                'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
-                                'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
-                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
-                                'GROUP BY event.ebe_ef_id',[req.session.Plan_StoreId], function (err, JetEvents) { //Subscriptions*/
-                            var query = connection_ikon_bg.query('SELECT event.*, master.tmi_content_type as contentType, partner.partner_cty_id as country FROM billing_ef_bgw_event as event '+
-                                'JOIN billing_app_info as info ON event.ebe_ai_bgw_id = info.ai_bg_eventid  '+
-                                'JOIN billing_event_family AS family ON family.ef_id = event.ebe_ef_id  '+
-                                'JOIN billing_telco_master_event_index AS master ON family.ef_tmi_id = master.tmi_id  '+
-                                'JOIN billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
-                                'JOIN billing_enum_data AS enum ON enum.en_id = master.tmi_pp_classification '+
-                                'WHERE enum.en_type = "payment_type" AND enum.en_description = "One Time" AND event.ebe_is_valid = 1 AND event.ebe_ai_bgw_id is not null AND info.ai_app_id = ? ' +
-                                'GROUP BY master.tmi_parent_id',[req.session.Plan_StoreId], function (err, JetEvents) {
-                                callback(err, JetEvents)
-                            })
+                            alacartaManager.getJetEventsByStoreId(connection_ikon_bg, req.session.Plan_StoreId, function (err, JetEvents ) {
+                                callback( err, JetEvents );
+                            });
                         },
                         OperatorDetail: function (callback) {
-                            var query = connection_ikon_bg.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id, bge.ebe_bgw_id_desc as duration, partner.partner_cty_id as country ' +
-                                'FROM '+config.db_name_ikon_bg+'.billing_ef_bgw_event as bge JOIN '+config.db_name_ikon_bg+'.billing_event_family AS bef ON bef.ef_id = bge.ebe_ef_id ' +
-                                'JOIN '+config.db_name_ikon_bg+'.billing_telco_master_event_index AS master ON bef.ef_tmi_id = master.tmi_id ' +
-                                'JOIN '+config.db_name_ikon_bg+'.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
-                                'LEFT JOIN '+config.db_name_ikon_cms+'.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
-                                'GROUP BY master.tmi_parent_id ', function (err, OperatorDetails) {
-                                callback(err, OperatorDetails)
-                            })
+                            alacartaManager.getOperatorDetail( connection_ikon_bg, config.db_name_ikon_bg, config.db_name_ikon_cms, function (err, OperatorDetails) {
+                                callback( err, OperatorDetails );
+                            });
                         },
                         RoleUser: function (callback) {
                             //Get User Role
@@ -107,17 +87,13 @@ exports.addeditvaluepack = function (req, res, next) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.waterfall([
                     function (callback) {
-                        var query = connection_ikon_cms.query('(select alacart.ap_id as plan_id from icn_alacart_plan as alacart where lower(alacart.ap_plan_name) = ? ) '+
-                            ' UNION ' +
-                            '(select subscription.sp_id as plan_id from icn_sub_plan AS subscription where lower(subscription.sp_plan_name) = ? ) ' +
-                            ' UNION ' +
-                            '(select valupack.vp_id as plan_id from icn_valuepack_plan as valupack where lower(valupack.vp_plan_name) = ? ) ', [req.body.PlanName.toLowerCase(),req.body.PlanName.toLowerCase(),req.body.PlanName.toLowerCase()], function (err, result) {
-                            if (result.length > 0) {
-                                callback(err, {'exist': true, 'plans': result});
-                            } else {
-                                callback(err, {'exist': false, 'plans': result});
+                        valuePackManager.getValuePackPlanByName( connection_ikon_cms, req.body.PlanName.toLowerCase(), function( err, result  ) {
+                            if( result != undefined && result.length > 0){
+                                callback(err, {'exist':true,'plans':result});
+                            }else{
+                                callback(err, {'exist':false,'plans':result});
                             }
-                        })
+                        });
                     },
                     function (data, callback) {
                         if (data.exist == true && data.plans[0].plan_id != req.body.valuepackplanId) {
@@ -142,7 +118,7 @@ exports.addeditvaluepack = function (req, res, next) {
 
                         function addEditOperators(cnt) {
                             var j = cnt;
-                            var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
+                            subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_id, function( err, disclaimer ) {
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
@@ -156,7 +132,7 @@ exports.addeditvaluepack = function (req, res, next) {
                                             dcl_modified_on: new Date(),
                                             dcl_modified_by: req.session.Plan_UserName
                                         }
-                                        var query = connection_ikon_cms.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData, disclaimer[0].dcl_id], function (err, result) {
+                                        subscriptionManager.updateOperatorDetails( connection_ikon_cms, disclaimerData, disclaimer[0].dcl_id, function( err, result ) {
                                             if (err) {
                                                 connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
@@ -170,7 +146,7 @@ exports.addeditvaluepack = function (req, res, next) {
                                         });
                                     } else {
                                         var dclID = 1;
-                                        var query = connection_ikon_cms.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
+                                        subscriptionManager.getLastInsertedOperatorId( connection_ikon_cms, function( err, result ) {
                                             if (err) {
                                                 connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
@@ -188,7 +164,7 @@ exports.addeditvaluepack = function (req, res, next) {
                                                     dcl_created_by: req.session.Plan_UserName,
                                                     dcl_created_on: new Date(),
                                                 }
-                                                var query = connection_ikon_cms.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
+                                                subscriptionManager.createOperatorDetails( connection_ikon_cms, disclaimer, function( err, result ) {
                                                     if (err) {
                                                         connection_ikon_cms.release();
                                                         res.status(500).json(err.message);
@@ -208,7 +184,7 @@ exports.addeditvaluepack = function (req, res, next) {
                         }
 
                         function EditValuePack() {
-                            var query = connection_ikon_cms.query('select * from icn_valuepack_plan where vp_id = ?', [req.body.valuepackplanId], function (err, result) {
+                            valuePackManager.getValuePackPlanByPlanId( connection_ikon_cms, req.body.valuepackplanId, function (err, result ) {
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
@@ -231,7 +207,7 @@ exports.addeditvaluepack = function (req, res, next) {
                                             vp_modified_on: new Date(),
                                             vp_modified_by: req.session.Plan_UserName
                                         }
-                                        var query = connection_ikon_cms.query('UPDATE icn_valuepack_plan SET ? WHERE vp_id =?', [data, req.body.valuepackplanId], function (err, result) {
+                                        valuePackManager.updateValuePackPlan( connection_ikon_cms, data, req.body.valuepackplanId, function (err, result) {
                                             if (err) {
                                                 connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
@@ -256,7 +232,7 @@ exports.addeditvaluepack = function (req, res, next) {
                         }
 
                         function AddValuePack() {
-                            var query = connection_ikon_cms.query('select max(vp_id) as id from icn_valuepack_plan', function (err, result) {
+                            valuePackManager.getLastInsertedValuePackPlanId( connection_ikon_cms, function (err, result) {
                                 if (err) {
                                     console.log(err.message);
                                     connection_ikon_cms.release();
@@ -285,7 +261,7 @@ exports.addeditvaluepack = function (req, res, next) {
                                         vp_modified_on: new Date(),
                                         vp_modified_by: req.session.Plan_UserName
                                     }
-                                    var query = connection_ikon_cms.query('INSERT INTO icn_valuepack_plan SET ?', data, function (err, result) {
+                                    valuePackManager.createValuePackPlan( connection_ikon_cms, data, function( err, result ) {
                                         if (err) {
                                             console.log(err.message);
                                             connection_ikon_cms.release();

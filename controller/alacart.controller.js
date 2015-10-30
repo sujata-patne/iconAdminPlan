@@ -113,7 +113,7 @@ exports.addeditalacart = function (req, res, next) {
                             }else{
                                 callback(err, {'exist':false,'plans':result});
                             }
-                        })
+                        });
                     },
                     function(data, callback){
                         if(data.exist == true && data.plans[0].plan_id != req.body.alacartplanid ){
@@ -206,7 +206,7 @@ exports.addeditalacart = function (req, res, next) {
                         function addDistributionChannel(cnt,groupID) {
                             var cmdID = 1;
                             var i = cnt;
-                            var query = connection_ikon_cms.query('SELECT MAX(cmd_id) AS id FROM multiselect_metadata_detail', function (err, result) {
+                            alacartaManager.getLastInsertedDistributionChannelId( connection_ikon_cms, function( err, result ) {
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
@@ -222,7 +222,7 @@ exports.addeditalacart = function (req, res, next) {
                                         cmd_entity_detail: req.body.DistributionChannels[i]
                                     };
                                     //console.log(cmd_data)
-                                    var query = connection_ikon_cms.query('INSERT INTO multiselect_metadata_detail SET ?', cmd_data, function (err, result) {
+                                    alacartaManager.createDistributionChannel( connection_ikon_cms, cmd_data, function( err, result ) {
                                         if (err) {
                                             connection_ikon_cms.end();
                                             res.status(500).json(err.message);
