@@ -20,6 +20,9 @@ exports.getsubscriptions = function (req, res, next) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
+                            StoreId: function (callback) {
+                                callback(err, req.session.Plan_StoreId);
+                            },
                             PlanData: function (callback) {
                                 //Get subscription plan data
                                 subscriptionManager.getPlanData( connection_ikon_cms, req.body.planid, function ( err, subplan ) {

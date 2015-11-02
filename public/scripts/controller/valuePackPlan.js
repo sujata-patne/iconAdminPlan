@@ -23,10 +23,12 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
 
     // get valuepack data & jet pay id
     Valuepacks.GetValuepackData({ planid: $stateParams.id }, function (valuepacks) {
+        $scope.StoreId = angular.copy(valuepacks.StoreId);
+
         $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
         $scope.AllOperatorDetails = angular.copy(valuepacks.OperatorDetail);
         $scope.durationOptions = angular.copy(valuepacks.DurationOptions);
-
+        $scope.getJetPayDetailsByStoreId($scope.StoreId);
         $scope.durationOptions.forEach(function(option){
             if(option.cd_name === 'Months'){
                 $scope.selectedDurationOptions = option.cd_id;
@@ -53,6 +55,24 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         });
     });
 
+    $scope.getJetPayDetailsByStoreId = function(storeId){
+        Valuepacks.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
+            $scope.jetPayDetials = angular.copy(jetPayDetials);
+            if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+                $scope.jetPayDetials.forEach(function (value) {
+                    if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                        $scope.OperatorDetails.push(value);
+                    }
+                })
+                $scope.jetPayDetials.forEach(function (value) {
+                    if ($scope.SelectedGeoLocation == value.country) {
+                        $scope.JetPayEvent.push(value);
+                    }
+                })
+            }
+        })
+    }
+
     $scope.$watch(function(){
         return $scope.numberOfContent = ($scope.SelectedStreamType == 2) ? '': $scope.numberOfContent;
     }, function(newvalue, oldvalue){},true);
@@ -75,9 +95,29 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         });
         $scope.selectedCurrency = currency;
     }*/
-
+    $scope.$watch('SelectedEventId',function() {
+        $scope.OperatorDetails = [];
+        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+            $scope.jetPayDetials.forEach(function (value) {
+                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                    $scope.OperatorDetails.push(value);
+                }
+            })
+        }
+    })
+    $scope.$watch('SelectedGeoLocation',function() {
+        console.log("$scope.$watch('SelectedGeoLocation'")
+        $scope.JetPayEvent = [];
+        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+            $scope.jetPayDetials.forEach(function (value) {
+                if ($scope.SelectedGeoLocation == value.country) {
+                    $scope.JetPayEvent.push(value);
+                }
+            })
+        }
+    })
     // display operator on change of jet event id
-    $scope.displayOperators = function () {
+    /*$scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
             if ($scope.SelectedEventId == value.ebe_ef_id ) { //&& $scope.SelectedGeoLocation == value.country
@@ -95,7 +135,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
             }
         })
         //console.log($scope.JetPayEvent)
-    }
+    }*/
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';

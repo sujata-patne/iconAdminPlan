@@ -28,6 +28,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
 
     // get subscription  & jet events
     Subscriptions.GetSubscriptionData({ planid: $stateParams.id }, function (SubscriptionData) {
+        $scope.StoreId = angular.copy(SubscriptionData.StoreId);
 
         $scope.distributionChannelList = angular.copy(SubscriptionData.DistributionChannel);
         $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
@@ -37,6 +38,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         $scope.GeoLocations = angular.copy(SubscriptionData.GeoLocations);
         $scope.ContentTypes = angular.copy(SubscriptionData.ContentTypes);
         $scope.alacartData = angular.copy(SubscriptionData.ContentTypeData);
+
+        $scope.getJetPayDetailsByStoreId($scope.StoreId);
 
         $scope.ContentTypeAlacart = angular.copy(SubscriptionData.AlacartaData);
         if($scope.ContentTypeAlacart.length > 0){
@@ -118,10 +121,31 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             $scope.SelectedGeoLocation = value.sp_cty_id;
             $scope.atCostFreePaid = value.sp_is_cnt_free;
 
-            $scope.displayJetEvents();
-            $scope.displayOperators();
+           /* $scope.displayJetEvents();
+            $scope.displayOperators();*/
         });
     });
+
+    $scope.getJetPayDetailsByStoreId = function(storeId){
+        Subscriptions.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
+            $scope.jetPayDetials = angular.copy(jetPayDetials);
+            $scope.OperatorDetails = [];
+            $scope.JetPayEvent = [];
+            if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+                $scope.jetPayDetials.forEach(function (value) {
+                    if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                        $scope.OperatorDetails.push(value);
+                    }
+                })
+                $scope.jetPayDetials.forEach(function (value) {
+                    if ($scope.SelectedGeoLocation == value.country) {
+                        $scope.JetPayEvent.push(value);
+                    }
+                })
+            }
+        })
+    }
+
     $scope.$watch(function(){
         return $scope.slc_tnb_free_cnt_limit = ($scope.streamingLimitType == 2) ? '': $scope.slc_tnb_free_cnt_limit;
     }, function(newvalue, oldvalue){},true);
@@ -163,8 +187,28 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         }
     };
     // operator display on change of jet event id
-
-    $scope.displayOperators = function () {
+    $scope.$watch('SelectedEventId',function() {
+        $scope.OperatorDetails = [];
+        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+            $scope.jetPayDetials.forEach(function (value) {
+                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                    $scope.OperatorDetails.push(value);
+                }
+            })
+        }
+    })
+    $scope.$watch('SelectedGeoLocation',function() {
+        console.log("$scope.$watch('SelectedGeoLocation'")
+        $scope.JetPayEvent = [];
+        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+            $scope.jetPayDetials.forEach(function (value) {
+                if ($scope.SelectedGeoLocation == value.country) {
+                    $scope.JetPayEvent.push(value);
+                }
+            })
+        }
+    })
+    /*$scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
             if ($scope.SelectedEventId == value.ebe_ef_id ) {//&& $scope.SelectedGeoLocation == value.country
@@ -182,7 +226,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             }
         })
         //console.log($scope.JetPayEvent)
-    }
+    }*/
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';

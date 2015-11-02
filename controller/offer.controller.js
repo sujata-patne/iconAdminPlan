@@ -15,6 +15,9 @@ exports.getofferdata = function (req, res, next) {
         if (req.session != undefined && req.session.Plan_UserName != undefined) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
+                    StoreId: function (callback) {
+                        callback(err, req.session.Plan_StoreId);
+                    },
                     DistributionChannel: function(callback){
                         //Get Distribution channels
                         var query = connection_ikon_cms.query('select cd.* FROM catalogue_detail as cd ' +
