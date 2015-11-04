@@ -10,7 +10,7 @@ myApp.service('Subscriptions', ['$http', function ($http) {
         });
     }
     service.getJetPayDetailsByStoreId = function(storeId,success){
-        $http.get('http://192.168.3.67:8234/jetpayAPI/GetStoreDetails?STORE='+storeId).success(function (items) {
+        $http.get('http://192.168.3.67:8234/BillingUtilService/GetStoreDetails?STORE='+storeId).success(function (items) {
             success(items);
         });
     }

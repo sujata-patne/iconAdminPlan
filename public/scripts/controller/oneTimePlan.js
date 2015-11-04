@@ -109,12 +109,16 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
     })
     $scope.$watch('SelectedGeoLocation',function() {
         $scope.JetPayEvent = [];
+
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
+
                 if ($scope.SelectedGeoLocation == value.country) {
                     $scope.JetPayEvent.push(value);
                 }
             })
+            console.log('$scope.$scope.JetPayEvent')
+            console.log($scope.JetPayEvent)
         }
     })
     // display operator on change of jet pay id 
