@@ -138,11 +138,21 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                     }
                 })
                 $scope.jetPayDetials.forEach(function (value) {
-                    if ($scope.SelectedGeoLocation == value.country) {
+                    console.log('value.country')
+                    console.log(value.country)
+                    console.log($scope.SelectedGeoLocation)
+
+                    if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                         $scope.JetPayEvent.push(value);
                     }
                 })
+
             }
+
+
+
+            console.log('$scope.JetPayEvent')
+            console.log($scope.JetPayEvent)
         })
     }
 
@@ -198,11 +208,10 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         }
     })
     $scope.$watch('SelectedGeoLocation',function() {
-        console.log("$scope.$watch('SelectedGeoLocation'")
         $scope.JetPayEvent = [];
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
-                if ($scope.SelectedGeoLocation == value.country) {
+                if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                     $scope.JetPayEvent.push(value);
                 }
             })

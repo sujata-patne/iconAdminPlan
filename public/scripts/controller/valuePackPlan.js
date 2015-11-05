@@ -65,7 +65,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
                     }
                 })
                 $scope.jetPayDetials.forEach(function (value) {
-                    if ($scope.SelectedGeoLocation == value.country) {
+                    if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                         $scope.JetPayEvent.push(value);
                     }
                 })
@@ -106,11 +106,10 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         }
     })
     $scope.$watch('SelectedGeoLocation',function() {
-        console.log("$scope.$watch('SelectedGeoLocation'")
         $scope.JetPayEvent = [];
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
-                if ($scope.SelectedGeoLocation == value.country) {
+                if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                     $scope.JetPayEvent.push(value);
                 }
             })

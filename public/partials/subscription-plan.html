@@ -49,18 +49,7 @@
                                 <!--<input type="text" readonly name="currency" class="form-control" id="" placeholder="Currency" data-ng-model="selectedCurrency">-->
                             <!--</div>-->
                         </div>
-                        <div class="form-group">
-                            <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>Distribution Channel</label>
-                            <div class="col-md-9">
-                                <span data-ng-repeat="i in distributionChannelList ">
-                                    <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)" ng-required="selectedDistributionChannel.length == 0" >&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
-                                </span>
-                                <br />
-                                <span style="color: red" ng-show="subscriptionForm.$submitted && selectedDistributionChannel.length == 0 ">
-                                     <span ng-show="subscriptionForm.distributionChannel.$error.required">Distribution Channel is required.</span>
-                                </span>
-                        </div>
-                        </div>
+
                         <div class="form-group">
                             <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>JetPay Event Id</label>
                             <div class="col-md-9">
@@ -74,6 +63,19 @@
                                 </span>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="distributionChannel" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>Distribution Channel</label>
+                            <div class="col-md-9">
+                                    <span data-ng-repeat="i in distributionChannelList ">
+                                        <input type="checkbox" name="distributionChannel" ng-model="distributionChannelArray[i.cd_id]" ng-change="stateChanged(i.cd_id)" ng-required="selectedDistributionChannel.length == 0" >&nbsp;{{i.cd_name}} &nbsp; &nbsp; &nbsp;
+                                    </span>
+                                <br />
+                                    <span style="color: red" ng-show="subscriptionForm.$submitted && selectedDistributionChannel.length == 0 ">
+                                         <span ng-show="subscriptionForm.distributionChannel.$error.required">Distribution Channel is required.</span>
+                                    </span>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="col-md-6 col-xs-12 form-group table-responsive">
                         <table id="eventOperators" class="table table-striped table-bordered table-checkable">
