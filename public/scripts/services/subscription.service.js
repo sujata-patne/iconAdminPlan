@@ -10,10 +10,11 @@ myApp.service('Subscriptions', ['$http', function ($http) {
         });
     }
     service.getJetPayDetailsByStoreId = function(storeId,success){
-        $http.get('http://192.168.3.67:8234/BillingUtilService/GetStoreDetails?STORE='+storeId).success(function (items) {
+        $http.get('http://103.43.2.10/BillingUtilService/GetStoreDetails?Store='+storeId).success(function (items) {
             success(items);
         });
     }
+
     service.AddEditSubscription = function (data, success) {
         $http.post(service.baseRestUrl + '/addeditsubscription', data).success(function (items) {
             success(items);
