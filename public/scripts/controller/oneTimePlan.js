@@ -71,6 +71,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
                 contentTypeData = type;
             }
         })
+        console.log(contentTypeData.parent_name)
         if( $scope.SelectedContentType == contentTypeData.cd_id && (contentTypeData.parent_name == 'Audio' || contentTypeData.parent_name == 'Video')){
             $scope.deliveryType = $scope.AllDeliveryType;
         }else{

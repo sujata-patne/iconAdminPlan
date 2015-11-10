@@ -2,7 +2,7 @@
  * Created by sujata.patne on 15-07-2015.
  */
 
-myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, $window) {
+myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, $window,Users,$cookieStore) {
     $('.removeActiveClass').removeClass('active');
     $('#plan-list').addClass('active');
     $scope.IsDisable = true;
@@ -14,6 +14,17 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
+   /* $cookieStore.remove('selectedPaymentType');
+    $cookieStore.put('selectedPaymentType', [{en_description:'One Time'}, {en_description:'Subscriptions'}]); */
+    Users.getPricePointType(function (pages){
+        if(pages && pages.length > 0){
+            $cookieStore.remove('selectedPaymentType')
+            $cookieStore.put('selectedPaymentType', pages);
+        }
+    })
+
+    var pagesData = $cookieStore.get('selectedPaymentType');
+    console.log(pagesData)
     // get contenttype
     $scope.getContentName = function (id) {
         var type = '';

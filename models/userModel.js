@@ -2,10 +2,10 @@
  * Created by darhamid on 28/10/15.
  */
 exports.getSelectedPaymentTypeByStoreId = function( dbConnection, db_name_ikon_cms ,db_name_ikon_bg, Plan_StoreId, callback ) {
-    dbConnection.query('select bed.* from '+db_name_ikon_cms+'.icn_store as st ' +
+    dbConnection.query('select mlm.* from '+db_name_ikon_cms+'.icn_store as st ' +
         'inner join '+db_name_ikon_cms+'.multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_payment_type) ' +
-        'inner join '+db_name_ikon_bg+'.billing_enum_data AS bed ON bed.en_id = mlm.cmd_entity_detail AND bed.en_type in ("payment_type") ' +
-        'WHERE st.st_id =? ORDER BY bed.en_id ', [Plan_StoreId],
+        //'inner join '+db_name_ikon_bg+'.billing_enum_data AS bed ON bed.en_id = mlm.cmd_entity_detail AND bed.en_type in ("payment_type") ' +
+        'WHERE st.st_id =? ORDER BY mlm.cmd_entity_detail ', [Plan_StoreId],
         function (err, selectedPaymentType) {
             callback( err, selectedPaymentType );
         }

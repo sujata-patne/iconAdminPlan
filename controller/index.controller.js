@@ -41,6 +41,7 @@ function Pad(padString, value, length) {
  */
 exports.pages = function (req, res, next) {
     var role;
+    var pricePointTypes = [];
     if (req.session) {
         if (req.session.Plan_UserName) {
             if (req.session.Plan_StoreId) {
@@ -48,7 +49,20 @@ exports.pages = function (req, res, next) {
                     mysql.getConnection('BG', function (err, connection_ikon_bg) {
                         userManager.getSelectedPaymentTypeByStoreId( connection_ikon_bg, config.db_name_ikon_cms , config.db_name_ikon_bg, req.session.Plan_StoreId, function (err, selectedPaymentType) {
                             role = req.session.Plan_UserRole;
-                            var pageData = getPages(role,selectedPaymentType);
+
+                            if(req.cookies.selectedPaymentType !== undefined && req.cookies.selectedPaymentType !== '' && req.cookies.selectedPaymentType.length > 0) {
+                                req.cookies.selectedPaymentType.forEach(function (paymentType) {
+                                    if(selectedPaymentType.cmd_entity_detail == paymentType.en_id){
+                                        pricePointTypes.push(paymentType);
+                                    }
+                                })
+                            }else{
+                                var pricePointTypes = [{en_description:'One Time'}, {en_description:'Subscriptions'}];
+                            }
+                            console.log('pricePointTypes')
+                            console.log(pricePointTypes)
+                            //partner_payment_type
+                            var pageData = getPages(role,pricePointTypes);
                             res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
                         })
                     })
@@ -193,16 +207,30 @@ function getPages(role, selectedPaymentType) {
     if (role == "Super Admin" || role == "Store Manager") {
         var pagesjson = [];
         pagesjson.push( { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] } );
-
-        selectedPaymentType.forEach(function(paymentType){
-
-            if(paymentType.en_display_name === 'One Time'){
-                pagesjson.push({ 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
-            }
-            if(paymentType.en_display_name === 'Subscriptions'){
-                pagesjson.push({ 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
-            }
-        })
+        if(selectedPaymentType.length > 0) {
+            selectedPaymentType.forEach(function (paymentType) {
+                if (paymentType.en_description === 'One Time') {
+                    pagesjson.push({
+                        'pagename': 'A La Cart Plan',
+                        'href': 'a-la-cart',
+                        'id': 'a-la-cart',
+                        'class': 'fa fa-briefcase',
+                        'submenuflag': '0',
+                        'sub': []
+                    });
+                }
+                if (paymentType.en_description === 'Subscriptions') {
+                    pagesjson.push({
+                        'pagename': 'Subscriptions Plan',
+                        'href': 'subscriptions',
+                        'id': 'subscriptions',
+                        'class': 'fa fa-briefcase',
+                        'submenuflag': '0',
+                        'sub': []
+                    });
+                }
+            })
+        }
         pagesjson.push(
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },

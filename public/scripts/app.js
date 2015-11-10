@@ -1,7 +1,7 @@
 /**
  * Created by sujata.patne on 7/6/2015.
  */
-var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress']);
+var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress','ngCookies']);
 toastr.options = {
     "closeButton": false,
     "debug": false,

@@ -30,6 +30,8 @@ exports.getalacartadata = function (req, res, next) {
                         },
                         ContentTypes: function (callback) {
                             planListManager.getContentTypesByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, ContentTypes) {
+                                console.log('ContentTypes')
+                                console.log(ContentTypes)
                                 callback(err, ContentTypes)
                             });
                         },
