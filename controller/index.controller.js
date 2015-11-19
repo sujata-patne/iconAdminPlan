@@ -7,6 +7,8 @@ var config = require('../config')();
 var nodemailer = require('nodemailer');
 var userManager = require('../models/userModel');
 
+var _ = require('underscore');
+
 function getDate(val) {
     var d = new Date(val);
     var dt = d.getDate();
@@ -41,40 +43,31 @@ function Pad(padString, value, length) {
  */
 exports.pages = function (req, res, next) {
     var role;
-    var pricePointTypes = [];
-    if (req.session) {
-        if (req.session.Plan_UserName) {
-            if (req.session.Plan_StoreId) {
-                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                        userManager.getSelectedPaymentTypeByStoreId( connection_ikon_bg, config.db_name_ikon_cms , config.db_name_ikon_bg, req.session.Plan_StoreId, function (err, selectedPaymentType) {
-                            role = req.session.Plan_UserRole;
-
-                            if(req.cookies.selectedPaymentType !== undefined && req.cookies.selectedPaymentType !== '' && req.cookies.selectedPaymentType.length > 0) {
-                                req.cookies.selectedPaymentType.forEach(function (paymentType) {
-                                    if(selectedPaymentType.cmd_entity_detail == paymentType.en_id){
-                                        pricePointTypes.push(paymentType);
-                                    }
-                                })
-                            }else{
-                                var pricePointTypes = [{en_description:'One Time'}, {en_description:'Subscriptions'}];
-                            }
-                            console.log('pricePointTypes')
-                            console.log(pricePointTypes)
-                            //partner_payment_type
-                            var pageData = getPages(role,pricePointTypes);
-                            res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
+    var paymentTypes = [];
+    if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId) {
+        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+            mysql.getConnection('BG', function (err, connection_ikon_bg) {
+                userManager.getSelectedPaymentTypeByStoreId( connection_ikon_bg, config.db_name_ikon_cms , config.db_name_ikon_bg, req.session.Plan_StoreId, function (err, selectedPaymentType) {
+                    role = req.session.Plan_UserRole;
+                    paymentTypes = req.cookies.paymentTypes;
+                    if(paymentTypes !== undefined && paymentTypes !== '' && paymentTypes.length > 0) {
+                        var pricePointTypes = [];
+                        _.each(JSON.parse(paymentTypes), function (paymentType1) {
+                            _.filter(selectedPaymentType, function (paymentType2) {
+                                if(paymentType2.cmd_entity_detail == paymentType1.en_id){
+                                    pricePointTypes.push(paymentType1);
+                                }
+                            });
                         })
-                    })
+                    }else{
+                       var pricePointTypes = paymentTypes;
+                    }
+                    //partner_payment_type
+                    var pageData = getPages(role,pricePointTypes);
+                    res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
                 })
-            }
-            else {
-                res.redirect('/accountlogin');
-            }
-        }
-        else {
-            res.redirect('/accountlogin');
-        }
+            })
+        })
     }
     else {
         res.redirect('/accountlogin');

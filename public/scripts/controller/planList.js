@@ -14,17 +14,15 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-   /* $cookieStore.remove('selectedPaymentType');
-    $cookieStore.put('selectedPaymentType', [{en_description:'One Time'}, {en_description:'Subscriptions'}]); */
-    Users.getPricePointType(function (pages){
-        if(pages && pages.length > 0){
-            $cookieStore.remove('selectedPaymentType')
-            $cookieStore.put('selectedPaymentType', pages);
+    /*Users.getPricePointType(function (paymentTypes){
+        if(paymentTypes && paymentTypes.length > 0){
+            $cookieStore.remove('paymentTypes')
+            $cookieStore.put('paymentTypes', angular.fromJson(paymentTypes));
         }
-    })
-
-    var pagesData = $cookieStore.get('selectedPaymentType');
-    console.log(pagesData)
+        var pagesData = $cookieStore.get('paymentTypes');
+        console.log("$cookieStore.get('paymentTypes')")
+        console.log($cookieStore.get('paymentTypes'))
+    })*/
     // get contenttype
     $scope.getContentName = function (id) {
         var type = '';

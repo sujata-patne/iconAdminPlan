@@ -150,6 +150,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
     };
+
     $scope.$watch(function(){
         return $scope.streamNoOfContentLimit = ($scope.streamingLimitType == 2) ? '': $scope.streamNoOfContentLimit;
     }, function(newvalue, oldvalue){},true);
