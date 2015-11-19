@@ -58,6 +58,8 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
     $scope.getJetPayDetailsByStoreId = function(storeId){
         Valuepacks.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
             $scope.jetPayDetials = angular.copy(jetPayDetials);
+            $scope.OperatorDetails = [];
+            $scope.JetPayEvent = [];
             if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
                 $scope.jetPayDetials.forEach(function (value) {
                     if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
@@ -118,6 +120,8 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
                 }
             })
         }
+        console.log('JetPayEvent')
+        console.log($scope.JetPayEvent)
     })
     // display operator on change of jet event id
     /*$scope.displayOperators = function () {

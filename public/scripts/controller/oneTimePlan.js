@@ -112,13 +112,19 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         $scope.JetPayEvent = [];
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
+                console.log('value.country')
+                console.log(value.country)
                 if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                     $scope.JetPayEvent.push(value);
                 }
             })
         }
+        console.log('JetPayEvent')
+        console.log($scope.JetPayEvent)
     })
-    // display operator on change of jet pay id 
+
+
+    // display operator on change of jet pay id
     /*$scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
@@ -180,6 +186,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
                     }
                 })
             }
+
         })
     }
 
