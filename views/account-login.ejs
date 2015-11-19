@@ -105,14 +105,9 @@
         url: 'http://103.43.2.10/BillingUtilService/GetEnumDetails?Type=payment_type',
         success: function(paymentTypes){
             if(paymentTypes && paymentTypes.length > 0){
-                //$cookieStore.remove('paymentTypes')
-               // $cookieStore.put('paymentTypes', paymentTypes);
                 $.cookie("paymentTypes", null);
                 $.cookie("paymentTypes", JSON.stringify(paymentTypes));
-
             }
-            console.log('$.cookie("paymentTypes")')
-            console.log($.cookie("paymentTypes"))
         }
     });
 </script>

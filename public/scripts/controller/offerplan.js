@@ -92,6 +92,11 @@ myApp.controller('offerPlanCtrl', function ($scope, $http, ngProgress, $statePar
         }
     };
 
+    $scope.isNumber = function(e) {
+        var key = e.keyCode ? e.keyCode : e.which;
+        if( (isNaN(String.fromCharCode(key)) && key !=8 )||key == 32) e.preventDefault();
+    }
+
     $scope.print_result = function(data){
         if(data.success){
             if ($scope.CurrentPage == "edit-offer-plan") {

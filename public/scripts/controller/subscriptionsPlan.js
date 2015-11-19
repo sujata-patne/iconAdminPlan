@@ -217,6 +217,11 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             })
         }
     })
+    $scope.isNumber = function(e) {
+        var key = e.keyCode ? e.keyCode : e.which;
+        if( (isNaN(String.fromCharCode(key)) && key !=8 )||key == 32) e.preventDefault();
+    }
+
     /*$scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {

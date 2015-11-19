@@ -90,7 +90,7 @@
                                         <div class="form-group">
                                             <label for="setDownloadLimit" class="col-md-4 control-label"><span class="asterisk padding-right-5">*</span>Set Download Limit</label>
                                             <div class="col-md-8">
-                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" required>
+                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDownloadLimit" placeholder="Set Download Limit" data-ng-model="setDownloadLimit" required  ng-keypress="isNumber($event)" >
                                                 <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.setDownloadLimit.$touched">
                                                     <span data-ng-show="valuePackForm.setDownloadLimit.$error.required">Insert download limit.</span>
                                                     <span data-ng-show="valuePackForm.setDownloadLimit.$error.pattern">Insert valid download limit.</span>
@@ -104,7 +104,7 @@
                                             <input type="radio" name="SelectedStreamType" data-ng-model="SelectedStreamType" ng-value="1" ng-required="true"></span></label>
 
                                             <div class="col-md-8 col-xs-12 no-padding">
-                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" data-ng-disabled="SelectedStreamType == 2" name="numberOfContent" data-ng-model="numberOfContent"  ng-required="SelectedStreamType == 1">
+                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" data-ng-disabled="SelectedStreamType == 2" name="numberOfContent" data-ng-model="numberOfContent"  ng-required="SelectedStreamType == 1"  ng-keypress="isNumber($event)" >
                                                 <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.streamingDurationLimit.$touched">
                                                     <span data-ng-show="valuePackForm.numberOfContent.$error.required">Insert Streaming No. of Content limit.</span>
                                                     <span data-ng-show="valuePackForm.numberOfContent.$error.pattern">Insert valid Streaming No. of Content limit.</span>
@@ -117,7 +117,7 @@
                                             <input type="radio" name="SelectedStreamType" data-ng-model="SelectedStreamType" ng-value="2" ng-required="true"></span></label>
 
                                             <div class="col-md-4 col-xs-6">
-                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" data-ng-disabled="SelectedStreamType == 1" class="form-control" name="streamingDurationLimit" placeholder="Streaming Duration" data-ng-model="streamingDurationLimit" ng-required="SelectedStreamType == 2" >
+                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" data-ng-disabled="SelectedStreamType == 1" class="form-control" name="streamingDurationLimit" placeholder="Streaming Duration" data-ng-model="streamingDurationLimit" ng-required="SelectedStreamType == 2"  ng-keypress="isNumber($event)" >
                                                 <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.streamingDurationLimit.$touched">
                                                     <span data-ng-show="valuePackForm.streamingDurationLimit.$error.required">Insert Streaming Duration limit.</span>
                                                     <span data-ng-show="valuePackForm.streamingDurationLimit.$error.pattern">Insert valid Streaming Duration limit.</span>
@@ -140,7 +140,7 @@
                                         <div class="form-group">
                                             <label for="setDurationLimit" class="col-md-4 col-xs-12 control-label"><span class="asterisk padding-right-5">*</span>Set Duration Limit</label>
                                             <div class="col-md-4 col-xs-6">
-                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDurationLimit" placeholder="Duration Limit" data-ng-model="setDurationLimit" required>
+                                                <input type="number"  min="0" max="10000" data-ng-pattern="/^[1-9][0-9]*$/" class="form-control" name="setDurationLimit" placeholder="Duration Limit" data-ng-model="setDurationLimit" required  ng-keypress="isNumber($event)" >
                                                 <span style="color: red" data-ng-show="valuePackForm.$submitted || valuePackForm.setDurationLimit.$touched">
                                                     <span data-ng-show="valuePackForm.setDurationLimit.$error.required">Insert Duration limit.</span>
                                                     <span data-ng-show="valuePackForm.setDurationLimit.$error.pattern">Insert valid Duration limit.</span>

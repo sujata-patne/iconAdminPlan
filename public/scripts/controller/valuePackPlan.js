@@ -85,6 +85,10 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         return $scope.streamDurationOptions = ($scope.SelectedStreamType == 1) ? '': $scope.streamDurationOptions;
     }, function(newvalue, oldvalue){},true);
 
+    $scope.isNumber = function(e) {
+        var key = e.keyCode ? e.keyCode : e.which;
+        if( (isNaN(String.fromCharCode(key)) && key !=8 )||key == 32) e.preventDefault();
+    }
 
     /*$scope.geoLocationChange = function () {
         var currency = '';
