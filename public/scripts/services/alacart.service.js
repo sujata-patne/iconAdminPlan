@@ -10,12 +10,13 @@ myApp.service('AlaCarts', ['$http', function ($http) {
             success(items);
         });
     }
-    
+
     service.getJetPayDetailsByStoreId = function(storeId,success){
         $http.get('http://103.43.2.10/BillingUtilService/GetStoreDetailsAla?Store='+storeId).success(function (items) {
             success(items);
         });
     }
+
 	service.AddEditAlacart = function(data,success){
 	    $http.post(service.baseRestUrl + '/addeditalacart', data).success(function (items) {
             success(items);
