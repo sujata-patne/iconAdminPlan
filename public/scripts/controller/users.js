@@ -225,8 +225,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     };
 
     $scope.Passwordvisible = function (val) {
-        console.log(val)
-        console.log($scope.passwordtype)
+
         if (val == 1) {
             $scope.passwordtype = $scope.passwordtype == "password" ? "text" : "password";
         }

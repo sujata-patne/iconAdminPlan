@@ -6,6 +6,8 @@ var async = require('async');
 var config = require('../config')();
 var alacartaManager = require("../models/alacartaModel");
 var planListManager = require("../models/planListModel");
+var subscriptionManager = require("../models/subscriptionModel");
+
 /**
  * @function getalacartadata
  * @param req
@@ -30,8 +32,7 @@ exports.getalacartadata = function (req, res, next) {
                         },
                         ContentTypes: function (callback) {
                             planListManager.getContentTypesByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, ContentTypes) {
-                                console.log('ContentTypes')
-                                console.log(ContentTypes)
+
                                 callback(err, ContentTypes)
                             });
                         },
@@ -61,7 +62,7 @@ exports.getalacartadata = function (req, res, next) {
                             });
                         },
                         OperatorDetail: function (callback) {
-                            alacartaManager.getOperatorDetail( connection_ikon_bg, config.db_name_ikon_bg, config.db_name_ikon_cms, function (err, OperatorDetails) {
+                            alacartaManager.getOperatorDetail( connection_ikon_cms, config.db_name_ikon_bg, config.db_name_ikon_cms, function (err, OperatorDetails) {
                                 callback( err, OperatorDetails );
                             });
                         },
@@ -135,113 +136,12 @@ exports.addeditalacart = function (req, res, next) {
                     }else{
                         if (req.body.planid) {
                             EditALacart();
-                        }
-                        else {
+                        } else {
                             AddAlacart();
                         }
                         var count = req.body.OperatorDetails.length;
-                        function addEditOperators(cnt) {
-                            var j = cnt;
-                            var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    if (disclaimer.length > 0) {
-                                        var disclaimerData = {
-                                            dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
-                                            dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                            dcl_st_id: req.session.Plan_StoreId,
-                                            dcl_modified_on: new Date(),
-                                            dcl_modified_by:  req.session.Plan_UserName
-                                        }
-                                        var query = connection_ikon_cms.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
-                                            if (err) {
-                                                connection_ikon_cms.release();
-                                                res.status(500).json(err.message);
-                                            }
-                                            else {
-                                                cnt++;
-                                                if (cnt < count) {
-                                                    addEditOperators(cnt);
-                                                }
-                                            }
-                                        });
-                                    } else {
-                                        var dclID = 1;
-                                        var query = connection_ikon_cms.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
-                                            if (err) {
-                                                connection_ikon_cms.release();
-                                                res.status(500).json(err.message);
-                                            }
-                                            else {
-                                                if (result[0].id != null) {
-                                                    dclID = parseInt(result[0].id) + 1;
-                                                }
-                                                var disclaimer = {
-                                                    dcl_id: dclID,
-                                                    dcl_ref_jed_id: req.body.JetId,
-                                                    dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
-                                                    dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                                    dcl_st_id: req.session.Plan_StoreId,
-                                                    dcl_created_by: req.session.Plan_UserName,
-                                                    dcl_created_on: new Date()
-                                                }
-                                                var query = connection_ikon_cms.query('INSERT INTO icn_disclaimer SET ?', disclaimer, function (err, result) {
-                                                    if (err) {
-                                                        connection_ikon_cms.release();
-                                                        res.status(500).json(err.message);
-                                                    }
-                                                    else {
-                                                        cnt++;
-                                                        if (cnt < count) {
-                                                            addEditOperators(cnt);
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        })
-                                    }
-                                }
-                            });
-                        }
 
                         var distributionChannellength = req.body.DistributionChannels.length;
-                        function addDistributionChannel(cnt,groupID) {
-                            var cmdID = 1;
-                            var i = cnt;
-                            alacartaManager.getLastInsertedDistributionChannelId( connection_ikon_cms, function( err, result ) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    if (result[0].id != null) {
-                                        cmdID = parseInt(result[0].id) + 1;
-                                    }
-                                    var cmd_data = {
-                                        cmd_id: cmdID,
-                                        cmd_group_id: groupID,
-                                        cmd_entity_type: req.body.DistributionChannelList[0].cd_cm_id,
-                                        cmd_entity_detail: req.body.DistributionChannels[i]
-                                    };
-                                    //console.log(cmd_data)
-                                    alacartaManager.createDistributionChannel( connection_ikon_cms, cmd_data, function( err, result ) {
-                                        if (err) {
-                                            connection_ikon_cms.end();
-                                            res.status(500).json(err.message);
-                                        }
-                                        else {
-                                            cnt = cnt + 1;
-                                            if (cnt < distributionChannellength ) {
-                                                addDistributionChannel(cnt, groupID);
-                                            }
-                                        }
-                                    })
-                                }
-                            })
-                        }
 
                         function EditALacart() {
                             async.waterfall([
@@ -254,7 +154,9 @@ exports.addeditalacart = function (req, res, next) {
                                     function (alacart,callback){
                                         if (req.body.OperatorDetails.length > 0) {
                                             var operator = 0;
-                                            addEditOperators(operator);
+                                            addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+
+                                            //addEditOperators(operator);
                                         }
                                         callback(null,alacart);
                                     },
@@ -262,7 +164,9 @@ exports.addeditalacart = function (req, res, next) {
                                         if (distributionChannellength > 0) {
                                             var distributionChannel = 0;
                                             alacartaManager.deleteDistributionChannel( connection_ikon_cms, alacart[0].ap_channel_front, function( err, result ) {
-                                                addDistributionChannel(distributionChannel, alacart[0].ap_channel_front );
+                                                addDistributionChannel(connection_ikon_cms,distributionChannel,alacart[0].ap_channel_front,req.body);
+
+                                                //addDistributionChannel(distributionChannel, alacart[0].ap_channel_front );
                                             })
                                         }
                                         callback(err,alacart);
@@ -321,14 +225,17 @@ exports.addeditalacart = function (req, res, next) {
                                                 groupID = parseInt(group[0].group_id) + 1;
                                             }
                                             var distributionChannel = 0;
-                                            addDistributionChannel(distributionChannel,groupID);
+                                            addDistributionChannel(connection_ikon_cms,distributionChannel,groupID,req.body);
+
+                                            //addDistributionChannel(distributionChannel,groupID);
                                         }
                                         callback(null,groupID);
                                     },
                                     function (group,callback){
                                         if (req.body.OperatorDetails.length > 0) {
                                             var operator = 0;
-                                            addEditOperators(operator);
+                                            addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+                                           // addEditOperators(operator);
                                         }
                                         callback(null,group);
                                     },
@@ -395,4 +302,117 @@ exports.addeditalacart = function (req, res, next) {
         connection_ikon_cms.release();
         res.status(500).json(err.message);
     }
+}
+
+function addEditOperators(connection_ikon_cms, cnt,data,session) {
+    var j = cnt;
+    var count = data.OperatorDetails.length;
+    subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_id, function( err, disclaimer ) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            console.log(err.message)
+        }
+        else {
+            if (disclaimer.length > 0) {
+                var disclaimerData = {
+                    dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
+                    dcl_partner_id: data.OperatorDetails[j].partner_id,
+                    dcl_st_id: session.Plan_StoreId,
+                    dcl_modified_on: new Date(),
+                    dcl_modified_by:  session.Plan_UserName
+                }
+                subscriptionManager.updateOperatorDetails( connection_ikon_cms, disclaimerData, disclaimer[0].dcl_id, function( err, result ) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message)
+                    }
+                    else {
+                        cnt++;
+                        if (cnt < count) {
+                            addEditOperators(connection_ikon_cms, cnt,data,session);
+                        }
+                    }
+                });
+            } else {
+                var dclID = 1;
+                subscriptionManager.getLastInsertedOperatorId( connection_ikon_cms, function( err, result ) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message)
+                    }
+                    else {
+                        if (result[0].id != null) {
+                            dclID = parseInt(result[0].id) + 1;
+                        }
+                        var disclaimerData = {
+                            dcl_id: dclID,
+                            dcl_ref_jed_id: data.JetId,
+                            dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
+                            dcl_partner_id: data.OperatorDetails[j].partner_id,
+                            dcl_st_id: session.Plan_StoreId,
+                            dcl_created_by: session.Plan_UserName,
+                            dcl_created_on: new Date()
+                        }
+                        subscriptionManager.createOperatorDetails( connection_ikon_cms, disclaimerData, function( err, result ) {
+                            if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                            }
+                            else {
+                                cnt++;
+                                if (cnt < count) {
+                                    addEditOperators(connection_ikon_cms, cnt,data,session);
+                                    //addEditOperators(cnt);
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+        }
+    });
+}
+
+function addDistributionChannel(connection_ikon_cms,cnt,groupID,data) {
+    // function addDistributionChannel(cnt,groupID) {
+    var distributionChannellength = data.DistributionChannels.length;
+
+    var cmdID = 1;
+    var i = cnt;
+    alacartaManager.getLastInsertedDistributionChannelId( connection_ikon_cms, function( err, result ) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            console.log(err.message)
+        }
+        else {
+            if (result[0].id != null) {
+                cmdID = parseInt(result[0].id) + 1;
+            }
+            var cmd_data = {
+                cmd_id: cmdID,
+                cmd_group_id: groupID,
+                cmd_entity_type: data.DistributionChannelList[0].cd_cm_id,
+                cmd_entity_detail: data.DistributionChannels[i]
+            };
+            alacartaManager.createDistributionChannel( connection_ikon_cms, cmd_data, function( err, result ) {
+                if (err) {
+                    connection_ikon_cms.release();
+                    res.status(500).json(err.message);
+                    console.log(err.message)
+                }
+                else {
+                    cnt++;
+                    if (cnt < distributionChannellength) {
+                        addDistributionChannel(connection_ikon_cms,cnt,groupID,data)
+                        //addDistributionChannel(cnt, groupID);
+                    }
+                }
+            })
+        }
+    })
+    //}
 }

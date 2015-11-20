@@ -71,7 +71,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
                 contentTypeData = type;
             }
         })
-        console.log(contentTypeData.parent_name)
         if( $scope.SelectedContentType == contentTypeData.cd_id && (contentTypeData.parent_name == 'Audio' || contentTypeData.parent_name == 'Video')){
             $scope.deliveryType = $scope.AllDeliveryType;
         }else{
@@ -99,28 +98,17 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         }
     }
     $scope.$watch('SelectedEventId',function() {
-        $scope.OperatorDetails = [];
-        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
-            $scope.jetPayDetials.forEach(function (value) {
-                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
-                    $scope.OperatorDetails.push(value);
-                }
-            })
-        }
+        $scope.getOperatorDetails();
     })
     $scope.$watch('SelectedGeoLocation',function() {
         $scope.JetPayEvent = [];
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
-                console.log('value.country')
-                console.log(value.country)
                 if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                     $scope.JetPayEvent.push(value);
                 }
             })
         }
-        console.log('JetPayEvent')
-        console.log($scope.JetPayEvent)
     })
 
 
@@ -169,24 +157,37 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         return $scope.SelectedDurationType = ($scope.streamingLimitType == 1) ? '': $scope.SelectedDurationType;
     }, function(newvalue, oldvalue){},true);
 
+    $scope.getOperatorDetails = function(){
+        $scope.OperatorDetails = [];
+        console.log('getOperatorDetails')
+
+        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+            $scope.jetPayDetials.forEach(function (value) {
+                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                    _.filter($scope.AllOperatorDetails, function (operator) {
+                        if(value.ebe_ef_id == operator.dcl_ref_jed_id && value.partner_id == operator.dcl_partner_id){
+                            value.dcl_disclaimer = operator.dcl_disclaimer;
+                        }
+                    })
+                    $scope.OperatorDetails.push(value);
+                }
+            })
+
+        }
+    }
     $scope.getJetPayDetailsByStoreId = function(storeId){
         AlaCarts.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
             $scope.jetPayDetials = angular.copy(jetPayDetials);
-            $scope.OperatorDetails = [];
             $scope.JetPayEvent = [];
             if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
-                $scope.jetPayDetials.forEach(function (value) {
-                    if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
-                        $scope.OperatorDetails.push(value);
-                    }
-                })
+
                 $scope.jetPayDetials.forEach(function (value) {
                     if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                         $scope.JetPayEvent.push(value);
                     }
                 })
             }
-
+            $scope.getOperatorDetails();
         })
     }
 

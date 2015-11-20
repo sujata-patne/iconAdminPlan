@@ -38,7 +38,7 @@ exports.updateValuePackPlan = function( dbConnection, data, valuePackPlanId, cal
 }
 
 exports.getLastInsertedValuePackPlanId = function( dbConnection, callback ) {
-    dbConnection.query('select max(vp_id) as id from icn_valuepack_plan',
+    dbConnection.query('select max(vp_id) as vp_id from icn_valuepack_plan',
         function ( err, result ) {
             callback( err, result );
         }

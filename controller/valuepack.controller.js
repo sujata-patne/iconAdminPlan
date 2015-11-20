@@ -46,7 +46,7 @@ exports.getvaluepack = function (req, res, next) {
                             });
                         },
                         OperatorDetail: function (callback) {
-                            alacartaManager.getOperatorDetail( connection_ikon_bg, config.db_name_ikon_bg, config.db_name_ikon_cms, function (err, OperatorDetails) {
+                            alacartaManager.getOperatorDetail( connection_ikon_cms, config.db_name_ikon_bg, config.db_name_ikon_cms, function (err, OperatorDetails) {
                                 callback( err, OperatorDetails );
                             });
                         },
@@ -119,81 +119,39 @@ exports.addeditvaluepack = function (req, res, next) {
                         }
                         var count = req.body.OperatorDetails.length;
 
-                        function addEditOperators(cnt) {
-                            var j = cnt;
-                            subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_id, function( err, disclaimer ) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    if (disclaimer.length > 0) {
-                                        var disclaimerData = {
-                                            dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
-                                            dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                            dcl_st_id: req.session.Plan_StoreId,
-                                            dcl_modified_on: new Date(),
-                                            dcl_modified_by: req.session.Plan_UserName
-                                        }
-                                        subscriptionManager.updateOperatorDetails( connection_ikon_cms, disclaimerData, disclaimer[0].dcl_id, function( err, result ) {
-                                            if (err) {
-                                                connection_ikon_cms.release();
-                                                res.status(500).json(err.message);
-                                            }
-                                            else {
-                                                cnt++;
-                                                if (cnt < count) {
-                                                    addEditOperators(cnt);
-                                                }
-                                            }
-                                        });
-                                    } else {
-                                        var dclID = 1;
-                                        subscriptionManager.getLastInsertedOperatorId( connection_ikon_cms, function( err, result ) {
-                                            if (err) {
-                                                connection_ikon_cms.release();
-                                                res.status(500).json(err.message);
-                                            }
-                                            else {
-                                                if (result[0].id != null) {
-                                                    dclID = parseInt(result[0].id) + 1;
-                                                }
-                                                var disclaimer = {
-                                                    dcl_id: dclID,
-                                                    dcl_ref_jed_id: req.body.JetId,
-                                                    dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
-                                                    dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                                                    dcl_st_id: req.session.Plan_StoreId,
-                                                    dcl_created_by: req.session.Plan_UserName,
-                                                    dcl_created_on: new Date(),
-                                                }
-                                                subscriptionManager.createOperatorDetails( connection_ikon_cms, disclaimer, function( err, result ) {
-                                                    if (err) {
-                                                        connection_ikon_cms.release();
-                                                        res.status(500).json(err.message);
-                                                    }
-                                                    else {
-                                                        cnt++;
-                                                        if (cnt < count) {
-                                                            addEditOperators(cnt);
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        })
-                                    }
-                                }
-                            });
-                        }
-
                         function EditValuePack() {
-                            valuePackManager.getValuePackPlanByPlanId( connection_ikon_cms, req.body.valuepackplanId, function (err, result ) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    if (result.length > 0) {
+                            async.waterfall([
+                                    function(callback){
+                                        valuePackManager.getValuePackPlanByPlanId( connection_ikon_cms, req.body.valuepackplanId, function (err, result ) {
+                                            callback( err,result );
+                                        });
+                                    },
+                                    function (alacart,callback){
+                                        if (req.body.OperatorDetails.length > 0) {
+                                            var operator = 0;
+                                            addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+
+                                            //addEditOperators(operator);
+                                        }
+                                        callback(null,alacart);
+                                    }/*,
+                                    function (alacart,callback){
+                                        if (distributionChannellength > 0) {
+                                            var distributionChannel = 0;
+                                            alacartaManager.deleteDistributionChannel( connection_ikon_cms, alacart[0].ap_channel_front, function( err, result ) {
+                                                addDistributionChannel(connection_ikon_cms,distributionChannel,alacart[0].ap_channel_front,req.body);
+
+                                                //addDistributionChannel(distributionChannel, alacart[0].ap_channel_front );
+                                            })
+                                        }
+                                        callback(err,alacart);
+                                    }*/
+                                ],
+                                function(err, results){
+                                    if(err){
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                    }else {
                                         var data = {
                                             vp_plan_name: req.body.PlanName,
                                             vp_caption: req.body.Caption,
@@ -210,6 +168,7 @@ exports.addeditvaluepack = function (req, res, next) {
                                             vp_modified_on: new Date(),
                                             vp_modified_by: req.session.Plan_UserName
                                         }
+                                        //console.log(data)
                                         valuePackManager.updateValuePackPlan( connection_ikon_cms, data, req.body.valuepackplanId, function (err, result) {
                                             if (err) {
                                                 connection_ikon_cms.release();
@@ -222,66 +181,96 @@ exports.addeditvaluepack = function (req, res, next) {
                                                     success: true,
                                                     message: 'Value-Pack Plan Updated successfully.'
                                                 });
-
                                             }
                                         });
                                     }
-                                    else {
+                                })
+                        }
+                        function AddValuePack() {
+                            async.waterfall([
+                                    function(callback){
+                                        //Get alacart plan max id
+                                        valuePackManager.getLastInsertedValuePackPlanId( connection_ikon_cms, function (err, result) {
+                                            callback(err,result);
+                                        });
+                                    },
+                                    function (group,callback){
+                                        if (req.body.OperatorDetails.length > 0) {
+                                            var operator = 0;
+                                            addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+                                            // addEditOperators(operator);
+                                        }
+                                        callback(null,group);
+                                    },
+                                    /*function (group,callback){
+                                        if (distributionChannellength > 0) {
+                                            var groupID = 1;
+                                            if (group[0].group_id != null) {
+                                                groupID = parseInt(group[0].group_id) + 1;
+                                            }
+                                            var distributionChannel = 0;
+                                            addDistributionChannel(connection_ikon_cms,distributionChannel,groupID,req.body);
+
+                                            //addDistributionChannel(distributionChannel,groupID);
+                                        }
+                                        callback(null,groupID);
+                                    },
+                                    function(group,callback){
+                                        //Get subscription plan
+                                        alacartaManager.selectLasInsertedSubscriptionPlanIdFromAlacartPlan( connection_ikon_cms, function (err, subMaxId) {
+                                            callback(err,{'group_id':group,'ap_id':subMaxId[0].ap_id});
+                                        });
+                                    }*/
+                                ],
+                                function(err, results) {
+                                    console.log('results')
+                                    console.log(results);
+                                    if (err) {
                                         connection_ikon_cms.release();
-                                        res.send({success: false, message: 'Invalid Value-Pack Plan Id.'});
+                                        res.status(500).json(err.message);
+                                    } else {
+                                        var data = {
+                                            vp_id: results[0].vp_id != null ? parseInt(results[0].vp_id + 1) : 1,
+                                            vp_ld_id: req.session.Plan_UserId,
+                                            vp_st_id: req.session.Plan_StoreId,
+                                            vp_plan_name: req.body.PlanName,
+                                            vp_caption: req.body.Caption,
+                                            vp_description: req.body.Description,
+                                            vp_jed_id: req.body.JetId,
+                                            vp_download_limit: req.body.DowmloadLimit,
+                                            vp_duration_limit: req.body.DurationLimit,
+                                            vp_duration_type: req.body.DurationOptions,
+                                            vp_stream_limit: req.body.NoOfStreamContent,
+                                            vp_stream_duration: req.body.StreamDuration,
+                                            vp_stream_setting: req.body.StreamType,
+                                            vp_cty_id: req.body.CountryId,
+                                            vp_stream_dur_type: req.body.StreamDurationOptions,
+                                            vp_is_active: 1,
+                                            vp_created_on: new Date(),
+                                            vp_created_by: req.session.Plan_UserName,
+                                            vp_modified_on: new Date(),
+                                            vp_modified_by: req.session.Plan_UserName
+                                        }
+
+                                        valuePackManager.createValuePackPlan( connection_ikon_cms, data, function( err, result ) {
+                                            if (err) {
+                                                console.log(err.message);
+                                                connection_ikon_cms.release();
+                                                res.status(500).json(err.message);
+                                                console.log(err)
+                                            }
+                                            else {
+                                                connection_ikon_cms.release();
+                                                res.send({
+                                                    success: true,
+                                                    message: 'Value-Pack Plan added successfully.'
+                                                });
+                                            }
+                                        });
                                     }
-                                }
-                            });
+                                })
                         }
 
-                        function AddValuePack() {
-                            valuePackManager.getLastInsertedValuePackPlanId( connection_ikon_cms, function (err, result) {
-                                if (err) {
-                                    console.log(err.message);
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    var data = {
-                                        vp_id: result[0].id != null ? parseInt(result[0].id + 1) : 1,
-                                        vp_ld_id: req.session.Plan_UserId,
-                                        vp_st_id: req.session.Plan_StoreId,
-                                        vp_plan_name: req.body.PlanName,
-                                        vp_caption: req.body.Caption,
-                                        vp_description: req.body.Description,
-                                        vp_jed_id: req.body.JetId,
-                                        vp_download_limit: req.body.DowmloadLimit,
-                                        vp_duration_limit: req.body.DurationLimit,
-                                        vp_duration_type: req.body.DurationOptions,
-                                        vp_stream_limit: req.body.NoOfStreamContent,
-                                        vp_stream_duration: req.body.StreamDuration,
-                                        vp_stream_setting: req.body.StreamType,
-                                        vp_cty_id: req.body.CountryId,
-                                        vp_stream_dur_type: req.body.StreamDurationOptions,
-                                        vp_is_active: 1,
-                                        vp_created_on: new Date(),
-                                        vp_created_by: req.session.Plan_UserName,
-                                        vp_modified_on: new Date(),
-                                        vp_modified_by: req.session.Plan_UserName
-                                    }
-                                    valuePackManager.createValuePackPlan( connection_ikon_cms, data, function( err, result ) {
-                                        if (err) {
-                                            console.log(err.message);
-                                            connection_ikon_cms.release();
-                                            res.status(500).json(err.message);
-                                            console.log(err)
-                                        }
-                                        else {
-                                            connection_ikon_cms.release();
-                                            res.send({
-                                                success: true,
-                                                message: 'Value-Pack Plan added successfully.'
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
                     }
                 });
             })
@@ -292,4 +281,118 @@ exports.addeditvaluepack = function (req, res, next) {
     catch (err) {
         res.status(500).json(err.message);
     }
+}
+
+
+function addEditOperators(connection_ikon_cms, cnt,data,session) {
+    var j = cnt;
+    var count = data.OperatorDetails.length;
+    subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_id, function( err, disclaimer ) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            console.log(err.message)
+        }
+        else {
+            if (disclaimer.length > 0) {
+                var disclaimerData = {
+                    dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
+                    dcl_partner_id: data.OperatorDetails[j].partner_id,
+                    dcl_st_id: session.Plan_StoreId,
+                    dcl_modified_on: new Date(),
+                    dcl_modified_by:  session.Plan_UserName
+                }
+                subscriptionManager.updateOperatorDetails( connection_ikon_cms, disclaimerData, disclaimer[0].dcl_id, function( err, result ) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message)
+                    }
+                    else {
+                        cnt++;
+                        if (cnt < count) {
+                            addEditOperators(connection_ikon_cms, cnt,data,session);
+                        }
+                    }
+                });
+            } else {
+                var dclID = 1;
+                subscriptionManager.getLastInsertedOperatorId( connection_ikon_cms, function( err, result ) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message)
+                    }
+                    else {
+                        if (result[0].id != null) {
+                            dclID = parseInt(result[0].id) + 1;
+                        }
+                        var disclaimerData = {
+                            dcl_id: dclID,
+                            dcl_ref_jed_id: data.JetId,
+                            dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
+                            dcl_partner_id: data.OperatorDetails[j].partner_id,
+                            dcl_st_id: session.Plan_StoreId,
+                            dcl_created_by: session.Plan_UserName,
+                            dcl_created_on: new Date()
+                        }
+                        subscriptionManager.createOperatorDetails( connection_ikon_cms, disclaimerData, function( err, result ) {
+                            if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                            }
+                            else {
+                                cnt++;
+                                if (cnt < count) {
+                                    addEditOperators(connection_ikon_cms, cnt,data,session);
+                                    //addEditOperators(cnt);
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+        }
+    });
+}
+
+function addDistributionChannel(connection_ikon_cms,cnt,groupID,data) {
+    // function addDistributionChannel(cnt,groupID) {
+    var distributionChannellength = data.DistributionChannels.length;
+
+    var cmdID = 1;
+    var i = cnt;
+    alacartaManager.getLastInsertedDistributionChannelId( connection_ikon_cms, function( err, result ) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            console.log(err.message)
+        }
+        else {
+            if (result[0].id != null) {
+                cmdID = parseInt(result[0].id) + 1;
+            }
+            var cmd_data = {
+                cmd_id: cmdID,
+                cmd_group_id: groupID,
+                cmd_entity_type: data.DistributionChannelList[0].cd_cm_id,
+                cmd_entity_detail: data.DistributionChannels[i]
+            };
+            alacartaManager.createDistributionChannel( connection_ikon_cms, cmd_data, function( err, result ) {
+                if (err) {
+                    connection_ikon_cms.release();
+                    res.status(500).json(err.message);
+                    console.log(err.message)
+                }
+                else {
+                    cnt++;
+                    if (cnt < distributionChannellength) {
+                        addDistributionChannel(connection_ikon_cms,cnt,groupID,data)
+                        //addDistributionChannel(cnt, groupID);
+                    }
+                }
+            })
+        }
+    })
+    //}
 }
