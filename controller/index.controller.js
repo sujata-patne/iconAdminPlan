@@ -111,7 +111,16 @@ exports.logout = function (req, res, next) {
         if (req.session) {
             if (req.session.Plan_UserName) {
                 if (req.session.Plan_StoreId) {
-                    req.session = null;
+                    //req.session = null;
+                    req.session.Plan_UserId = null;
+                    req.session.Plan_UserRole = null;
+                    req.session.Plan_UserName = null;
+                    req.session.Plan_Password = null;
+                    req.session.Plan_Email = null;
+                    req.session.Plan_FullName = null;
+                    req.session.Plan_lastlogin = null;
+                    req.session.Plan_UserType = null;
+                    req.session.Plan_StoreId = null;
                     res.redirect('/accountlogin');
                 }
                 else {
@@ -240,7 +249,16 @@ function getPages(role, selectedPaymentType) {
  * @description display forgot password page
  */
 exports.viewForgotPassword = function (req, res, next) {
-    req.session = null;
+    //req.session = null;
+    req.session.Plan_UserId = null;
+    req.session.Plan_UserRole = null;
+    req.session.Plan_UserName = null;
+    req.session.Plan_Password = null;
+    req.session.Plan_Email = null;
+    req.session.Plan_FullName = null;
+    req.session.Plan_lastlogin = null;
+    req.session.Plan_UserType = null;
+    req.session.Plan_StoreId = null;
     res.render('account-forgot', { error: '', msg: '' });
 }
 /**
@@ -304,7 +322,16 @@ exports.forgotPassword = function (req, res, next) {
  * @description displays change password page
  */
 exports.viewChangePassword = function (req, res, next) {
-    req.session = null;
+    //req.session = null;
+    req.session.Plan_UserId = null;
+    req.session.Plan_UserRole = null;
+    req.session.Plan_UserName = null;
+    req.session.Plan_Password = null;
+    req.session.Plan_Email = null;
+    req.session.Plan_FullName = null;
+    req.session.Plan_lastlogin = null;
+    req.session.Plan_UserType = null;
+    req.session.Plan_StoreId = null;
     res.render('account-changepassword', { error: '' });
 }
 /**
