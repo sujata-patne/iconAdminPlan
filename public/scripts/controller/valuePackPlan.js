@@ -25,7 +25,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
     Valuepacks.GetValuepackData({ planid: $stateParams.id }, function (valuepacks) {
         $scope.StoreId = angular.copy(valuepacks.StoreId);
 
-        $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
+        //$scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
         $scope.AllOperatorDetails = angular.copy(valuepacks.OperatorDetail);
         $scope.durationOptions = angular.copy(valuepacks.DurationOptions);
         $scope.getJetPayDetailsByStoreId($scope.StoreId);

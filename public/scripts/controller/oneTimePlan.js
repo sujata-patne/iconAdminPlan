@@ -30,7 +30,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.GeoLocations = angular.copy(Alacarts.GeoLocations);
-        $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
+        //$scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.durationOptions = angular.copy(Alacarts.DurationOptions);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OperatorDetail);
         $scope.PlanData = angular.copy(Alacarts.PlanData);
@@ -159,7 +159,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
 
     $scope.getOperatorDetails = function(){
         $scope.OperatorDetails = [];
-        console.log('getOperatorDetails')
 
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {

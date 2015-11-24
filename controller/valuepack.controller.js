@@ -20,7 +20,7 @@ exports.getvaluepack = function (req, res, next) {
     try {
         if (req.session && req.session.Plan_UserName != undefined && req.session.Plan_StoreId != undefined) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                mysql.getConnection('BG', function (err, connection_ikon_bg) {
+                //mysql.getConnection('BG', function (err, connection_ikon_bg) {
                     async.parallel({
                         StoreId: function (callback) {
                             callback(err, req.session.Plan_StoreId);
@@ -40,13 +40,13 @@ exports.getvaluepack = function (req, res, next) {
                                 callback( err, GeoLocations );
                             });
                         },
-                        JetEvents: function (callback) {
+                        /*JetEvents: function (callback) {
                             alacartaManager.getJetEventsByStoreId(connection_ikon_bg, req.session.Plan_StoreId, function (err, JetEvents ) {
                                 callback( err, JetEvents );
                             });
-                        },
+                        },*/
                         OperatorDetail: function (callback) {
-                            alacartaManager.getOperatorDetail( connection_ikon_cms, config.db_name_ikon_bg, config.db_name_ikon_cms, function (err, OperatorDetails) {
+                            alacartaManager.getOperatorDetail( connection_ikon_cms, function (err, OperatorDetails) { //config.db_name_ikon_bg, config.db_name_ikon_cms,
                                 callback( err, OperatorDetails );
                             });
                         },
@@ -58,17 +58,17 @@ exports.getvaluepack = function (req, res, next) {
                     function (err, results) {
                         if (err) {
                             connection_ikon_cms.release();
-                            connection_ikon_bg.release();
+                            //connection_ikon_bg.release();
                             res.status(500).json(err.message);
                             console.log(err.message)
                         } else {
                             connection_ikon_cms.release();
-                            connection_ikon_bg.release();
+                           // connection_ikon_bg.release();
                             res.send(results);
                         }
                     });
                 })
-            })
+            //})
         }else {
             res.redirect('/accountlogin');
         }

@@ -31,7 +31,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         $scope.StoreId = angular.copy(SubscriptionData.StoreId);
 
         $scope.distributionChannelList = angular.copy(SubscriptionData.DistributionChannel);
-        $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
+       // $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
         $scope.AllOperatorDetails = angular.copy(SubscriptionData.OperatorDetail);
         $scope.PlanData = angular.copy(SubscriptionData.PlanData);
         $scope.durationOptions = angular.copy(SubscriptionData.DurationOptions);
