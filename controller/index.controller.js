@@ -85,10 +85,10 @@ exports.login = function (req, res, next) {
     if (req.session) {
         if (req.session.Plan_UserName) {
             if (req.session.Plan_StoreId) {
-                res.redirect("/planlist");
+                res.redirect("/#/planlist");
             }
             else {
-                res.redirect("/planlist");
+                res.redirect("/#/planlist");
             }
         }
         else {
@@ -209,7 +209,7 @@ function getPages(role, selectedPaymentType) {
     if (role == "Super Admin" || role == "Store Manager") {
         var pagesjson = [];
         pagesjson.push( { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] } );
-        if(selectedPaymentType.length > 0) {
+        if(selectedPaymentType != undefined && selectedPaymentType != null && selectedPaymentType.length > 0) {
             selectedPaymentType.forEach(function (paymentType) {
                 if (paymentType.en_description === 'One Time') {
                     pagesjson.push({

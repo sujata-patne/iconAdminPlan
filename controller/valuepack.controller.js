@@ -168,14 +168,12 @@ exports.addeditvaluepack = function (req, res, next) {
                                             vp_modified_on: new Date(),
                                             vp_modified_by: req.session.Plan_UserName
                                         }
-                                        //console.log(data)
                                         valuePackManager.updateValuePackPlan( connection_ikon_cms, data, req.body.valuepackplanId, function (err, result) {
                                             if (err) {
                                                 connection_ikon_cms.release();
                                                 res.status(500).json(err.message);
                                             }
                                             else {
-
                                                 connection_ikon_cms.release();
                                                 res.send({
                                                     success: true,

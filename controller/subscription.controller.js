@@ -82,7 +82,6 @@ exports.getsubscriptions = function (req, res, next) {
                             }
                         },
                         function (err, results) {
-                            //console.log(results.AlacartaData)
                             if (err) {
                                 connection_ikon_cms.release();
                                 //connection_ikon_bg.release();
@@ -266,7 +265,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         }
                                     ],
                                     function(err, results){
-                                        //console.log(results)
                                         if(err){
                                             connection_ikon_cms.release();
                                             res.status(500).json(err.message);

@@ -14,15 +14,6 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    /*Users.getPricePointType(function (paymentTypes){
-        if(paymentTypes && paymentTypes.length > 0){
-            $cookieStore.remove('paymentTypes')
-            $cookieStore.put('paymentTypes', angular.fromJson(paymentTypes));
-        }
-        var pagesData = $cookieStore.get('paymentTypes');
-        console.log("$cookieStore.get('paymentTypes')")
-        console.log($cookieStore.get('paymentTypes'))
-    })*/
     // get contenttype
     $scope.getContentName = function (id) {
         var type = '';
@@ -152,7 +143,6 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     // get all plan 
     PlanList.GetPlanList(function (PlanList) {
         $scope.ContentTypes = angular.copy(PlanList.ContentTypes);
-        //console.log( $scope.ContentTypes)
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Subscription", cd_id: "Subscription", cd_name: "Subscription" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Value Pack", cd_id: "Value Pack", cd_name: "Value Pack" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Offers", cd_id: "Offers", cd_name: "Offers" });

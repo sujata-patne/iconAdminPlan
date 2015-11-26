@@ -192,7 +192,6 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
-       // console.log(isValid)
         $scope.successvisible = false;
         $scope.errorvisible = false;
         var Alacart = {

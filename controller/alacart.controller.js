@@ -77,7 +77,6 @@ exports.getalacartadata = function (req, res, next) {
                         }
                     },
                     function (err, results) {
-                        //console.log(results.OperatorDetails)
                         if (err) {
                             connection_ikon_cms.release();
                             //connection_ikon_bg.release();
