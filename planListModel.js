@@ -2,24 +2,14 @@
  * Created by darhamid on 28/10/15.
  */
 exports.getContentTypesByStoreId = function( dbConnection, storeId, callback ) {
-    //dbConnection.query('select cd.cd_name as parent_name, mct.mct_parent_cnt_type_id, content.* from catalogue_detail as cd '+
-    //    'inner join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id AND cm_name in("Content Type") '+
-    //    'inner join icn_manage_content_type AS mct on mct.mct_parent_cnt_type_id = cd.cd_id '+
-    //    'inner join catalogue_detail AS content on(mct.mct_cnt_type_id = content.cd_id)',
-    //    function (err, contentTypes) {
-    //        callback(err, contentTypes);
-    //    }
-    //);
-    var query = dbConnection.query('select cd.*, ct.mct_parent_cnt_type_id, ' +
-        '(SELECT cd_name FROM catalogue_detail as cd1 join catalogue_master as cm1 ON  cm1.cm_id = cd1.cd_cm_id WHERE ct.mct_parent_cnt_type_id = cd1.cd_id) AS parent_name ' +
-        'from icn_store As st ' +
-        'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_content_type) ' +
-        'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
-        'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
-        'WHERE st.st_id = ? ', [storeId], function (err, ContentTypes) {
-        callback(err, ContentTypes);
-
-    });
+    dbConnection.query('select cd.cd_name as parent_name, mct.mct_parent_cnt_type_id, content.* from catalogue_detail as cd '+
+        'inner join catalogue_master as cm ON cm.cm_id = cd.cd_cm_id AND cm_name in("Content Type") '+
+        'inner join icn_manage_content_type AS mct on mct.mct_parent_cnt_type_id = cd.cd_id '+
+        'inner join catalogue_detail AS content on(mct.mct_cnt_type_id = content.cd_id)',
+        function (err, contentTypes) {
+            callback(err, contentTypes);
+        }
+    );
 }
 
 exports.getAlaCartPlansByStoreId = function( dbConnection, storeId, callback ) {
