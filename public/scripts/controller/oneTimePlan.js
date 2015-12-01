@@ -50,14 +50,14 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             $scope.SelectedDeliveryType = value.ap_delivery_type || 2;
             $scope.SelectedDurationIn = value.ap_stream_dur_type || 'Min';
             $scope.SelectedGeoLocation = value.ap_cty_id;
-            $scope.streamNoOfContentLimit =  value.ap_no_of_stream;
-            $scope.streamDurationLimit = value.ap_stream_duration;
+            $scope.streamNoOfContentLimit =  value.ap_no_of_stream || null;
+            $scope.streamDurationLimit = value.ap_stream_duration || null;
             $scope.SelectedDurationType = value.ap_stream_dur_type;
             $scope.streamingLimitType = value.ap_stream_setting;
 
             $scope.ContentTypeChange();
-           // $scope.displayJetEvents();
-           // $scope.displayOperators();
+            // $scope.displayJetEvents();
+            // $scope.displayOperators();
             $scope.deliveryTypeChange();
         });
 
@@ -114,22 +114,22 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
 
     // display operator on change of jet pay id
     /*$scope.displayOperators = function () {
-        $scope.OperatorDetails = [];
-        $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id ) { //&& $scope.SelectedGeoLocation == value.country
-                $scope.OperatorDetails.push(value);
-            }
-        })
-    }*/
+     $scope.OperatorDetails = [];
+     $scope.AllOperatorDetails.forEach(function (value) {
+     if ($scope.SelectedEventId == value.ebe_ef_id ) { //&& $scope.SelectedGeoLocation == value.country
+     $scope.OperatorDetails.push(value);
+     }
+     })
+     }*/
 
     /*$scope.displayJetEvents = function () {
-        $scope.JetPayEvent = [];
-        $scope.AllJetPayEvents.forEach(function (value) {
-            if ($scope.SelectedGeoLocation == value.country  ) {
-                $scope.JetPayEvent.push(value);
-            }
-        })
-    }*/
+     $scope.JetPayEvent = [];
+     $scope.AllJetPayEvents.forEach(function (value) {
+     if ($scope.SelectedGeoLocation == value.country  ) {
+     $scope.JetPayEvent.push(value);
+     }
+     })
+     }*/
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';
@@ -206,38 +206,38 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             OperatorDetails: $scope.OperatorDetails,
             DistributionChannelList: $scope.distributionChannelList,
             DistributionChannels: $scope.selectedDistributionChannel,
-            NoOfStream: $scope.streamNoOfContentLimit,
-            StreamDuration: $scope.streamDurationLimit,
-            StreamDurationType: $scope.SelectedDurationType,
+            NoOfStream: $scope.streamNoOfContentLimit || null,
+            StreamDuration: $scope.streamDurationLimit || null,
+            StreamDurationType: $scope.SelectedDurationType || null,
             CountryId: $scope.SelectedGeoLocation,
-            StreamSetting: $scope.streamingLimitType
+            StreamSetting: $scope.streamingLimitType || null
         };
 
         if (isValid) {
             ngProgress.start();
             AlaCarts.AddEditAlacart(Alacart, function (data) {
-                if (data.success) {
-                    if ($scope.CurrentPage == "edit-a-la-cart") {
-                        $state.go('a-la-cart');// = "#a-la-cart";
-                    }else{
-                         $state.reload();
+                    if (data.success) {
+                        if ($scope.CurrentPage == "edit-a-la-cart") {
+                            $state.go('a-la-cart');// = "#a-la-cart";
+                        }else{
+                            $state.reload();
+                        }
+                        toastr.success(data.message)
+                        //$scope.success = data.message;
+                        $scope.successvisible = true;
                     }
-                    toastr.success(data.message)
-                    //$scope.success = data.message;
-                    $scope.successvisible = true;
-                }
-                else {
-                    toastr.error(data.message)
-                    //$scope.error = data.message;
+                    else {
+                        toastr.error(data.message)
+                        //$scope.error = data.message;
+                        $scope.errorvisible = true;
+                    }
+                    ngProgress.complete();
+                },
+                function (error) {
+                    $scope.error = error;
                     $scope.errorvisible = true;
-                }
-                ngProgress.complete();
-            },
-            function (error) {
-                $scope.error = error;
-                $scope.errorvisible = true;
-                ngProgress.complete();
-            });
+                    ngProgress.complete();
+                });
         }
     };
 });
