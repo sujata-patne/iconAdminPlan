@@ -6,6 +6,24 @@ var mysql = require('../config/db').pool;
 var config = require('../config')();
 var nodemailer = require('nodemailer');
 var userManager = require('../models/userModel');
+var crypto = require('crypto');
+algorithm = 'aes-256-ctr', //Algorithm used for encrytion
+    password = 'd6F3Efeq'; //Encryption password
+
+function encrypt(text){
+    var cipher = crypto.createCipher(algorithm,password)
+    var crypted = cipher.update(text,'utf8','hex')
+    crypted += cipher.final('hex');
+    return crypted;
+}
+
+function decrypt(text){
+    var decipher = crypto.createDecipher(algorithm,password)
+    var dec = decipher.update(text,'hex','utf8')
+    dec += decipher.final('utf8');
+    return dec;
+}
+
 
 function getDate(val) {
     var d = new Date(val);
@@ -75,13 +93,55 @@ exports.pages = function (req, res, next) {
  * @description user can login
  */
 exports.login = function (req, res, next) {
-    if (req.session) {
+    if(req.cookies.remember == 1 && req.cookies.username != '' ){
+        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+            userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.username), decrypt(req.cookies.password), function( err, row ){
+                if (err) {
+                    res.render('account-login', { error: 'Error in database connection' });
+                } else {
+                    if (row.length > 0) {
+                        if (row[0].ld_active == 1) {
+                            if(row[0].ld_role == 'Store Manager') {
+                                connection_ikon_cms.release();
+                                var session = req.session;
+                                session.Plan_UserId = row[0].ld_id;
+                                session.Plan_UserRole = row[0].ld_role;
+                                session.Plan_UserName = row[0].ld_user_name;
+                                session.Plan_Password = row[0].ld_user_pwd;
+                                session.Plan_Email = row[0].ld_email_id;
+                                session.Plan_FullName = row[0].ld_display_name;
+                                session.Plan_lastlogin = row[0].ld_last_login;
+                                session.Plan_UserType = row[0].ld_user_type;
+                                session.Plan_StoreId = row[0].su_st_id;
+                                if (req.session) {
+                                    if (req.session.Plan_UserName) {
+                                        if (req.session.Plan_StoreId) {
+                                            res.redirect("/");
+                                        }
+                                        else {
+                                            res.redirect("/accountlogin");
+                                        }
+                                    }
+                                    else {
+                                        res.render('account-login', { error: '' });
+                                    }
+                                }
+                                else {
+                                    res.render('account-login', { error: '' });
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }else if (req.session) {
         if (req.session.Plan_UserName) {
             if (req.session.Plan_StoreId) {
                 res.redirect("/planlist");
             }
             else {
-                res.redirect("/planlist");
+                res.redirect("/accountlogin");
             }
         }
         else {
@@ -92,6 +152,24 @@ exports.login = function (req, res, next) {
         res.render('account-login', { error: '' });
     }
 }
+//exports.login = function (req, res, next) {
+//    if (req.session) {
+//        if (req.session.Plan_UserName) {
+//            if (req.session.Plan_StoreId) {
+//                res.redirect("/planlist");
+//            }
+//            else {
+//                res.redirect("/planlist");
+//            }
+//        }
+//        else {
+//            res.render('account-login', { error: '' });
+//        }
+//    }
+//    else {
+//        res.render('account-login', { error: '' });
+//    }
+//}
 /**
  * @function logout
  * @param req
@@ -104,7 +182,18 @@ exports.logout = function (req, res, next) {
         if (req.session) {
             if (req.session.Plan_UserName) {
                 if (req.session.Plan_StoreId) {
-                    req.session = null;
+                    req.session.Plan_UserId = null;
+                    req.session.Plan_UserRole = null;
+                    req.session.Plan_UserName = null;
+                    req.session.Plan_Password = null;
+                    req.session.Plan_Email = null;
+                    req.session.Plan_FullName = null;
+                    req.session.Plan_lastlogin = null;
+                    req.session.Plan_UserType = null;
+                    req.session.Plan_StoreId = null;
+                    res.clearCookie('remember');
+                    res.clearCookie('username');
+                    res.clearCookie('password');
                     res.redirect('/accountlogin');
                 }
                 else {
@@ -131,58 +220,75 @@ exports.logout = function (req, res, next) {
  */
 exports.authenticate = function (req, res, next) {
     try {
-        mysql.getConnection('CMS', function (err, connection_central) {
-            userManager.getUserDetails( connection_central, req.body.username, req.body.password, function( err, row, fields ) {
-                if (err) {
-                    res.render('account-login', { error: 'Error in database connection.' });
-                } else {
-                    if (row.length > 0) {
-                        if (row[0].ld_active == 1) {
-                            if(row[0].ld_role == 'Store Manager') {
-
-                                var session = req.session;
-                                session.Plan_UserId = row[0].ld_id;
-                                session.Plan_UserRole = row[0].ld_role;
-                                session.Plan_UserName = req.body.username;
-                                session.Plan_Password = req.body.password;
-                                session.Plan_Email = row[0].ld_email_id;
-                                session.Plan_FullName = row[0].ld_display_name;
-                                session.Plan_lastlogin = row[0].ld_last_login;
-                                session.Plan_UserType = row[0].ld_user_type;
-                                session.Plan_StoreId = row[0].su_st_id;//coming from new store's user table.
-                                connection_central.release();
-                                res.redirect('/');
-                            } else {
-                                connection_central.release();
-                                res.render('account-login', { error: 'Only Store Admin/Manager are allowed to login.' });
-                            }
-                        }
-                        else {
-                            connection_central.release();
-                            res.render('account-login', { error: 'Your account has been disable.' });
-                        }
-                    } else {
-                        connection_central.release();
-                        if( req.body.username.length == 0  &&  req.body.password.length == 0 ) {
-                            res.render('account-login', {error: 'Please enter username and password.'});
-                        }else if(req.body.username.length != 0  &&  req.body.password.length == 0 ){
-                            res.render('account-login', {error: 'Please enter password.'});
-                            }
-                        else if(req.body.username.length == 0  &&  req.body.password.length != 0){
-                            res.render('account-login', {error: 'Please enter username.'});
-                        }
-                        else {
-                            res.render('account-login', {error: 'Invalid Username / Password.'});
-                        }
-                    }
-                }
-            });
-        })
+        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+            if(req.body.rememberMe){
+                var minute = 10080 * 60 * 1000;
+                res.cookie('remember', 1, { maxAge: minute });
+                res.cookie('username', encrypt(req.body.username), { maxAge: minute });
+                res.cookie('password', encrypt(req.body.password), { maxAge: minute });
+            }
+            userAuthDetails(connection_ikon_cms,req.body.username,req.body.password,req,res);
+        });
     }
     catch (error) {
-        res.render('account-login', { error: 'Error in database connection.' });
+        res.render('account-login', { error: 'Error in database connection' });
     }
 }
+
+
+function userAuthDetails(dbConnection, username,password,req,res){
+    userManager.getUserDetails( dbConnection, username, password, function( err, row ){
+        if (err) {
+            res.render('account-login', { error: 'Error in database connection' });
+        } else {
+            if (row.length > 0) {
+                if (row[0].ld_active == 1) {
+                    if(row[0].ld_role == 'Store Manager') {
+                        var session = req.session;
+                        session.Plan_UserId = row[0].ld_id;
+                        session.Plan_UserRole = row[0].ld_role;
+                        session.Plan_UserName = req.body.username;
+                        session.Plan_Password = req.body.password;
+                        session.Plan_Email = row[0].ld_email_id;
+                        session.Plan_FullName = row[0].ld_display_name;
+                        session.Plan_lastlogin = row[0].ld_last_login;
+                        session.Plan_UserType = row[0].ld_user_type;
+                        session.Plan_StoreId = row[0].su_st_id;//coming from new store's user table.
+                        userManager.updateLastLoggedIn( dbConnection, row[0].ld_id ,function(err,response){
+                            if(err){
+                                dbConnection.release();
+                            }else{
+                                dbConnection.release();
+                                res.redirect('/');
+                            }
+                        })
+                    } else {
+                        dbConnection.release();
+                        res.render('account-login', { error: 'Only Store Admin/Manager are allowed to login' });
+                    }
+                }
+                else {
+                    dbConnection.release();
+                    res.render('account-login', { error: 'Your account has been disable' });
+                }
+            } else {
+                dbConnection.release();
+                if( req.body.username != undefined && req.body.username.length == 0  &&  req.body.password.length == 0 ) {
+                    res.render('account-login', {error: 'Please enter username and password'});
+                }else if(req.body.username != undefined && req.body.username.length != 0  &&  req.body.password.length == 0 ){
+                    res.render('account-login', {error: 'Please enter password'});
+                }
+                else if(req.body.username != undefined && req.body.username.length == 0  &&  req.body.password.length != 0){
+                    res.render('account-login', {error: 'Please enter username'});
+                }
+                else {
+                    res.render('account-login', {error: 'Invalid Username / Password'});
+                }
+            }
+        }
+    });
+}
+
 /**
  * #function getPages
  * @param role
