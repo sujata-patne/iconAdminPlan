@@ -100,9 +100,9 @@ exports.pages = function (req, res, next) {
  * @description user can login
  */
 exports.login = function (req, res, next) {
-    if(req.cookies.remember == 1 && req.cookies.username != '' ){
+    if(req.cookies.plan_remember == 1 && req.cookies.plan_username != '' ){
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-            userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.username), decrypt(req.cookies.password), function( err, row ){
+            userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.plan_username), decrypt(req.cookies.plan_password), function( err, row ){
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection' });
                 } else {
@@ -202,9 +202,9 @@ exports.logout = function (req, res, next) {
                     req.session.Plan_UserType = null;
                     req.session.Plan_StoreId = null;
 
-                    res.clearCookie('remember');
-                    res.clearCookie('username');
-                    res.clearCookie('password');
+                    res.clearCookie('plan_remember');
+                    res.clearCookie('plan_username');
+                    res.clearCookie('plan_password');
 
                     res.redirect('/accountlogin');
                 }
@@ -235,9 +235,9 @@ exports.authenticate = function (req, res, next) {
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
             if(req.body.rememberMe){
                 var minute = 10080 * 60 * 1000;
-                res.cookie('remember', 1, { maxAge: minute });
-                res.cookie('username', encrypt(req.body.username), { maxAge: minute });
-                res.cookie('password', encrypt(req.body.password), { maxAge: minute });
+                res.cookie('plan_remember', 1, { maxAge: minute });
+                res.cookie('plan_username', encrypt(req.body.username), { maxAge: minute });
+                res.cookie('plan_password', encrypt(req.body.password), { maxAge: minute });
             }
             userAuthDetails(connection_ikon_cms,req.body.username,req.body.password,req,res);
         });
