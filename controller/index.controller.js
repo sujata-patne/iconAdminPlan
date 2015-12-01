@@ -25,6 +25,8 @@ function decrypt(text){
 }
 
 
+var _ = require('underscore');
+
 function getDate(val) {
     var d = new Date(val);
     var dt = d.getDate();
@@ -59,27 +61,32 @@ function Pad(padString, value, length) {
  */
 exports.pages = function (req, res, next) {
     var role;
-    if (req.session) {
-        if (req.session.Plan_UserName) {
-            if (req.session.Plan_StoreId) {
-                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                        userManager.getSelectedPaymentTypeByStoreId( connection_ikon_bg, config.db_name_ikon_cms , config.db_name_ikon_bg, req.session.Plan_StoreId, function (err, selectedPaymentType) {
-                            role = req.session.Plan_UserRole;
-                            var pageData = getPages(role,selectedPaymentType);
-                            res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
-                        })
+    var paymentTypes = [];
+    if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId) {
+        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+           // mysql.getConnection('BG', function (err, connection_ikon_bg) {
+            userManager.getSelectedPaymentTypeByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, selectedPaymentType) {
+                role = req.session.Plan_UserRole;
+                paymentTypes = req.cookies.paymentTypes;
+                if(paymentTypes !== undefined && paymentTypes !== '' && paymentTypes.length > 0) {
+                    var pricePointTypes = [];
+                    _.each(JSON.parse(paymentTypes), function (paymentType1) {
+                        _.filter(selectedPaymentType, function (paymentType2) {
+                            if(paymentType2.cmd_entity_detail == paymentType1.en_id){
+                                pricePointTypes.push(paymentType1);
+                            }
+                        });
                     })
-                })
-            }
-            else {
-                res.redirect('/accountlogin');
-            }
-        }
-        else {
-            res.redirect('/accountlogin');
-        }
-    }
+                }else{
+                   var pricePointTypes = paymentTypes;
+                }
+                //partner_payment_type
+                var pageData = getPages(role,pricePointTypes);
+                res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
+            })
+        })
+    // })
+}
     else {
         res.redirect('/accountlogin');
     }
@@ -138,10 +145,12 @@ exports.login = function (req, res, next) {
     }else if (req.session) {
         if (req.session.Plan_UserName) {
             if (req.session.Plan_StoreId) {
-                res.redirect("/planlist");
+                res.redirect("/#/planlist");
             }
             else {
+
                 res.redirect("/accountlogin");
+
             }
         }
         else {
@@ -182,6 +191,7 @@ exports.logout = function (req, res, next) {
         if (req.session) {
             if (req.session.Plan_UserName) {
                 if (req.session.Plan_StoreId) {
+
                     req.session.Plan_UserId = null;
                     req.session.Plan_UserRole = null;
                     req.session.Plan_UserName = null;
@@ -191,9 +201,11 @@ exports.logout = function (req, res, next) {
                     req.session.Plan_lastlogin = null;
                     req.session.Plan_UserType = null;
                     req.session.Plan_StoreId = null;
+
                     res.clearCookie('remember');
                     res.clearCookie('username');
                     res.clearCookie('password');
+
                     res.redirect('/accountlogin');
                 }
                 else {
@@ -299,16 +311,30 @@ function getPages(role, selectedPaymentType) {
     if (role == "Super Admin" || role == "Store Manager") {
         var pagesjson = [];
         pagesjson.push( { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] } );
-
-        selectedPaymentType.forEach(function(paymentType){
-
-            if(paymentType.en_display_name === 'One Time'){
-                pagesjson.push({ 'pagename': 'A La Cart Plan', 'href': 'a-la-cart', 'id': 'a-la-cart', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
-            }
-            if(paymentType.en_display_name === 'Subscriptions'){
-                pagesjson.push({ 'pagename': 'Subscriptions Plan', 'href': 'subscriptions', 'id': 'subscriptions', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
-            }
-        })
+        if(selectedPaymentType != undefined && selectedPaymentType != null && selectedPaymentType.length > 0) {
+            selectedPaymentType.forEach(function (paymentType) {
+                if (paymentType.en_description === 'One Time') {
+                    pagesjson.push({
+                        'pagename': 'A La Cart Plan',
+                        'href': 'a-la-cart',
+                        'id': 'a-la-cart',
+                        'class': 'fa fa-briefcase',
+                        'submenuflag': '0',
+                        'sub': []
+                    });
+                }
+                if (paymentType.en_description === 'Subscriptions') {
+                    pagesjson.push({
+                        'pagename': 'Subscriptions Plan',
+                        'href': 'subscriptions',
+                        'id': 'subscriptions',
+                        'class': 'fa fa-briefcase',
+                        'submenuflag': '0',
+                        'sub': []
+                    });
+                }
+            })
+        }
         pagesjson.push(
             { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
@@ -325,7 +351,16 @@ function getPages(role, selectedPaymentType) {
  * @description display forgot password page
  */
 exports.viewForgotPassword = function (req, res, next) {
-    req.session = null;
+    //req.session = null;
+    req.session.Plan_UserId = null;
+    req.session.Plan_UserRole = null;
+    req.session.Plan_UserName = null;
+    req.session.Plan_Password = null;
+    req.session.Plan_Email = null;
+    req.session.Plan_FullName = null;
+    req.session.Plan_lastlogin = null;
+    req.session.Plan_UserType = null;
+    req.session.Plan_StoreId = null;
     res.render('account-forgot', { error: '', msg: '' });
 }
 /**
@@ -389,7 +424,16 @@ exports.forgotPassword = function (req, res, next) {
  * @description displays change password page
  */
 exports.viewChangePassword = function (req, res, next) {
-    req.session = null;
+    //req.session = null;
+    req.session.Plan_UserId = null;
+    req.session.Plan_UserRole = null;
+    req.session.Plan_UserName = null;
+    req.session.Plan_Password = null;
+    req.session.Plan_Email = null;
+    req.session.Plan_FullName = null;
+    req.session.Plan_lastlogin = null;
+    req.session.Plan_UserType = null;
+    req.session.Plan_StoreId = null;
     res.render('account-changepassword', { error: '' });
 }
 /**

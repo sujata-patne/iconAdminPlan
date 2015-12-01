@@ -47,6 +47,8 @@
             <div class="account-body">
                 <label style="color: red;"><%= error %></label>
                 <form class="form account-form" action="/accountlogin" method="post">
+                    <b><center style="font-size:15px;padding-bottom:20px;">Plan Creation Admin - Login</center></b>
+
                     <div class="form-group">
                         <label for="login-username" class="placeholder-hidden">Username</label>
                         <input type="text" class="form-control" maxlength="50"  name="username" id="username" placeholder="Username" tabindex="1">
@@ -88,6 +90,7 @@
         <!-- /.account-wrapper -->
         <script src="assets/scripts/jquery-1.10.1.min.js"></script>
         <script src="assets/scripts/jquery-ui-1.9.2.custom.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
         <script src="assets/scripts/bootstrap.min.js"></script>
                     <!--[if lt IE 9]>
         <script src="assets/scripts/excanvas.compiled.js"></script>
@@ -98,3 +101,15 @@
         <script src="assets/scripts/target-account.js"></script>
     </body>
 </html>
+<script>
+    $.ajax({
+        dataType: "json",
+        url: 'http://103.43.2.10/BillingUtilService/GetEnumDetails?Type=payment_type',
+        success: function(paymentTypes){
+            if(paymentTypes && paymentTypes.length > 0){
+                $.cookie("paymentTypes", null);
+                $.cookie("paymentTypes", JSON.stringify(paymentTypes));
+            }
+        }
+    });
+</script>

@@ -89,7 +89,6 @@
                             </thead>
                             <tbody>
                             <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails">
-                                {{operators}}
                                 <td class="col-md-2 col-xs-2">{{operators.partner_name}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.duration}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.tmi_amt}}</td>
@@ -114,7 +113,7 @@
                                 <div class="form-group">
                                     <label for="offerForDays" class="col-md-3 col-xs-12 control-label">Try & Buy(TB) Offer for Days</label>
                                     <div class="col-md-3 col-xs-12">
-                                        <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="offerForDays" placeholder="Try & Buy offer for Days" data-ng-model="offerForDays" data-ng-disabled="offerForDaysDisabled">
+                                        <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="offerForDays" placeholder="Try & Buy offer for Days" data-ng-model="offerForDays" data-ng-disabled="offerForDaysDisabled" ng-keypress="isNumber($event)" >
                                         <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.offerForDays.$touched">
                                             <span ng-show="subscriptionForm.offerForDays.$error.pattern">Insert valid limit for TB Offer days.</span>
                                         </span>
@@ -160,7 +159,7 @@
                                         <div class="col-md-2 col-xs-3">
                                             <div class="row"><div class="col-md-12">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="numContentOffer" placeholder="Limit for TB offer per day" data-ng-model="numContentOffer" data-ng-disabled="numContentOfferDisabled">
+                                                    <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="numContentOffer" placeholder="Limit for TB offer per day" data-ng-model="numContentOffer" data-ng-disabled="numContentOfferDisabled" ng-keypress="isNumber($event)" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.numContentOffer.$touched">
                                                         <span ng-show="subscriptionForm.numContentOffer.$error.pattern">Insert valid limit for TB Offer per day.</span>
                                                         <span ng-show="numContentOffer < limitSingleDay">Value must be greater than or equal to For Single Day limit.</span>
@@ -169,7 +168,7 @@
                                             </div></div>
                                             <div class="row"><div class="col-md-12">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="limitSingleDay" placeholder="Limit For Single Day" data-ng-model="limitSingleDay" data-ng-disabled="limitSingleDayDisabled">
+                                                    <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="limitSingleDay" placeholder="Limit For Single Day" data-ng-model="limitSingleDay" data-ng-disabled="limitSingleDayDisabled" ng-keypress="isNumber($event)" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.limitSingleDay.$touched">
                                                         <span ng-show="subscriptionForm.limitSingleDay.$error.pattern">Insert valid download limit for Single Day.</span>
                                                     </span>
@@ -177,7 +176,7 @@
                                             </div></div>
                                             <div class="row"><div class="col-md-12">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="fullSubDuration" placeholder="Limit for Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" ><!--required-->
+                                                    <input type="number"  min="0" max="10000" ng-pattern="/^[0-9]*$/" class="form-control" name="fullSubDuration" placeholder="Limit for Full Subscription Duration" data-ng-model="fullSubDuration" data-ng-disabled="fullSubDurationDisabled" ng-keypress="isNumber($event)" ><!--required-->
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.fullSubDuration.$touched">
                                                         <!--<span ng-show="subscriptionForm.fullSubDuration.$error.required">Insert download limit for Full Subscription.</span>-->
                                                         <span ng-show="subscriptionForm.fullSubDuration.$error.pattern">Insert valid download limit for Full Subscription.</span>
@@ -189,7 +188,7 @@
                                         <div class="col-md-2 col-xs-3">
                                             <div class="row">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_tnb_free_cnt_limit" placeholder="Limit for TB offer per day" data-ng-model="slc_tnb_free_cnt_limit" data-ng-disabled="numContentOfferDisabled">
+                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_tnb_free_cnt_limit" placeholder="Limit for TB offer per day" data-ng-model="slc_tnb_free_cnt_limit" data-ng-disabled="numContentOfferDisabled" ng-keypress="isNumber($event)" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.slc_tnb_free_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.slc_tnb_free_cnt_limit.$error.pattern">Insert valid limit for TB Offer per day.</span>
                                                     </span>
@@ -197,7 +196,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="slc_single_day_cnt_limit" >
+                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="slc_single_day_cnt_limit"  ng-keypress="isNumber($event)" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.slc_single_day_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.slc_single_day_cnt_limit.$error.pattern">Insert valid download limit for Single Day.</span>
                                                     </span>
@@ -205,7 +204,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-12 col-xs-12">
-                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="slc_full_sub_cnt_limit" ><!--ng-required="streamingLimitType == 1"-->
+                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 2" ng-pattern="/^[0-9]*$/" class="form-control" name="slc_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="slc_full_sub_cnt_limit" ng-keypress="isNumber($event)"  ><!--ng-required="streamingLimitType == 1"-->
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.slc_full_sub_cnt_limit.$touched">
                                                         <!--<span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.required">Insert content limit for Full Subscription.</span>-->
                                                         <span ng-show="subscriptionForm.slc_full_sub_cnt_limit.$error.pattern">Insert valid content limit for Full Subscription.</span>
@@ -217,7 +216,7 @@
                                         <div class="col-md-4 col-xs-3">
                                             <div class="row">
                                                 <div class="form-group col-md-6 col-xs-6">
-                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_tnb_free_cnt_limit" placeholder="Limit for TB offer per day" data-ng-model="sld_tnb_free_cnt_limit" >
+                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_tnb_free_cnt_limit" placeholder="Limit for TB offer per day" data-ng-model="sld_tnb_free_cnt_limit" ng-keypress="isNumber($event)"  >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_tnb_free_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.sld_tnb_free_cnt_limit.$error.pattern && streamingLimitType == 2">Insert valid limit for TB Offer per day.</span>
                                                     </span>
@@ -234,7 +233,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-6 col-xs-6">
-                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="sld_single_day_cnt_limit" >
+                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_single_day_cnt_limit" placeholder="Limit For Single Day" data-ng-model="sld_single_day_cnt_limit" ng-keypress="isNumber($event)" >
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_single_day_cnt_limit.$touched">
                                                         <span ng-show="subscriptionForm.sld_single_day_cnt_limit.$error.pattern && streamingLimitType == 2">Insert valid download limit for Single Day.</span>
                                                     </span>
@@ -251,7 +250,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-6 col-xs-6">
-                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="sld_full_sub_cnt_limit" ><!--ng-required="streamingLimitType == 2"-->
+                                                    <input type="number"  min="0" max="10000" ng-disabled="streamingLimitType == 1" ng-pattern="/^[0-9]*$/" class="form-control" name="sld_full_sub_cnt_limit" placeholder="Limit for Full Subscription Duration" data-ng-model="sld_full_sub_cnt_limit" ng-keypress="isNumber($event)" ><!--ng-required="streamingLimitType == 2"-->
                                                     <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.sld_full_sub_cnt_limit.$touched">
                                                         <!--<span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.required">Insert duration limit for Full Subscription.</span>-->
                                                         <span ng-show="subscriptionForm.sld_full_sub_cnt_limit.$error.pattern">Insert valid duration limit for Full Subscription.</span>
@@ -326,7 +325,7 @@
                         <div class="form-group">
                             <label for="planDuration" class="col-md-3 control-label"><span class="asterisk">*</span>Plan Duration</label>
                             <div class="col-md-4">
-                                <input type="number"  min="0" max="10000" name="planDuration" class="form-control" id="" placeholder="Plan Duration" data-ng-model="planDuration" required>
+                                <input type="number"  min="0" max="10000" name="planDuration" class="form-control" id="" placeholder="Plan Duration" data-ng-model="planDuration" required ng-keypress="isNumber($event)" >
                                 <span style="color: red" ng-show="subscriptionForm.$submitted || subscriptionForm.planDuration.$touched">
                                     <span ng-show="subscriptionForm.planDuration.$error.required">Plan Duration is Required.</span>
                                 </span>

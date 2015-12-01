@@ -30,7 +30,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.GeoLocations = angular.copy(Alacarts.GeoLocations);
-        $scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
+        //$scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.durationOptions = angular.copy(Alacarts.DurationOptions);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OperatorDetail);
         $scope.PlanData = angular.copy(Alacarts.PlanData);
@@ -98,14 +98,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         }
     }
     $scope.$watch('SelectedEventId',function() {
-        $scope.OperatorDetails = [];
-        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
-            $scope.jetPayDetials.forEach(function (value) {
-                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
-                    $scope.OperatorDetails.push(value);
-                }
-            })
-        }
+        $scope.getOperatorDetails();
     })
     $scope.$watch('SelectedGeoLocation',function() {
         $scope.JetPayEvent = [];
@@ -117,7 +110,9 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             })
         }
     })
-    // display operator on change of jet pay id 
+
+
+    // display operator on change of jet pay id
     /*$scope.displayOperators = function () {
         $scope.OperatorDetails = [];
         $scope.AllOperatorDetails.forEach(function (value) {
@@ -149,6 +144,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
     };
+
     $scope.$watch(function(){
         return $scope.streamNoOfContentLimit = ($scope.streamingLimitType == 2) ? '': $scope.streamNoOfContentLimit;
     }, function(newvalue, oldvalue){},true);
@@ -161,29 +157,41 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         return $scope.SelectedDurationType = ($scope.streamingLimitType == 1) ? '': $scope.SelectedDurationType;
     }, function(newvalue, oldvalue){},true);
 
+    $scope.getOperatorDetails = function(){
+        $scope.OperatorDetails = [];
+
+        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+            $scope.jetPayDetials.forEach(function (value) {
+                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                    _.filter($scope.AllOperatorDetails, function (operator) {
+                        if(value.ebe_ef_id == operator.dcl_ref_jed_id && value.partner_id == operator.dcl_partner_id){
+                            value.dcl_disclaimer = operator.dcl_disclaimer;
+                        }
+                    })
+                    $scope.OperatorDetails.push(value);
+                }
+            })
+
+        }
+    }
     $scope.getJetPayDetailsByStoreId = function(storeId){
         AlaCarts.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
             $scope.jetPayDetials = angular.copy(jetPayDetials);
-            $scope.OperatorDetails = [];
             $scope.JetPayEvent = [];
             if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
-                $scope.jetPayDetials.forEach(function (value) {
-                    if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
-                        $scope.OperatorDetails.push(value);
-                    }
-                })
+
                 $scope.jetPayDetials.forEach(function (value) {
                     if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                         $scope.JetPayEvent.push(value);
                     }
                 })
             }
+            $scope.getOperatorDetails();
         })
     }
 
     /**    function to submit the form after all validation has occurred and check to make sure the form is completely valid */
     $scope.submitForm = function (isValid) {
-       // console.log(isValid)
         $scope.successvisible = false;
         $scope.errorvisible = false;
         var Alacart = {

@@ -31,7 +31,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         $scope.StoreId = angular.copy(SubscriptionData.StoreId);
 
         $scope.distributionChannelList = angular.copy(SubscriptionData.DistributionChannel);
-        $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
+       // $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
         $scope.AllOperatorDetails = angular.copy(SubscriptionData.OperatorDetail);
         $scope.PlanData = angular.copy(SubscriptionData.PlanData);
         $scope.durationOptions = angular.copy(SubscriptionData.DurationOptions);
@@ -121,40 +121,10 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             $scope.SelectedGeoLocation = value.sp_cty_id;
             $scope.atCostFreePaid = value.sp_is_cnt_free;
 
-           /* $scope.displayJetEvents();
-            $scope.displayOperators();*/
+           /* $scope.displayJetEvents();*/
+         //   $scope.displayOperators();
         });
     });
-
-    $scope.getJetPayDetailsByStoreId = function(storeId){
-        Subscriptions.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
-            $scope.jetPayDetials = angular.copy(jetPayDetials);
-            $scope.OperatorDetails = [];
-            $scope.JetPayEvent = [];
-            if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
-                $scope.jetPayDetials.forEach(function (value) {
-                    if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
-                        $scope.OperatorDetails.push(value);
-                    }
-                })
-                $scope.jetPayDetials.forEach(function (value) {
-                    console.log('value.country')
-                    console.log(value.country)
-                    console.log($scope.SelectedGeoLocation)
-
-                    if (value.country != null && $scope.SelectedGeoLocation == value.country) {
-                        $scope.JetPayEvent.push(value);
-                    }
-                })
-
-            }
-
-
-
-            console.log('$scope.JetPayEvent')
-            console.log($scope.JetPayEvent)
-        })
-    }
 
     $scope.$watch(function(){
         return $scope.slc_tnb_free_cnt_limit = ($scope.streamingLimitType == 2) ? '': $scope.slc_tnb_free_cnt_limit;
@@ -185,8 +155,6 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         return $scope.sld_full_sub_cnt_duration = ($scope.streamingLimitType == 1) ? '': $scope.sld_full_sub_cnt_duration;
     }, function(newvalue, oldvalue){},true);
 
-
-
     $scope.stateChanged = function (id) {
         if($scope.distributionChannelArray[id] === true){
             $scope.selectedDistributionChannel.push(id);
@@ -196,17 +164,41 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             $scope.selectedDistributionChannel.splice(idx, 1);
         }
     };
+
+    $scope.getJetPayDetailsByStoreId = function(storeId){
+        Subscriptions.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
+            $scope.jetPayDetials = angular.copy(jetPayDetials);
+            $scope.JetPayEvent = [];
+            $scope.jetPayDetials.forEach(function (value) {
+                if (value.country != null && $scope.SelectedGeoLocation == value.country) {
+                    $scope.JetPayEvent.push(value);
+                }
+            })
+            $scope.getOperatorDetails();
+        })
+    }
+
     // operator display on change of jet event id
     $scope.$watch('SelectedEventId',function() {
+        $scope.getOperatorDetails();
+    })
+    $scope.getOperatorDetails = function(){
         $scope.OperatorDetails = [];
+
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
                 if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                    _.filter($scope.AllOperatorDetails, function (operator) {
+                        if(value.ebe_ef_id == operator.dcl_ref_jed_id){
+                            value.dcl_disclaimer = operator.dcl_disclaimer;
+                        }
+                    })
                     $scope.OperatorDetails.push(value);
                 }
             })
+
         }
-    })
+    }
     $scope.$watch('SelectedGeoLocation',function() {
         $scope.JetPayEvent = [];
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
@@ -217,15 +209,26 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             })
         }
     })
-    /*$scope.displayOperators = function () {
-        $scope.OperatorDetails = [];
-        $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id ) {//&& $scope.SelectedGeoLocation == value.country
-                $scope.OperatorDetails.push(value);
-            }
-        })
+    $scope.isNumber = function(e) {
+        var key = e.keyCode ? e.keyCode : e.which;
+        if( (isNaN(String.fromCharCode(key)) && key !=8 )||key == 32) e.preventDefault();
     }
-    $scope.displayJetEvents = function () {
+
+    $scope.displayOperators = function () {
+
+        var disclaimerText = _.filter($scope.AllOperatorDetails, function (operator) {
+                return  _.contains($scope.OperatorDetails.ebe_ef_id, operator.dcl_ref_jed_id)
+        });
+       /* $scope.AllOperatorDetails.forEach(function (operator) {
+            var disclaimerText = _.contains($scope.OperatorDetails.ebe_ef_id, operator.dcl_ref_jed_id)
+            /!*if ($scope.SelectedEventId == operator.dcl_ref_jed_id ) {//&& $scope.SelectedGeoLocation == value.country
+                $scope.OperatorDetails.push(operator);
+            }*!/
+
+        })*/
+
+    }
+    /*$scope.displayJetEvents = function () {
         $scope.JetPayEvent = [];
         //console.log($scope.AllJetPayEvents)
         $scope.AllJetPayEvents.forEach(function (value) {

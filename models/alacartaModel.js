@@ -74,13 +74,14 @@ exports.getJetEventsByStoreId = function( dbConnection, storeId, callback ) {
     );
 }
 
-exports.getOperatorDetail = function( dbConnection, db_name_ikon_bg, db_name_ikon_cms, callback ) {
-    dbConnection.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id, partner.partner_cty_id as country ' +
+exports.getOperatorDetail = function( dbConnection, callback ) { // config.db_name_ikon_bg, config.db_name_ikon_cms,
+    /*dbConnection.query('SELECT dis.dcl_id,dis.dcl_disclaimer, bge.ebe_ef_id, master.tmi_id,master.tmi_amt,master.tmi_name, partner.partner_name, partner.partner_id, partner.partner_cty_id as country ' +
         'FROM '+config.db_name_ikon_bg+'.billing_ef_bgw_event as bge JOIN '+config.db_name_ikon_bg+'.billing_event_family AS bef ON bef.ef_id = bge.ebe_ef_id ' +
         'JOIN '+config.db_name_ikon_bg+'.billing_telco_master_event_index AS master ON bef.ef_tmi_id = master.tmi_id ' +
         'JOIN '+config.db_name_ikon_bg+'.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
         'LEFT JOIN '+config.db_name_ikon_cms+'.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
-        'GROUP BY master.tmi_parent_id ',
+        'GROUP BY master.tmi_parent_id ',*/
+    dbConnection.query('SELECT dis.* FROM icn_disclaimer AS dis ',
         function ( err, operatorDetails ) {
             callback( err, operatorDetails );
         }

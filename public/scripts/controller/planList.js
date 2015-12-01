@@ -2,7 +2,7 @@
  * Created by sujata.patne on 15-07-2015.
  */
 
-myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, $window) {
+myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, $window,Users,$cookieStore) {
     $('.removeActiveClass').removeClass('active');
     $('#plan-list').addClass('active');
     $scope.IsDisable = true;
@@ -143,7 +143,6 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     // get all plan 
     PlanList.GetPlanList(function (PlanList) {
         $scope.ContentTypes = angular.copy(PlanList.ContentTypes);
-        //console.log( $scope.ContentTypes)
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Subscription", cd_id: "Subscription", cd_name: "Subscription" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Value Pack", cd_id: "Value Pack", cd_name: "Value Pack" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Offers", cd_id: "Offers", cd_name: "Offers" });

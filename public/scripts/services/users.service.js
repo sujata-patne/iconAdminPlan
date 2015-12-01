@@ -4,6 +4,12 @@
 myApp.service('Users', ['$http', function ($http) {
     var service = {};
     service.baseRestUrl = '';
+    service.getPricePointType = function(success){
+        $http.get('http://103.43.2.10/BillingUtilService/GetEnumDetails?Type=payment_type').success(function (items) {
+            success(items);
+        });
+    }
+    
     service.getUsers = function(success){
         $http.get(service.baseRestUrl + '/users').success(function (items) {
             success(items);
@@ -15,6 +21,7 @@ myApp.service('Users', ['$http', function ($http) {
             success(items);
         });
     }
+
     service.saveUser = function(data,success){
         $http.post(service.baseRestUrl + '/saveUsers', data).success(function (items) {
             success(items);

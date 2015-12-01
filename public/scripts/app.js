@@ -1,7 +1,7 @@
 /**
  * Created by sujata.patne on 7/6/2015.
  */
-var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress']);
+var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress','ngCookies']);
 toastr.options = {
     "closeButton": false,
     "debug": false,
@@ -36,7 +36,7 @@ myApp.config(function ($stateProvider) {
             controller: 'oneTimePlanCtrl',
             url: '/a-la-cart'
         })
-         .state('edit-a-la-cart', {
+        .state('edit-a-la-cart', {
              templateUrl: 'partials/a-la-cart-plan.html',
              controller: 'oneTimePlanCtrl',
              url: '/edit-a-la-cart/:id'
@@ -61,7 +61,7 @@ myApp.config(function ($stateProvider) {
             controller: 'valuePackPlanCtrl',
             url: '/edit-value-pack/:id'
         })
-         .state('offer-plan', {
+        .state('offer-plan', {
              templateUrl: 'partials/offer-plan.html',
              controller: 'offerPlanCtrl',
              url: '/offer-plan'
@@ -86,7 +86,7 @@ myApp.config(function ($stateProvider) {
             controller: 'usersCtrl',
             url: '/changepassword'
         })
-})
+    })
     .run(function ($state) {
         $state.go("plan-list");
     })

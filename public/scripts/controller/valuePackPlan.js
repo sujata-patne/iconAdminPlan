@@ -25,7 +25,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
     Valuepacks.GetValuepackData({ planid: $stateParams.id }, function (valuepacks) {
         $scope.StoreId = angular.copy(valuepacks.StoreId);
 
-        $scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
+        //$scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
         $scope.AllOperatorDetails = angular.copy(valuepacks.OperatorDetail);
         $scope.durationOptions = angular.copy(valuepacks.DurationOptions);
         $scope.getJetPayDetailsByStoreId($scope.StoreId);
@@ -50,26 +50,23 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
             $scope.numberOfContent = value.vp_stream_limit;
             $scope.streamingDurationLimit = value.vp_stream_duration;
             $scope.selectedDurationOptions = value.vp_duration_type;            ;
-            $scope.displayJetEvents();
-            $scope.displayOperators();
+          //  $scope.displayJetEvents();
+          //  $scope.displayOperators();
         });
     });
 
     $scope.getJetPayDetailsByStoreId = function(storeId){
         Valuepacks.getJetPayDetailsByStoreId(storeId, function (jetPayDetials){
             $scope.jetPayDetials = angular.copy(jetPayDetials);
+            $scope.JetPayEvent = [];
             if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
-                $scope.jetPayDetials.forEach(function (value) {
-                    if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
-                        $scope.OperatorDetails.push(value);
-                    }
-                })
                 $scope.jetPayDetials.forEach(function (value) {
                     if (value.country != null && $scope.SelectedGeoLocation == value.country) {
                         $scope.JetPayEvent.push(value);
                     }
                 })
             }
+            $scope.getOperatorDetails();
         })
     }
 
@@ -85,7 +82,27 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         return $scope.streamDurationOptions = ($scope.SelectedStreamType == 1) ? '': $scope.streamDurationOptions;
     }, function(newvalue, oldvalue){},true);
 
+    $scope.isNumber = function(e) {
+        var key = e.keyCode ? e.keyCode : e.which;
+        if( (isNaN(String.fromCharCode(key)) && key !=8 )||key == 32) e.preventDefault();
+    }
+    $scope.getOperatorDetails = function(){
+        $scope.OperatorDetails = [];
 
+        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
+            $scope.jetPayDetials.forEach(function (value) {
+                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
+                    _.filter($scope.AllOperatorDetails, function (operator) {
+                        if(value.ebe_ef_id == operator.dcl_ref_jed_id && value.partner_id == operator.dcl_partner_id){
+                            value.dcl_disclaimer = operator.dcl_disclaimer;
+                        }
+                    })
+                    $scope.OperatorDetails.push(value);
+                }
+            })
+
+        }
+    }
     /*$scope.geoLocationChange = function () {
         var currency = '';
         $scope.GeoLoction.forEach(function (value) {
@@ -96,14 +113,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         $scope.selectedCurrency = currency;
     }*/
     $scope.$watch('SelectedEventId',function() {
-        $scope.OperatorDetails = [];
-        if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
-            $scope.jetPayDetials.forEach(function (value) {
-                if ($scope.SelectedEventId == value.ebe_ef_id) { //&& $scope.SelectedGeoLocation == value.country
-                    $scope.OperatorDetails.push(value);
-                }
-            })
-        }
+        $scope.getOperatorDetails();
     })
     $scope.$watch('SelectedGeoLocation',function() {
         $scope.JetPayEvent = [];

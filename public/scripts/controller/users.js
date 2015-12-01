@@ -34,6 +34,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
+
    /* Users.getUsers(function (users) {
         $scope.UserList = angular.copy(users.UserData);
         $scope.UserRole = angular.copy(users.UserRole);
@@ -224,8 +225,7 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
     };
 
     $scope.Passwordvisible = function (val) {
-        console.log(val)
-        console.log($scope.passwordtype)
+
         if (val == 1) {
             $scope.passwordtype = $scope.passwordtype == "password" ? "text" : "password";
         }
