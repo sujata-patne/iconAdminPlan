@@ -1,6 +1,6 @@
 /**
-* Created by sujata.patne on 15-07-2015.
-*/
+ * Created by sujata.patne on 15-07-2015.
+ */
 myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $stateParams, Valuepacks) {
     $('.removeActiveClass').removeClass('active');
     $('#value-pack').addClass('active');
@@ -50,8 +50,8 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
             $scope.numberOfContent = value.vp_stream_limit;
             $scope.streamingDurationLimit = value.vp_stream_duration;
             $scope.selectedDurationOptions = value.vp_duration_type;            ;
-          //  $scope.displayJetEvents();
-          //  $scope.displayOperators();
+            //  $scope.displayJetEvents();
+            //  $scope.displayOperators();
         });
     });
 
@@ -104,14 +104,14 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         }
     }
     /*$scope.geoLocationChange = function () {
-        var currency = '';
-        $scope.GeoLoction.forEach(function (value) {
-            if ($scope.SelectedGeoLocation == value.cd_id) {
-                currency = value.cd_cur;
-            }
-        });
-        $scope.selectedCurrency = currency;
-    }*/
+     var currency = '';
+     $scope.GeoLoction.forEach(function (value) {
+     if ($scope.SelectedGeoLocation == value.cd_id) {
+     currency = value.cd_cur;
+     }
+     });
+     $scope.selectedCurrency = currency;
+     }*/
     $scope.$watch('SelectedEventId',function() {
         $scope.getOperatorDetails();
     })
@@ -127,24 +127,24 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
     })
     // display operator on change of jet event id
     /*$scope.displayOperators = function () {
-        $scope.OperatorDetails = [];
-        $scope.AllOperatorDetails.forEach(function (value) {
-            if ($scope.SelectedEventId == value.ebe_ef_id ) { //&& $scope.SelectedGeoLocation == value.country
-                $scope.OperatorDetails.push(value);
-            }
-        })
-        //console.log($scope.OperatorDetails)
-    }
-    $scope.displayJetEvents = function () {
-        $scope.JetPayEvent = [];
-        $scope.AllJetPayEvents.forEach(function (value) {
-            //console.log($scope.SelectedContentType +' : '+ value.contentType)
-            if ($scope.SelectedGeoLocation == value.country  ) {
-                $scope.JetPayEvent.push(value);
-            }
-        })
-        //console.log($scope.JetPayEvent)
-    }*/
+     $scope.OperatorDetails = [];
+     $scope.AllOperatorDetails.forEach(function (value) {
+     if ($scope.SelectedEventId == value.ebe_ef_id ) { //&& $scope.SelectedGeoLocation == value.country
+     $scope.OperatorDetails.push(value);
+     }
+     })
+     //console.log($scope.OperatorDetails)
+     }
+     $scope.displayJetEvents = function () {
+     $scope.JetPayEvent = [];
+     $scope.AllJetPayEvents.forEach(function (value) {
+     //console.log($scope.SelectedContentType +' : '+ value.contentType)
+     if ($scope.SelectedGeoLocation == value.country  ) {
+     $scope.JetPayEvent.push(value);
+     }
+     })
+     //console.log($scope.JetPayEvent)
+     }*/
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';
@@ -162,15 +162,15 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
                 Caption: $scope.Caption,
                 Description: $scope.Description,
                 JetId: $scope.SelectedEventId,
-                DowmloadLimit: $scope.setDownloadLimit,
-                DurationLimit: $scope.setDurationLimit,
-                StreamType: $scope.SelectedStreamType,
+                DowmloadLimit: $scope.setDownloadLimit || null,
+                DurationLimit: $scope.setDurationLimit || null,
+                StreamType: $scope.SelectedStreamType || null,
                 CountryId: $scope.SelectedGeoLocation,
                 OperatorDetails: $scope.OperatorDetails,
-                NoOfStreamContent: $scope.numberOfContent,
-                StreamDuration: $scope.streamingDurationLimit,
-                DurationOptions: $scope.selectedDurationOptions,
-                StreamDurationOptions: $scope.streamDurationOptions
+                NoOfStreamContent: $scope.numberOfContent || null,
+                StreamDuration: $scope.streamingDurationLimit || null,
+                DurationOptions: $scope.selectedDurationOptions || null,
+                StreamDurationOptions: $scope.streamDurationOptions || null
             }
             //console.log(valuepack)
             ngProgress.start();

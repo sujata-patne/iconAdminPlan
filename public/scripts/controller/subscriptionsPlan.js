@@ -31,7 +31,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         $scope.StoreId = angular.copy(SubscriptionData.StoreId);
 
         $scope.distributionChannelList = angular.copy(SubscriptionData.DistributionChannel);
-       // $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
+        // $scope.AllJetPayEvents = angular.copy(SubscriptionData.JetEvents);
         $scope.AllOperatorDetails = angular.copy(SubscriptionData.OperatorDetail);
         $scope.PlanData = angular.copy(SubscriptionData.PlanData);
         $scope.durationOptions = angular.copy(SubscriptionData.DurationOptions);
@@ -121,8 +121,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
             $scope.SelectedGeoLocation = value.sp_cty_id;
             $scope.atCostFreePaid = value.sp_is_cnt_free;
 
-           /* $scope.displayJetEvents();*/
-         //   $scope.displayOperators();
+            /* $scope.displayJetEvents();*/
+            //   $scope.displayOperators();
         });
     });
 
@@ -217,28 +217,28 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
     $scope.displayOperators = function () {
 
         var disclaimerText = _.filter($scope.AllOperatorDetails, function (operator) {
-                return  _.contains($scope.OperatorDetails.ebe_ef_id, operator.dcl_ref_jed_id)
+            return  _.contains($scope.OperatorDetails.ebe_ef_id, operator.dcl_ref_jed_id)
         });
-       /* $scope.AllOperatorDetails.forEach(function (operator) {
-            var disclaimerText = _.contains($scope.OperatorDetails.ebe_ef_id, operator.dcl_ref_jed_id)
-            /!*if ($scope.SelectedEventId == operator.dcl_ref_jed_id ) {//&& $scope.SelectedGeoLocation == value.country
-                $scope.OperatorDetails.push(operator);
-            }*!/
+        /* $scope.AllOperatorDetails.forEach(function (operator) {
+         var disclaimerText = _.contains($scope.OperatorDetails.ebe_ef_id, operator.dcl_ref_jed_id)
+         /!*if ($scope.SelectedEventId == operator.dcl_ref_jed_id ) {//&& $scope.SelectedGeoLocation == value.country
+         $scope.OperatorDetails.push(operator);
+         }*!/
 
-        })*/
+         })*/
 
     }
     /*$scope.displayJetEvents = function () {
-        $scope.JetPayEvent = [];
-        //console.log($scope.AllJetPayEvents)
-        $scope.AllJetPayEvents.forEach(function (value) {
-            //console.log($scope.SelectedGeoLocation +' : '+ value.country)
-            if ($scope.SelectedGeoLocation == value.country  ) {
-                $scope.JetPayEvent.push(value);
-            }
-        })
-        //console.log($scope.JetPayEvent)
-    }*/
+     $scope.JetPayEvent = [];
+     //console.log($scope.AllJetPayEvents)
+     $scope.AllJetPayEvents.forEach(function (value) {
+     //console.log($scope.SelectedGeoLocation +' : '+ value.country)
+     if ($scope.SelectedGeoLocation == value.country  ) {
+     $scope.JetPayEvent.push(value);
+     }
+     })
+     //console.log($scope.JetPayEvent)
+     }*/
     $scope.resetForm = function () {
         $scope.SelectedEventId = '';
         $scope.OperatorsList = '';
@@ -266,21 +266,21 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                 Caption: $scope.Caption,
                 Description: $scope.Description,
                 JetId: $scope.SelectedEventId,
-                offerForDays: $scope.offerForDays,
-                numContentOffer: $scope.numContentOffer,
-                limitSingleDay: $scope.limitSingleDay,
-                fullSubDuration: $scope.fullSubDuration,
-                slc_tnb_free_cnt_limit : $scope.slc_tnb_free_cnt_limit,
-                slc_single_day_cnt_limit : $scope.slc_single_day_cnt_limit,
-                slc_full_sub_cnt_limit : $scope.slc_full_sub_cnt_limit,
+                offerForDays: $scope.offerForDays|| null,
+                numContentOffer: $scope.numContentOffer || null,
+                limitSingleDay: $scope.limitSingleDay || null,
+                fullSubDuration: $scope.fullSubDuration || null,
+                slc_tnb_free_cnt_limit : $scope.slc_tnb_free_cnt_limit || null,
+                slc_single_day_cnt_limit : $scope.slc_single_day_cnt_limit || null,
+                slc_full_sub_cnt_limit : $scope.slc_full_sub_cnt_limit || null,
 
-                sld_tnb_free_cnt_limit : $scope.sld_tnb_free_cnt_limit,
-                sld_tnb_free_cnt_duration : $scope.sld_tnb_free_cnt_duration,
-                sld_single_day_cnt_limit : $scope.sld_single_day_cnt_limit,
-                sld_single_day_cnt_duration : $scope.sld_single_day_cnt_duration,
-                sld_full_sub_cnt_limit : $scope.sld_full_sub_cnt_limit,
-                sld_full_sub_cnt_duration : $scope.sld_full_sub_cnt_duration,
-                streamingLimitType : $scope.streamingLimitType,
+                sld_tnb_free_cnt_limit : $scope.sld_tnb_free_cnt_limit || null,
+                sld_tnb_free_cnt_duration : $scope.sld_tnb_free_cnt_duration || null,
+                sld_single_day_cnt_limit : $scope.sld_single_day_cnt_limit || null,
+                sld_single_day_cnt_duration : $scope.sld_single_day_cnt_duration || null,
+                sld_full_sub_cnt_limit : $scope.sld_full_sub_cnt_limit || null,
+                sld_full_sub_cnt_duration : $scope.sld_full_sub_cnt_duration || null,
+                streamingLimitType : $scope.streamingLimitType || null,
                 OperatorDetails: $scope.OperatorDetails,
                 DistributionChannelList: $scope.distributionChannelList,
                 DistributionChannels: $scope.selectedDistributionChannel,
@@ -289,15 +289,15 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                 ContentTypes: $scope.ContentTypes,
                 atCostFreePaid: $scope.atCostFreePaid,
                 /*subscription_plan_Wallpaper: $scope.subscription_plan_Wallpaper,
-                subscription_plan_Animation: $scope.subscription_plan_Animation,
-                subscription_plan_RingTone: $scope.subscription_plan_RingTone,
-                subscription_plan_TextArtical: $scope.subscription_plan_TextArtical,
-                subscription_plan_GamesApps: $scope.subscription_plan_GamesApps,
-                subscription_plan_Video: $scope.subscription_plan_Video,
-                subscription_plan_FullSong: $scope.subscription_plan_FullSong,
-                subscription_plan_stream_video: $scope.subscription_plan_stream_video,
-                subscription_plan_stream_songs: $scope.subscription_plan_stream_songs,*/
-                planDuration: $scope.planDuration,
+                 subscription_plan_Animation: $scope.subscription_plan_Animation,
+                 subscription_plan_RingTone: $scope.subscription_plan_RingTone,
+                 subscription_plan_TextArtical: $scope.subscription_plan_TextArtical,
+                 subscription_plan_GamesApps: $scope.subscription_plan_GamesApps,
+                 subscription_plan_Video: $scope.subscription_plan_Video,
+                 subscription_plan_FullSong: $scope.subscription_plan_FullSong,
+                 subscription_plan_stream_video: $scope.subscription_plan_stream_video,
+                 subscription_plan_stream_songs: $scope.subscription_plan_stream_songs,*/
+                planDuration: $scope.planDuration || null,
                 planDurationOption: $scope.planDurationOption
             }
 
@@ -310,9 +310,9 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                     }else{
                         $state.reload();
                     }
-                    
+
                     toastr.success(data.message)
-                   // $scope.success = data.message;
+                    // $scope.success = data.message;
                     $scope.successvisible = true;
                 }
                 else {

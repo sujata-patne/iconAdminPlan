@@ -18,81 +18,81 @@ exports.getsubscriptions = function (req, res, next) {
     try {
         if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId ) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-               // mysql.getConnection('BG', function (err, connection_ikon_bg) {
-                    async.parallel({
-                            StoreId: function (callback) {
-                                callback(err, req.session.Plan_StoreId);
-                            },
-                            PlanData: function (callback) {
-                                //Get subscription plan data
-                                subscriptionManager.getPlanData( connection_ikon_cms, req.body.planid, function ( err, subplan ) {
-                                    callback(err, subplan);
-                                });
-                            },
-                            AlacartaData: function (callback) {
-                                subscriptionManager.getAlacartPlanByPlanId(connection_ikon_cms, req.body.planid, function( err, AlacartaData ) {
-                                    callback(err, AlacartaData)
-                                });
-                            },
-                            ContentTypes: function (callback) {
-                                planListManager.getContentTypesByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, ContentTypes) {
-                                    callback(err, ContentTypes);
-                                });
-                            },
-                            DistributionChannel: function (callback) {
-                                //Get distribution channels
-                                alacartaManager.getDistributionChannelsByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, DistributionChannel ) {
-                                    callback( err, DistributionChannel );
-                                });
-                            },
-                            GeoLocations: function (callback) {
-                                alacartaManager.getGeoLocationsByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, GeoLocations ) {
-                                    callback( err, GeoLocations );
-                                });
-                            },
-                            DurationOptions: function (callback) {
-                                /** get stream duration list  */
-                                alacartaManager.getDurationOptions(connection_ikon_cms,  function (err, DurationOptions ) {
-                                    callback(err, DurationOptions);
-                                });
-                            },
-                            /*JetEvents: function (callback) {
-                                alacartaManager.getJetEventsByStoreId(connection_ikon_bg, req.session.Plan_StoreId, function (err, JetEvents ) {
-                                    callback( err, JetEvents );
-                                });
-                            },*/
-                            OperatorDetail: function (callback) {
-                                alacartaManager.getOperatorDetail( connection_ikon_cms, function (err, OperatorDetails) {
-                                    callback( err, OperatorDetails );
-                                });
-                            },
-                            ContentTypeData: function (callback) {
-                                subscriptionManager.getContentTypeDataByPlanStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, alacart) {
-                                    callback(err, alacart);
-                                });
-                            },
-                            selectedDistributionChannel: function (callback) {
-                                subscriptionManager.getSelectedDistributionChannelByPlanId( connection_ikon_cms, req.body.planid, function ( err, selectedDistributionChannel ) {
-                                    callback( err, selectedDistributionChannel );
-                                });
-                            },
-                            RoleUser: function (callback) {
-                                //Get User Role
-                                callback(null, req.session.Plan_UserRole);
-                            }
+                // mysql.getConnection('BG', function (err, connection_ikon_bg) {
+                async.parallel({
+                        StoreId: function (callback) {
+                            callback(err, req.session.Plan_StoreId);
                         },
-                        function (err, results) {
-                            if (err) {
-                                connection_ikon_cms.release();
-                                //connection_ikon_bg.release();
-                                res.status(500).json(err.message);
-                                console.log(err.message)
-                            } else {
-                                connection_ikon_cms.release();
-                               // connection_ikon_bg.release();
-                                res.send(results);
-                            }
-                        });
+                        PlanData: function (callback) {
+                            //Get subscription plan data
+                            subscriptionManager.getPlanData( connection_ikon_cms, req.body.planid, function ( err, subplan ) {
+                                callback(err, subplan);
+                            });
+                        },
+                        AlacartaData: function (callback) {
+                            subscriptionManager.getAlacartPlanByPlanId(connection_ikon_cms, req.body.planid, function( err, AlacartaData ) {
+                                callback(err, AlacartaData)
+                            });
+                        },
+                        ContentTypes: function (callback) {
+                            planListManager.getContentTypesByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, ContentTypes) {
+                                callback(err, ContentTypes);
+                            });
+                        },
+                        DistributionChannel: function (callback) {
+                            //Get distribution channels
+                            alacartaManager.getDistributionChannelsByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, DistributionChannel ) {
+                                callback( err, DistributionChannel );
+                            });
+                        },
+                        GeoLocations: function (callback) {
+                            alacartaManager.getGeoLocationsByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, GeoLocations ) {
+                                callback( err, GeoLocations );
+                            });
+                        },
+                        DurationOptions: function (callback) {
+                            /** get stream duration list  */
+                            alacartaManager.getDurationOptions(connection_ikon_cms,  function (err, DurationOptions ) {
+                                callback(err, DurationOptions);
+                            });
+                        },
+                        /*JetEvents: function (callback) {
+                         alacartaManager.getJetEventsByStoreId(connection_ikon_bg, req.session.Plan_StoreId, function (err, JetEvents ) {
+                         callback( err, JetEvents );
+                         });
+                         },*/
+                        OperatorDetail: function (callback) {
+                            alacartaManager.getOperatorDetail( connection_ikon_cms, function (err, OperatorDetails) {
+                                callback( err, OperatorDetails );
+                            });
+                        },
+                        ContentTypeData: function (callback) {
+                            subscriptionManager.getContentTypeDataByPlanStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, alacart) {
+                                callback(err, alacart);
+                            });
+                        },
+                        selectedDistributionChannel: function (callback) {
+                            subscriptionManager.getSelectedDistributionChannelByPlanId( connection_ikon_cms, req.body.planid, function ( err, selectedDistributionChannel ) {
+                                callback( err, selectedDistributionChannel );
+                            });
+                        },
+                        RoleUser: function (callback) {
+                            //Get User Role
+                            callback(null, req.session.Plan_UserRole);
+                        }
+                    },
+                    function (err, results) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            //connection_ikon_bg.release();
+                            res.status(500).json(err.message);
+                            console.log(err.message)
+                        } else {
+                            connection_ikon_cms.release();
+                            // connection_ikon_bg.release();
+                            res.send(results);
+                        }
+                    });
                 //});
             });
         }
@@ -477,8 +477,9 @@ function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data) {
         sctp_sp_id: subPlanId,
         sctp_content_type_id: ContentTypeId,
         sctp_download_id: downloadId,
-        sctp_stream_id: streamingId
+        sctp_stream_id: streamingId == '' ? null : streamingId
     }
+    console.log(ContentTypePlanData);
     subscriptionManager.createSubscriptionContentType( connection_ikon_cms, ContentTypePlanData, function( err, result ) {
         if (err) {
             connection_ikon_cms.release();
