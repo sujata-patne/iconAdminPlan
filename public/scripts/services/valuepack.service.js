@@ -11,7 +11,17 @@ myApp.service('Valuepacks', ['$http', function ($http) {
         });
     }
     service.getJetPayDetailsByStoreId = function(storeId,success){
-        $http.get('http://192.168.1.168:8060/BillingUtilService/GetStoreDetailsAla?Store='+storeId).success(function (items) {
+        /*$.ajax({
+            method: "POST",
+            dataType: "json",
+            data: data,
+            url: 'http://192.168.1.168:8060/BillingUtilService/GetStoreDetailsAla',
+            success: function(items){
+                alert(items)
+            }
+        });*/
+
+        $http.post('http://192.168.1.168:8060/BillingUtilService/GetStoreDetailsAla?Store='+storeId).success(function (items) {
             success(items);
         });
     }

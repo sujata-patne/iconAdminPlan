@@ -105,7 +105,8 @@
     $.ajax({
         method: "POST",
         dataType: "json",
-        url: 'http://192.168.1.168:8060/BillingUtilService/GetEnumDetails?Type=payment_type',
+        data: {Type : 'payment_type'},
+        url: 'http://192.168.1.168:8060/BillingUtilService/GetEnumDetails',
         success: function(paymentTypes){
             if(paymentTypes && paymentTypes.length > 0){
                 $.cookie("paymentTypes", null);

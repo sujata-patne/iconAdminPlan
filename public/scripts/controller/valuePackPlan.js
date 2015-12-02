@@ -28,7 +28,7 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
         //$scope.AllJetPayEvents = angular.copy(valuepacks.JetEvents);
         $scope.AllOperatorDetails = angular.copy(valuepacks.OperatorDetail);
         $scope.durationOptions = angular.copy(valuepacks.DurationOptions);
-        $scope.getJetPayDetailsByStoreId($scope.StoreId);
+        $scope.getJetPayDetailsByStoreId($scope.StoreId); //{Store: $scope.StoreId}
         $scope.durationOptions.forEach(function(option){
             if(option.cd_name === 'Months'){
                 $scope.selectedDurationOptions = option.cd_id;

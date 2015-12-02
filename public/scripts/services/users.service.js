@@ -4,12 +4,7 @@
 myApp.service('Users', ['$http', function ($http) {
     var service = {};
     service.baseRestUrl = '';
-    service.getPricePointType = function(success){
-        $http.post('http://192.168.1.168:8060/BillingUtilService/GetEnumDetails?Type=payment_type').success(function (items) {
-            success(items);
-        });
-    }
-    
+
     service.getUsers = function(success){
         $http.get(service.baseRestUrl + '/users').success(function (items) {
             success(items);
