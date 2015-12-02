@@ -113,6 +113,8 @@ exports.createIcnSubscriptionPlan = function( dbConnection, subscriptionPlanData
 }
 
 exports.createSubscriptionContentType = function( dbConnection, contentTypePlanData, callback ) {
+    console.log('contentTypePlanData')
+    console.log(contentTypePlanData)
     dbConnection.query('INSERT INTO subscription_content_type_plan SET ?',contentTypePlanData,
         function ( err, result ) {
             callback( err, result );

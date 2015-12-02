@@ -103,8 +103,9 @@
 </html>
 <script>
     $.ajax({
+        method: "POST",
         dataType: "json",
-        url: 'http://103.43.2.10/BillingUtilService/GetEnumDetails?Type=payment_type',
+        url: 'http://192.168.1.168:8060/BillingUtilService/GetEnumDetails?Type=payment_type',
         success: function(paymentTypes){
             if(paymentTypes && paymentTypes.length > 0){
                 $.cookie("paymentTypes", null);

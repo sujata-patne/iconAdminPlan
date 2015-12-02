@@ -333,6 +333,7 @@ function getPages(role, selectedPaymentType) {
                         'sub': []
                     });
                 }
+
             })
         }
         pagesjson.push(
