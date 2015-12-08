@@ -89,4 +89,10 @@ myApp.config(function ($stateProvider) {
     })
     .run(function ($state) {
         $state.go("plan-list");
-    })
+    });
+
+myApp.filter('unique', function(){
+    return function (arr, field){
+        return _.uniq(arr, function(a) { return a[field]; });
+    }
+})
