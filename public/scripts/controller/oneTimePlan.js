@@ -39,7 +39,9 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
             $scope.selectedDistributionChannel.push(data.cmd_entity_detail);
             $scope.distributionChannelArray[data.cmd_entity_detail] = true;
         })
+
         $scope.getJetPayDetailsByStoreId($scope.StoreId);
+
         $scope.PlanData.forEach(function (value) {
             $scope.PlanId = value.ap_id;
             $scope.PlanName = value.ap_plan_name;

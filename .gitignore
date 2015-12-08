@@ -7,3 +7,4 @@
 .project
 /env.json
 /npm-debug.log
+.git

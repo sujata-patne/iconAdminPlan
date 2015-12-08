@@ -24,7 +24,6 @@ function decrypt(text){
     return dec;
 }
 
-
 var _ = require('underscore');
 
 function getDate(val) {
@@ -323,7 +322,7 @@ function getPages(role, selectedPaymentType) {
                         'sub': []
                     });
                 }
-                if (paymentType.en_description === 'Subscriptions') {
+                if (paymentType.en_description === 'Subscription') {
                     pagesjson.push({
                         'pagename': 'Subscriptions Plan',
                         'href': 'subscriptions',
