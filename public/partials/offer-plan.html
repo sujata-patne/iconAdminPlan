@@ -15,7 +15,7 @@
                         <div class="form-group">
                             <label for="planname" class="col-sm-3 control-label">  <span class="asterisk padding-right-5">*</span>Plan Name</label>
                             <div class="col-sm-9">
-                                <input type="text" name="planname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" maxlength="40" required>
+                                <input type="text" name="planname" data-ng-maxlength="40"  class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" maxlength="40" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <input type="hidden" name="contentType" class="form-control" data-ng-model="contentType">
                                 <span style="color: red" data-ng-show="offerplanForm.$submitted || offerplanForm.planname.$touched">
@@ -26,13 +26,19 @@
                         <div class="form-group">
                             <label for="caption" class="col-sm-3 control-label">Caption</label>
                             <div class="col-sm-9">
-                                <input type="text" name="u_caption" class="form-control" id="" placeholder="Caption" data-ng-model="Caption">
+                                <input type="text" name="u_caption" data-ng-maxlength="40" class="form-control" id="" placeholder="Caption" data-ng-model="Caption">
+                                <span style="color: red" ng-show="offerplanForm.$submitted || offerplanForm.u_caption.$touched">
+                                    <span data-ng-show="offerplanForm.u_caption.$error.maxlength">Maximum 40 characters allowed.</span>
+                                </span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="description" class="col-sm-3 control-label">Description</label>
                             <div class="col-sm-9">
-                                <textarea name="u_caption" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="3"></textarea>
+                                <textarea name="u_description"  data-ng-maxlength="200" class="form-control" id="" placeholder="Description" data-ng-model="Description" rows="3"></textarea>
+                                <span style="color: red" ng-show="offerplanForm.$submitted || offerplanForm.u_description.$touched">
+                                    <span data-ng-show="offerplanForm.u_description.$error.maxlength">Maximum 200 characters allowed.</span>
+                                </span>
                             </div>
                         </div>
                         <div class="form-group">
