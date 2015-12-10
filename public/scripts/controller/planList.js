@@ -7,7 +7,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
     $('#plan-list').addClass('active');
     $scope.IsDisable = true;
     $scope.listcurrentPage = 0;
-    $scope.listpageSize = 10;
+    $scope.listpageSize = 25;
     $scope.AllPlanList = [];
     $scope.PlanName = "";
     $scope.planList = [];
