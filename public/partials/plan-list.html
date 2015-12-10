@@ -15,7 +15,7 @@
                         <div class="row">
                             <div class="col-xs-4 col-md-4">
                                 <div class="form-group">
-                                    <label for="planname" class="col-md-6 control-label">Plan Name</label>
+                                    <label for="planname" class="col-md-6 control-label">Search By Plan Name: </label>
                                     <div class="col-md-6">
                                         <input type="text" name="planname" class="form-control" id="" placeholder="Plan Name" data-ng-model="PlanName" required>
                                     </div>
@@ -23,7 +23,7 @@
                             </div>
                             <div class="col-xs-5 col-md-5">
                                 <div class="form-group">
-                                    <label for="contentType" class="col-md-6 control-label">Content Type</label>
+                                    <label for="contentType" class="col-md-6 control-label">& Content Type :  </label>
                                     <div class="col-md-6">
                                         <select name="contentType" class="form-control" data-ng-model="SelectedContentType" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes">
                                             <option value="">-- Select Content Type --</option>
@@ -60,13 +60,13 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody data-ng-repeat="plan in planList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
+                                <tbody data-ng-repeat="plan in planList |orderBy: '-created_on' | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
                                     <tr>
                                         <td class="col-md-1 col-xs-1 text-center">{{$index+1+(listcurrentPage*listpageSize)}}</td>
                                         <td class="col-md-2 col-xs-2 ">{{plan.type}}:{{plan.planid}}</td>
                                         <td class="col-md-3 col-xs-3">{{plan.planname}}</td>
                                         <td class="col-md-2 col-xs-2">{{plan.contenttype}}</td>
-                                        <td class="col-md-3 col-xs-3">{{plan.created_on}}</td>
+                                        <td class="col-md-3 col-xs-3">{{plan.created_on | date : "d-MMM-yyyy" }}</td>
                                         <td class="col-md-2 col-xs-2">
                                             <div class="row">
                                                 <div class="col-md-3 col-xs-4" data-ng-hide="plan.active == 0"><a href="" data-ng-click="EditPlan(plan.planid,plan.contenttype)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
@@ -85,7 +85,7 @@
             <div class="row">
                 <div class="col-md-12 col-xs-12">
                     <div class="col-xs-3 col-md-3">
-                        <button type="button" class="btn btn-primary btn-w-xs" title="Previous" data-ng-disabled="listcurrentPage == 0" data-ng-click="listcurrentPage=listcurrentPage-1">Previous</button>
+                        <button type="button" id="prev_btn" class="btn btn-primary btn-w-xs" title="Previous" data-ng-disabled="listcurrentPage == 0" data-ng-click="listcurrentPage=listcurrentPage-1">Previous</button>
                     </div>
                     <div class="col-xs-6 col-md-6">
                         <button type="button" style="margin-left:32%" class="btn btn-primary btn-w-xs" ng-show="planList.length > 0" title="Download" data-ng-click="ExportPlan()">Download in excel</button>

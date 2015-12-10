@@ -138,6 +138,7 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
             }
         });
         $scope.planList = plans;
+        $scope.listcurrentPage = 0;
     }
 
     // get all plan 
@@ -147,19 +148,18 @@ myApp.controller('planListCtrl', function ($scope, $http, ngProgress, PlanList, 
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Value Pack", cd_id: "Value Pack", cd_name: "Value Pack" });
         $scope.ContentTypes.push({ cd_cm_id: 2, cd_desc: 0, cd_desc1: '', cd_display_name: "Offers", cd_id: "Offers", cd_name: "Offers" });
         PlanList.Alacarts.forEach(function (value) {
-            $scope.AllPlanList.push({ planid: value.ap_id, type: 'Alacart', planname: value.ap_plan_name, created_on: $scope.setDate(value.ap_created_on), active: value.ap_is_active, contenttype: $scope.getContentName(value.ap_content_type), contentid: value.ap_content_type });
+            $scope.AllPlanList.push({ planid: value.ap_id, type: 'Alacart', planname: value.ap_plan_name, created_on: value.ap_created_on, active: value.ap_is_active, contenttype: $scope.getContentName(value.ap_content_type), contentid: value.ap_content_type });
         });
         PlanList.Subscriptions.forEach(function (value) {
-            $scope.AllPlanList.push({ planid: value.sp_id, type: 'Subscriptions',  planname: value.sp_plan_name, created_on: $scope.setDate(value.sp_created_on), active: value.sp_is_active, contenttype: 'Subscription', contentid: 'Subscription' });
+            $scope.AllPlanList.push({ planid: value.sp_id, type: 'Subscriptions',  planname: value.sp_plan_name, created_on: value.sp_created_on, active: value.sp_is_active, contenttype: 'Subscription', contentid: 'Subscription' });
         });
         PlanList.ValuePacks.forEach(function (value) {
-            $scope.AllPlanList.push({ planid: value.vp_id, type: 'ValuePacks',  planname: value.vp_plan_name, created_on: $scope.setDate(value.vp_created_on), active: value.vp_is_active, contenttype: "Value Pack", contentid: "Value Pack" });
+            $scope.AllPlanList.push({ planid: value.vp_id, type: 'ValuePacks',  planname: value.vp_plan_name, created_on: value.vp_created_on, active: value.vp_is_active, contenttype: "Value Pack", contentid: "Value Pack" });
         });
         PlanList.Offers.forEach(function (value) {
-            $scope.AllPlanList.push({ planid: value.op_id, type: 'Offers',  planname: value.op_plan_name, created_on: $scope.setDate(value.op_created_on), active: value.op_is_active, contenttype: "Offers", contentid: "Offers" });
+            $scope.AllPlanList.push({ planid: value.op_id, type: 'Offers',  planname: value.op_plan_name, created_on: value.op_created_on, active: value.op_is_active, contenttype: "Offers", contentid: "Offers" });
         });
         $scope.planList = $scope.AllPlanList;
-
     });
 
     //export plan 
