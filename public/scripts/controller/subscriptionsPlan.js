@@ -316,7 +316,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                     $scope.successvisible = true;
                 }
                 else {
-                    toastr.success(data.message)
+                    toastr.error(data.message)
                     //$scope.error = data.message;
                     $scope.errorvisible = true;
                 }

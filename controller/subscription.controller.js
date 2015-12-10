@@ -407,7 +407,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                 }
                                                 else {
                                                     connection_ikon_cms.release();
-                                                    res.send({ success: true, message: 'Sunscription Plan added successfully.' });
+                                                    res.send({ success: true, message: 'Subscription Plan added successfully.' });
                                                 }
                                             });
                                         }
