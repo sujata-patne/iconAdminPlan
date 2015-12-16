@@ -257,139 +257,143 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         }, function(newvalue, oldvalue){},true);
 
         if (isValid) {
-            var durationTB= _.findWhere($scope.durationOptions, {cd_id:$scope.sld_tnb_free_cnt_duration}).cd_name;
-            switch (durationTB.toLowerCase()) {
-                case 'min':
-                    $scope.TBmultiplier = 1;
-                    break;
-                case 'hours':
-                    $scope.TBmultiplier = 60;
-                    break;
-                case 'days':
-                    $scope.TBmultiplier = 24 * 60;
-                    break;
-                case 'weeks':
-                    $scope.TBmultiplier = 7 * 24 * 60;
-                    break;
-                case 'months':
-                    $scope.TBmultiplier = 31 * 24 * 60;
-                    break;
-                case 'years':
-                    $scope.TBmultiplier = 365 * 24 * 60;
-                    break;
+            if($scope.streamingLimitType == 2){
+                var durationTB= _.findWhere($scope.durationOptions, {cd_id:$scope.sld_tnb_free_cnt_duration}).cd_name;
+                switch (durationTB.toLowerCase()) {
+                    case 'min':
+                        $scope.TBmultiplier = 1;
+                        break;
+                    case 'hours':
+                        $scope.TBmultiplier = 60;
+                        break;
+                    case 'days':
+                        $scope.TBmultiplier = 24 * 60;
+                        break;
+                    case 'weeks':
+                        $scope.TBmultiplier = 7 * 24 * 60;
+                        break;
+                    case 'months':
+                        $scope.TBmultiplier = 31 * 24 * 60;
+                        break;
+                    case 'years':
+                        $scope.TBmultiplier = 365 * 24 * 60;
+                        break;
+                }
+                var durationSingleDay= _.findWhere($scope.durationOptions, {cd_id:$scope.sld_single_day_cnt_duration}).cd_name;
+                switch (durationSingleDay.toLowerCase()) {
+                    case 'min':
+                        $scope.Singlemultiplier = 1;
+                        break;
+                    case 'hours':
+                        $scope.Singlemultiplier = 60;
+                        break;
+                    case 'days':
+                        $scope.Singlemultiplier = 24 * 60;
+                        break;
+                    case 'weeks':
+                        $scope.Singlemultiplier = 7 * 24 * 60;
+                        break;
+                    case 'months':
+                        $scope.Singlemultiplier = 31 * 24 * 60;
+                        break;
+                    case 'years':
+                        $scope.Singlemultiplier = 365 * 24 * 60;
+                        break;
+                }
+                var durationFull= _.findWhere($scope.durationOptions, {cd_id:$scope.sld_full_sub_cnt_duration}).cd_name;
+                switch (durationFull.toLowerCase()) {
+                    case 'min':
+                        $scope.Fullmultiplier = 1;
+                        break;
+                    case 'hours':
+                        $scope.Fullmultiplier = 60;
+                        break;
+                    case 'days':
+                        $scope.Fullmultiplier = 24 * 60;
+                        break;
+                    case 'weeks':
+                        $scope.Fullmultiplier = 7 * 24 * 60;
+                        break;
+                    case 'months':
+                        $scope.Fullmultiplier = 31 * 24 * 60;
+                        break;
+                    case 'years':
+                        $scope.Fullmultiplier = 365 * 24 * 60;
+                        break;
+                }
             }
-           var durationSingleDay= _.findWhere($scope.durationOptions, {cd_id:$scope.sld_single_day_cnt_duration}).cd_name;
-            switch (durationSingleDay.toLowerCase()) {
-                case 'min':
-                    $scope.Singlemultiplier = 1;
-                    break;
-                case 'hours':
-                    $scope.Singlemultiplier = 60;
-                    break;
-                case 'days':
-                    $scope.Singlemultiplier = 24 * 60;
-                    break;
-                case 'weeks':
-                    $scope.Singlemultiplier = 7 * 24 * 60;
-                    break;
-                case 'months':
-                    $scope.Singlemultiplier = 31 * 24 * 60;
-                    break;
-                case 'years':
-                    $scope.Singlemultiplier = 365 * 24 * 60;
-                    break;
-            }
-            var durationFull= _.findWhere($scope.durationOptions, {cd_id:$scope.sld_full_sub_cnt_duration}).cd_name;
-            switch (durationFull.toLowerCase()) {
-                case 'min':
-                    $scope.Fullmultiplier = 1;
-                    break;
-                case 'hours':
-                    $scope.Fullmultiplier = 60;
-                    break;
-                case 'days':
-                    $scope.Fullmultiplier = 24 * 60;
-                    break;
-                case 'weeks':
-                    $scope.Fullmultiplier = 7 * 24 * 60;
-                    break;
-                case 'months':
-                    $scope.Fullmultiplier = 31 * 24 * 60;
-                    break;
-                case 'years':
-                    $scope.Fullmultiplier = 365 * 24 * 60;
-                    break;
-            }
+
             if($scope.sld_tnb_free_cnt_limit*$scope.TBmultiplier >= $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier){
                 toastr.error('T&B  Streaming Duration must be lesser than Single Day limit.');
             }else if ($scope.sld_full_sub_cnt_limit * $scope.Fullmultiplier  <= $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier) {
                 toastr.error('Full Subscription Streaming Duration must be greater than Single Day limit.');
             }
+
             else {
-            var subscription = {
-                planid: $stateParams.id,
-                subplanId: $scope.PlanId,
-                PlanName: $scope.PlanName,
-                Caption: $scope.Caption,
-                Description: $scope.Description,
-                JetId: $scope.SelectedEventId,
-                offerForDays: $scope.offerForDays || null,
-                numContentOffer: $scope.numContentOffer || null,
-                limitSingleDay: $scope.limitSingleDay || null,
-                fullSubDuration: $scope.fullSubDuration || null,
-                slc_tnb_free_cnt_limit: $scope.slc_tnb_free_cnt_limit || null,
-                slc_single_day_cnt_limit: $scope.slc_single_day_cnt_limit || null,
-                slc_full_sub_cnt_limit: $scope.slc_full_sub_cnt_limit || null,
+                var subscription = {
+                    planid: $stateParams.id,
+                    subplanId: $scope.PlanId,
+                    PlanName: $scope.PlanName,
+                    Caption: $scope.Caption,
+                    Description: $scope.Description,
+                    JetId: $scope.SelectedEventId,
+                    offerForDays: $scope.offerForDays || null,
+                    numContentOffer: $scope.numContentOffer || null,
+                    limitSingleDay: $scope.limitSingleDay || null,
+                    fullSubDuration: $scope.fullSubDuration || null,
+                    slc_tnb_free_cnt_limit: $scope.slc_tnb_free_cnt_limit || null,
+                    slc_single_day_cnt_limit: $scope.slc_single_day_cnt_limit || null,
+                    slc_full_sub_cnt_limit: $scope.slc_full_sub_cnt_limit || null,
 
-                sld_tnb_free_cnt_limit: $scope.sld_tnb_free_cnt_limit || null,
-                sld_tnb_free_cnt_duration: $scope.sld_tnb_free_cnt_duration || null,
-                sld_single_day_cnt_limit: $scope.sld_single_day_cnt_limit || null,
-                sld_single_day_cnt_duration: $scope.sld_single_day_cnt_duration || null,
-                sld_full_sub_cnt_limit: $scope.sld_full_sub_cnt_limit || null,
-                sld_full_sub_cnt_duration: $scope.sld_full_sub_cnt_duration || null,
-                streamingLimitType: $scope.streamingLimitType || null,
-                OperatorDetails: $scope.OperatorDetails,
-                DistributionChannelList: $scope.distributionChannelList,
-                DistributionChannels: $scope.selectedDistributionChannel,
-                geoLocationId: $scope.SelectedGeoLocation,
-                alacartPlansList: $scope.alacartPlanIds,
-                ContentTypes: $scope.ContentTypes,
-                atCostFreePaid: $scope.atCostFreePaid,
-                /*subscription_plan_Wallpaper: $scope.subscription_plan_Wallpaper,
-                 subscription_plan_Animation: $scope.subscription_plan_Animation,
-                 subscription_plan_RingTone: $scope.subscription_plan_RingTone,
-                 subscription_plan_TextArtical: $scope.subscription_plan_TextArtical,
-                 subscription_plan_GamesApps: $scope.subscription_plan_GamesApps,
-                 subscription_plan_Video: $scope.subscription_plan_Video,
-                 subscription_plan_FullSong: $scope.subscription_plan_FullSong,
-                 subscription_plan_stream_video: $scope.subscription_plan_stream_video,
-                 subscription_plan_stream_songs: $scope.subscription_plan_stream_songs,*/
-                planDuration: $scope.planDuration || null,
-                planDurationOption: $scope.planDurationOption
-            }
+                    sld_tnb_free_cnt_limit: $scope.sld_tnb_free_cnt_limit || null,
+                    sld_tnb_free_cnt_duration: $scope.sld_tnb_free_cnt_duration || null,
+                    sld_single_day_cnt_limit: $scope.sld_single_day_cnt_limit || null,
+                    sld_single_day_cnt_duration: $scope.sld_single_day_cnt_duration || null,
+                    sld_full_sub_cnt_limit: $scope.sld_full_sub_cnt_limit || null,
+                    sld_full_sub_cnt_duration: $scope.sld_full_sub_cnt_duration || null,
+                    streamingLimitType: $scope.streamingLimitType || null,
+                    OperatorDetails: $scope.OperatorDetails,
+                    DistributionChannelList: $scope.distributionChannelList,
+                    DistributionChannels: $scope.selectedDistributionChannel,
+                    geoLocationId: $scope.SelectedGeoLocation,
+                    alacartPlansList: $scope.alacartPlanIds,
+                    ContentTypes: $scope.ContentTypes,
+                    atCostFreePaid: $scope.atCostFreePaid,
+                    /*subscription_plan_Wallpaper: $scope.subscription_plan_Wallpaper,
+                     subscription_plan_Animation: $scope.subscription_plan_Animation,
+                     subscription_plan_RingTone: $scope.subscription_plan_RingTone,
+                     subscription_plan_TextArtical: $scope.subscription_plan_TextArtical,
+                     subscription_plan_GamesApps: $scope.subscription_plan_GamesApps,
+                     subscription_plan_Video: $scope.subscription_plan_Video,
+                     subscription_plan_FullSong: $scope.subscription_plan_FullSong,
+                     subscription_plan_stream_video: $scope.subscription_plan_stream_video,
+                     subscription_plan_stream_songs: $scope.subscription_plan_stream_songs,*/
+                    planDuration: $scope.planDuration || null,
+                    planDurationOption: $scope.planDurationOption
+                }
 
-            ngProgress.start();
-            Subscriptions.AddEditSubscription(subscription, function (data) {
-                if (data.success) {
+                ngProgress.start();
+                Subscriptions.AddEditSubscription(subscription, function (data) {
+                    if (data.success) {
 
-                    if ($scope.CurrentPage == "edit-subscriptions") {
-                        $state.go('subscriptions'); //"#subscriptions";
-                    } else {
-                        $state.reload();
+                        if ($scope.CurrentPage == "edit-subscriptions") {
+                            $state.go('subscriptions'); //"#subscriptions";
+                        } else {
+                            $state.reload();
+                        }
+
+                        toastr.success(data.message)
+                        // $scope.success = data.message;
+                        $scope.successvisible = true;
                     }
-
-                    toastr.success(data.message)
-                    // $scope.success = data.message;
-                    $scope.successvisible = true;
-                }
-                else {
-                    toastr.error(data.message)
-                    //$scope.error = data.message;
-                    $scope.errorvisible = true;
-                }
-                ngProgress.complete();
-            });
-          }
+                    else {
+                        toastr.error(data.message)
+                        //$scope.error = data.message;
+                        $scope.errorvisible = true;
+                    }
+                    ngProgress.complete();
+                });
+            }
         }
     };
 
