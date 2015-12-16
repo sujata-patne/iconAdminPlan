@@ -327,7 +327,7 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                 toastr.error('T&B  Streaming Duration must be lesser than Single Day limit.');
             }else if ($scope.sld_full_sub_cnt_limit * $scope.Fullmultiplier  <= $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier) {
                 toastr.error('Full Subscription Streaming Duration must be greater than Single Day limit.');
-            }
+       }
 
             else {
                 var subscription = {
