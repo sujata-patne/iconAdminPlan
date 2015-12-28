@@ -198,6 +198,11 @@ exports.addeditalacart = function (req, res, next) {
                                                 res.status(500).json(err.message);
                                             }
                                             else {
+                                                alacartaManager.isPlanMappedPackageExist(connection_ikon_cms, req.body.alacartplanid, function (err, result) {
+                                                    if(result.length > 0) {
+                                                        updatePackageDate(connection_ikon_cms,0,result);
+                                                    }
+                                                })
                                                 connection_ikon_cms.release();
                                                 res.send({
                                                     success: true,
@@ -208,7 +213,23 @@ exports.addeditalacart = function (req, res, next) {
                                     }
                                 })
                         }
-
+                        function updatePackageDate(connection_ikon_cms, cnt, data) {
+                            var j = cnt;
+                            var count = data.length;
+                            alacartaManager.updatePackageDate(connection_ikon_cms, data[j].paos_sp_pkg_id, function (err, updated) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                    console.log(err.message)
+                                }
+                                else {
+                                    cnt++;
+                                    if (cnt < count) {
+                                        updatePackageDate(connection_ikon_cms, cnt,data);
+                                    }
+                                }
+                            });
+                        }
                         function AddAlacart() {
                             async.waterfall([
                                     function(callback){

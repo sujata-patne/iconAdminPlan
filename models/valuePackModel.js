@@ -29,6 +29,22 @@ exports.getValuePackPlanByPlanId = function( dbConnection, planId, callback ) {
     );
 }
 
+exports.isPlanMappedPackageExist = function(dbConnection,planId,callback){
+    dbConnection.query('select pvs_sp_pkg_id from icn_package_value_pack_site where ISNULL(pvs_crud_isactive) AND pvs_vp_id = ?', [ planId ],
+        function ( err, result ) {
+            callback( err, result );
+        }
+    );
+}
+
+exports.updatePackageDate = function( dbConnection, pkgId, callback ) {
+    dbConnection.query('UPDATE icn_store_package SET sp_modified_on = ? ' +
+            'WHERE ISNULL(sp_crud_isactive) AND sp_pkg_id = ? ', [ new Date(), pkgId ],
+        function ( err, result ) {
+            callback( err, result );
+        }
+    );
+}
 exports.updateValuePackPlan = function( dbConnection, data, valuePackPlanId, callback ) {
     dbConnection.query('UPDATE icn_valuepack_plan SET ? WHERE vp_id =?', [ data, valuePackPlanId ],
         function ( err, valuePackData ) {

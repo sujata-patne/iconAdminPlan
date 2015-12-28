@@ -148,76 +148,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                             else {
                                 AddSubscriptions();
                             }
-                            /*function addEditOperators(cnt) {
-                             var j = cnt;
-                             var query = connection_ikon_cms.query('SELECT * FROM icn_disclaimer WHERE dcl_ref_jed_id = ? AND dcl_partner_id = ?', [req.body.JetId, req.body.OperatorDetails[j].partner_id], function (err, disclaimer) {
-                             if (err) {
-                             connection_ikon_cms.release();
-                             res.status(500).json(err.message);
-                             console.log(err.message)
-                             }
-                             else {
-                             if (disclaimer.length > 0) {
-                             var disclaimerData = {
-                             dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
-                             dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                             dcl_st_id: req.session.Plan_StoreId,
-                             dcl_modified_on: new Date(),
-                             dcl_modified_by:  req.session.Plan_UserName
-                             }
-
-                             var query = connection_ikon_cms.query('UPDATE icn_disclaimer SET ? where dcl_id = ?', [disclaimerData,disclaimer[0].dcl_id], function (err, result) {
-                             if (err) {
-                             connection_ikon_cms.release();
-                             res.status(500).json(err.message);
-                             console.log(err.message)
-                             }
-                             else {
-                             cnt++;
-                             if (cnt < count) {
-                             addEditOperators(cnt);
-                             }
-                             }
-                             });
-                             } else {
-                             var dclID = 1;
-                             var query = connection_ikon_cms.query('SELECT MAX(dcl_id) AS id FROM icn_disclaimer', function (err, result) {
-                             if (err) {
-                             connection_ikon_cms.release();
-                             res.status(500).json(err.message);
-                             console.log(err.message)
-                             }
-                             else {
-                             if (result[0].id != null) {
-                             dclID = parseInt(result[0].id) + 1;
-                             }
-                             var disclaimerData = {
-                             dcl_id: dclID,
-                             dcl_ref_jed_id: req.body.JetId,
-                             dcl_disclaimer: req.body.OperatorDetails[j].dcl_disclaimer,
-                             dcl_partner_id: req.body.OperatorDetails[j].partner_id,
-                             dcl_st_id: req.session.Plan_StoreId,
-                             dcl_created_by: req.session.Plan_UserName,
-                             dcl_created_on: new Date()
-                             }
-                             var query = connection_ikon_cms.query('INSERT INTO icn_disclaimer SET ?', disclaimerData, function (err, result) {
-                             if (err) {
-                             connection_ikon_cms.release();
-                             res.status(500).json(err.message);
-                             }
-                             else {
-                             cnt++;
-                             if (cnt < count) {
-                             addEditOperators(cnt);
-                             }
-                             }
-                             });
-                             }
-                             })
-                             }
-                             }
-                             });
-                             }*/
 
                             var contentTypesList  = Object.keys(req.body.alacartPlansList)
                                 .map(function (element) {
@@ -306,6 +236,15 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                     res.status(500).json(err.message);
                                                 }
                                                 else {
+                                                    subscriptionManager.isPlanMappedPackageExist(connection_ikon_cms, req.body.subplanId, function (err, result) {
+                                                        if(result.length > 0) {
+                                                            /*subscriptionManager.updatePackageDate(connection_ikon_cms, req.body.subplanId, function (err, updated) {
+                                                                console.log("### "+ req.body.subplanId)
+                                                            })*/
+                                                            updatePackageDate(connection_ikon_cms,0,result);
+
+                                                        }
+                                                    })
                                                     connection_ikon_cms.release();
                                                     res.send({ success: true, message: 'Subscription Plan Updated successfully.' });
                                                 }
@@ -313,7 +252,23 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         }
                                     });
                             }
-
+                            function updatePackageDate(connection_ikon_cms, cnt, data) {
+                                var j = cnt;
+                                var count = data.length;
+                                alacartaManager.updatePackageDate(connection_ikon_cms, data[j].pss_sp_pkg_id, function (err, updated) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                        console.log(err.message)
+                                    }
+                                    else {
+                                        cnt++;
+                                        if (cnt < count) {
+                                            updatePackageDate(connection_ikon_cms, cnt,data);
+                                        }
+                                    }
+                                });
+                            }
                             function AddSubscriptions() {
                                 async.waterfall([
                                         function(callback){

@@ -3,6 +3,7 @@
  */
 var mysql = require('../config/db').pool;
 var async = require("async");
+var offerManager = require("../models/offerModel");
 /**
  * @function getofferdata
  * @param req
@@ -275,17 +276,23 @@ exports.editOffer = function (req, res, next) {
                                                                                               connection_ikon_cms.release();
                                                                                               res.status(500).json(err.message);
                                                                                          }else{
-                                                                                                 connection_ikon_cms.release();
-                                                                                                  res.send({
-                                                                                                      success: true,
-                                                                                                      message: 'Offer Plan Updated successfully.'
-                                                                                                  });     
-                                                                                              }
-                                                                                         }); 
-                                                                                    }else{
-                                                                                        loop(cnt);
-                                                                                    }
-                                                                              }
+                                                                                             offerManager.isPlanMappedPackageExist(connection_ikon_cms, req.body.offerplanId, function (err, result) {
+                                                                                                 if(result.length > 0) {
+                                                                                                     updatePackageDate(connection_ikon_cms,0,result);
+                                                                                                 }
+                                                                                             })
+
+                                                                                             connection_ikon_cms.release();
+                                                                                              res.send({
+                                                                                                  success: true,
+                                                                                                  message: 'Offer Plan Updated successfully.'
+                                                                                              });
+                                                                                          }
+                                                                                     });
+                                                                                }else{
+                                                                                    loop(cnt);
+                                                                                }
+                                                                            }
                                                                      }); //query
                                                               } //else
                                                           });
@@ -302,4 +309,21 @@ exports.editOffer = function (req, res, next) {
                     res.status(500).json(err.message);
                 }
     };
-                            
+
+function updatePackageDate(connection_ikon_cms, cnt, data) {
+    var j = cnt;
+    var count = data.length;
+    offerManager.updatePackageDate(connection_ikon_cms, data[j].paos_sp_pkg_id, function (err, updated) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            console.log(err.message)
+        }
+        else {
+            cnt++;
+            if (cnt < count) {
+                updatePackageDate(connection_ikon_cms, cnt,data);
+            }
+        }
+    });
+}

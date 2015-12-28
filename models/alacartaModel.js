@@ -30,11 +30,22 @@ exports.getDurationOptions = function( dbConnection, callback ) {
 }
 
 exports.getGeoLocationsByStoreId = function( dbConnection, storeId, callback ) {
-    dbConnection.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
+    /*dbConnection.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
                         'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                         'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
                         'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id ' +
-                        'WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [storeId],
+                        'WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [storeId],*/
+    dbConnection.query('select DISTINCT(`cd_id`) as geoID, `cd_name` as geoName from '+
+        '(select CASE  WHEN groupid is null THEN icn_cnt_name ELSE country_name  END AS country_name, '+
+        'CASE  WHEN groupid is null THEN icn_cnt ELSE countryid  END AS country_id, '+
+        'groupid  from  (SELECT cd_id as icn_cnt,cd_name as icn_cnt_name ,cd_cm_id as icn_cd_cm_id FROM catalogue_detail)cd '+
+        'inner join(select cm_id as icn_cm_id,cm_name as icn_cm_name from catalogue_master where cm_name in("icon_geo_location") )cm on(cm.icn_cm_id = cd.icn_cd_cm_id) '+
+        'left outer join (select cm_id as groupid,cm_name as groupname from catalogue_master )master on(master.groupname = cd.icn_cnt_name) '+
+        'left outer join (select cd_id as countryid,cd_name as country_name,cd_cm_id as m_groupid from catalogue_detail)mastercnt on(master.groupid =mastercnt.m_groupid))country '+
+        'inner join(select icc_country_name as cd_name, icc_country_id as cd_id from icn_country_currency) AS g_cd on(g_cd.cd_name =country.country_name) '+
+        'join multiselect_metadata_detail AS m ON cd_id = m.cmd_entity_detail '+
+        'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights '+
+        'WHERE s.st_id = ?', [storeId],
         function ( err, geoLocations ) {
             callback( err, geoLocations )
         }
@@ -81,7 +92,7 @@ exports.getOperatorDetail = function( dbConnection, callback ) { // config.db_na
         'JOIN '+config.db_name_ikon_bg+'.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
         'LEFT JOIN '+config.db_name_ikon_cms+'.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
         'GROUP BY master.tmi_parent_id ',*/
-    dbConnection.query('SELECT dis.* FROM icn_disclaimer AS dis ',
+    dbConnection.query('SELECT dis.* FROM icn_disclaimer AS dis group by dcl_partner_id ',
         function ( err, operatorDetails ) {
             callback( err, operatorDetails );
         }
@@ -126,7 +137,32 @@ exports.deleteDistributionChannel = function( dbConnection, channelId, callback 
         }
     );
 }
+exports.isPlanMappedPackageExist = function(dbConnection,planId,callback){
+    dbConnection.query('SELECT paos.paos_sp_pkg_id as paos_sp_pkg_id FROM `icn_package_alacart_offer_site` AS paos ' +
+        'JOIN icn_package_content_type as pct ON pct.pct_paos_id = paos.paos_id AND ISNULL(pct.pct_crud_isactive) ' +
+        'WHERE (pct.pct_download_id = ? OR pct_stream_id = ?) AND ISNULL(paos.paos_crud_isactive)',
+        [planId, planId],
+        function ( err, result ) {
+            callback( err, result );
+        }
+    );
+}
 
+exports.updatePackageDate = function( dbConnection, pkgId, callback ) {
+    /*in ( ' +
+     'SELECT GROUP_CONCAT(paos.paos_sp_pkg_id) FROM `icn_package_alacart_offer_site` AS paos ' +
+     'JOIN icn_package_content_type as pct ON pct.pct_paos_id = paos.paos_id AND ISNULL(pct.pct_crud_isactive) ' +
+     'WHERE (pct.pct_download_id = '+subplanId+' OR pct_stream_id = '+subplanId+') AND ISNULL(paos.paos_crud_isactive) '+
+     ')*/
+    dbConnection.query('UPDATE icn_store_package SET sp_modified_on = ?'+
+            ' WHERE sp_pkg_id = ? ', [new Date(),pkgId],
+        function ( err, result ) {
+            console.log(result);
+
+            callback( err, result );
+        }
+    );
+}
 exports.updateIcnAlacartPlan = function( dbConnection, data, planId, callback ) {
     dbConnection.query('UPDATE icn_alacart_plan SET ? where ap_id =?', [ data, planId ],
         function ( err, result ) {

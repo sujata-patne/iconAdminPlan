@@ -79,10 +79,25 @@ exports.deleteSubscriptionPlanFromSubscriptionContentType = function( dbConnecti
         }
     );
 }
+exports.isPlanMappedPackageExist = function(dbConnection,planId,callback){
+    dbConnection.query('select pss_sp_pkg_id from icn_package_subscription_site where ISNULL(pss_crud_isactive) AND pss_sp_id = ?', [ planId ],
+        function ( err, result ) {
+            callback( err, result );
+        }
+    );
+}
 
+exports.updatePackageDate = function( dbConnection, pkgId, callback ) {
+    dbConnection.query('UPDATE icn_store_package SET sp_modified_on = ? ' +
+                       'WHERE ISNULL(sp_crud_isactive) AND sp_pkg_id = ? ', [ new Date(), pkgId ],
+        function ( err, result ) {
+            callback( err, result );
+        }
+    );
+}
 exports.updateIcnSubscriptionPlan = function( dbConnection, data, subplanId, callback ) {
     dbConnection.query('UPDATE icn_sub_plan SET ?' +
-                        'WHERE sp_id =?', [ data, subplanId ],
+            'WHERE sp_id =?', [ data, subplanId ],
         function ( err, result ) {
             callback( err, result );
         }
@@ -113,8 +128,7 @@ exports.createIcnSubscriptionPlan = function( dbConnection, subscriptionPlanData
 }
 
 exports.createSubscriptionContentType = function( dbConnection, contentTypePlanData, callback ) {
-    console.log('contentTypePlanData')
-    console.log(contentTypePlanData)
+
     dbConnection.query('INSERT INTO subscription_content_type_plan SET ?',contentTypePlanData,
         function ( err, result ) {
             callback( err, result );
