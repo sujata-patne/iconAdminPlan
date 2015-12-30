@@ -35,17 +35,15 @@ exports.getGeoLocationsByStoreId = function( dbConnection, storeId, callback ) {
                         'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
                         'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id ' +
                         'WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [storeId],*/
-    dbConnection.query('select DISTINCT(`cd_id`) as geoID, `cd_name` as geoName from '+
-        '(select CASE  WHEN groupid is null THEN icn_cnt_name ELSE country_name  END AS country_name, '+
-        'CASE  WHEN groupid is null THEN icn_cnt ELSE countryid  END AS country_id, '+
-        'groupid  from  (SELECT cd_id as icn_cnt,cd_name as icn_cnt_name ,cd_cm_id as icn_cd_cm_id FROM catalogue_detail)cd '+
-        'inner join(select cm_id as icn_cm_id,cm_name as icn_cm_name from catalogue_master where cm_name in("icon_geo_location") )cm on(cm.icn_cm_id = cd.icn_cd_cm_id) '+
-        'left outer join (select cm_id as groupid,cm_name as groupname from catalogue_master )master on(master.groupname = cd.icn_cnt_name) '+
-        'left outer join (select cd_id as countryid,cd_name as country_name,cd_cm_id as m_groupid from catalogue_detail)mastercnt on(master.groupid =mastercnt.m_groupid))country '+
-        'inner join(select icc_country_name as cd_name, icc_country_id as cd_id from icn_country_currency) AS g_cd on(g_cd.cd_name =country.country_name) '+
-        'join multiselect_metadata_detail AS m ON cd_id = m.cmd_entity_detail '+
-        'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights '+
-        'WHERE s.st_id = ?', [storeId],
+    dbConnection.query('select cm_group.cm_id,cm_group.cm_name, g_cd.cd_id as geoID, cd_group.cd_name as geoName '+
+                'from catalogue_detail as cd '+
+                'inner join catalogue_master as cm on(cm.cm_id = cd.cd_cm_id) '+
+                'inner join catalogue_master as cm_group on(cm_group.cm_name = cd.cd_name) '+
+                'inner join catalogue_detail as cd_group on(cd_group.cd_cm_id = cm_group.cm_id) '+
+                'left join (select icc_country_name as country_name, icc_country_id as cd_id from icn_country_currency) AS g_cd on(g_cd.country_name =cd_group.cd_name) '+
+                'join multiselect_metadata_detail AS m ON cd.cd_id = m.cmd_entity_detail '+
+                'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights '+
+                'WHERE s.st_id = ? GROUP BY g_cd.cd_id ', [storeId],
         function ( err, geoLocations ) {
             callback( err, geoLocations )
         }

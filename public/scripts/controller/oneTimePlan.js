@@ -30,6 +30,7 @@ myApp.controller('oneTimePlanCtrl', function ($scope,$state,$window, $http, $sta
         $scope.distributionChannelList = angular.copy(Alacarts.DistributionChannel);
         $scope.ContentTypes = angular.copy(Alacarts.ContentTypes);
         $scope.GeoLocations = angular.copy(Alacarts.GeoLocations);
+        console.log($scope.GeoLocations)
         //$scope.AllJetPayEvents = angular.copy(Alacarts.JetEvents);
         $scope.durationOptions = angular.copy(Alacarts.DurationOptions);
         $scope.AllOperatorDetails = angular.copy(Alacarts.OperatorDetail);
