@@ -12,8 +12,8 @@ myApp.service('AlaCarts', ['$http', function ($http) {
     }
 
     service.getJetPayDetailsByStoreId = function(storeId,success){
-        //$http.post('http://192.168.1.168:8060/BillingUtilService/GetStoreDetailsAla?Store='+storeId).success(function (items) {
-        $http.post('http://103.43.2.5/BillingUtilService/GetStoreDetailsAla?Store='+storeId).success(function (items) {
+        $http.post('http://192.168.1.168:8060/BillingUtilService/GetStoreDetailsAla?Store='+storeId).success(function (items) {
+        //$http.post('http://103.43.2.5/BillingUtilService/GetStoreDetailsAla?Store='+storeId).success(function (items) {
             console.log(items)
             success(items);
         });

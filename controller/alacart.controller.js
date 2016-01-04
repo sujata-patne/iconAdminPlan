@@ -342,6 +342,9 @@ function addEditOperators(connection_ikon_cms, cnt,data,session) {
                     dcl_modified_on: new Date(),
                     dcl_modified_by:  session.Plan_UserName
                 }
+                console.log('update')
+                console.log(disclaimerData)
+
                 subscriptionManager.updateOperatorDetails( connection_ikon_cms, disclaimerData, disclaimer[0].dcl_id, function( err, result ) {
                     if (err) {
                         connection_ikon_cms.release();
@@ -364,6 +367,8 @@ function addEditOperators(connection_ikon_cms, cnt,data,session) {
                         console.log(err.message)
                     }
                     else {
+                        console.log('insert')
+
                         if (result[0].id != null) {
                             dclID = parseInt(result[0].id) + 1;
                         }
@@ -376,6 +381,7 @@ function addEditOperators(connection_ikon_cms, cnt,data,session) {
                             dcl_created_by: session.Plan_UserName,
                             dcl_created_on: new Date()
                         }
+                        console.log(disclaimerData)
                         subscriptionManager.createOperatorDetails( connection_ikon_cms, disclaimerData, function( err, result ) {
                             if (err) {
                                 connection_ikon_cms.release();

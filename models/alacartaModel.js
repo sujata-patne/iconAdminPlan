@@ -155,8 +155,6 @@ exports.updatePackageDate = function( dbConnection, pkgId, callback ) {
     dbConnection.query('UPDATE icn_store_package SET sp_modified_on = ?'+
             ' WHERE sp_pkg_id = ? ', [new Date(),pkgId],
         function ( err, result ) {
-            console.log(result);
-
             callback( err, result );
         }
     );
