@@ -96,7 +96,7 @@
                             </thead>
                             <tbody>
                             <tr data-ng-show="SelectedEventId" data-ng-repeat="operators in OperatorDetails | unique:'partner_id'">
-                                <td class="col-md-2 col-xs-2">{{operators.partner_name}}</td>
+                                <td class="col-md-2 col-xs-2">{{operators.partner_id}}  {{operators.partner_name}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.duration}}</td>
                                 <td class="col-md-2 col-xs-2">{{operators.tmi_amt}}</td>
                                 <td class="col-md-6 col-xs-6">

@@ -30,20 +30,39 @@ exports.getDurationOptions = function( dbConnection, callback ) {
 }
 
 exports.getGeoLocationsByStoreId = function( dbConnection, storeId, callback ) {
-    /*dbConnection.query('SELECT DISTINCT(`cd_id`) as geoID, `cd_name` as geoName FROM `multiselect_metadata_detail` AS m ' +
+   /* dbConnection.query('SELECT DISTINCT(g_cd.cd_id) as geoID, cd.cd_name as geoName FROM `multiselect_metadata_detail` AS m ' +
                         'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights ' +
                         'LEFT JOIN catalogue_detail AS cd ON cd.cd_id = m.cmd_entity_detail ' +
-                        'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id ' +
-                        'WHERE cm.cm_name IN ("global_country_list") and s.st_id = ? ', [storeId],*/
-    dbConnection.query('select cm_group.cm_id,cm_group.cm_name, g_cd.cd_id as geoID, cd_group.cd_name as geoName '+
+                        'left join (select icc_country_name as country_name, icc_country_id as cd_id from icn_country_currency) AS g_cd on(g_cd.country_name =cd.cd_name) '+
+
+            //'LEFT JOIN catalogue_master AS cm ON cm.cm_id = cd.cd_cm_id ' +
+                        'WHERE s.st_id = ? ', [storeId],*/
+/*SELECT * FROM `multiselect_metadata_detail`
+ join icn_country_currency as icc on cmd_entity_detail = icc.icc_country_id
+ LEFT JOIN `icn_store` AS s ON cmd_group_id = s.st_country_distribution_rights
+ where  s.st_id = 1*/
+    /*dbConnection.query('select cm_group.cm_id,cm_group.cm_name, g_cd.cd_id as geoID, cd_group.cd_name as geoName '+
                 'from catalogue_detail as cd '+
-                'inner join catalogue_master as cm on(cm.cm_id = cd.cd_cm_id) '+
-                'inner join catalogue_master as cm_group on(cm_group.cm_name = cd.cd_name) '+
-                'inner join catalogue_detail as cd_group on(cd_group.cd_cm_id = cm_group.cm_id) '+
-                'left join (select icc_country_name as country_name, icc_country_id as cd_id from icn_country_currency) AS g_cd on(g_cd.country_name =cd_group.cd_name) '+
+                'join catalogue_master as cm on(cm.cm_id = cd.cd_cm_id) '+
+                'left join catalogue_master as cm_group on(cm_group.cm_name = cd.cd_name) '+
+                'join catalogue_detail as cd_group on(cd_group.cd_cm_id = cm_group.cm_id) '+
+                'right join (select icc_country_name as country_name, icc_country_id as cd_id from icn_country_currency) AS g_cd on(g_cd.country_name =cd_group.cd_name) '+
                 'join multiselect_metadata_detail AS m ON cd.cd_id = m.cmd_entity_detail '+
                 'LEFT JOIN `icn_store` AS s ON m.cmd_group_id = s.st_country_distribution_rights '+
-                'WHERE s.st_id = ? GROUP BY g_cd.cd_id ', [storeId],
+                'WHERE s.st_id = ? GROUP BY g_cd.cd_id ', [storeId],*/
+    dbConnection.query('(SELECT g_cd.cd_id as geoID, cd_group.cd_name as geoName FROM `multiselect_metadata_detail` '+
+    'join catalogue_detail as cd on cmd_entity_detail = cd_id '+
+    'join catalogue_master as cm on cd_cm_id = cm_id '+
+    'left join catalogue_master as cm_group on(cm_group.cm_name = cd.cd_name) '+
+    'join catalogue_detail as cd_group on(cd_group.cd_cm_id = cm_group.cm_id) '+
+    'right join (select icc_country_name as country_name, icc_country_id as cd_id from icn_country_currency) AS g_cd on(g_cd.country_name =cd_group.cd_name) '+
+    'LEFT JOIN `icn_store` AS s ON cmd_group_id = s.st_country_distribution_rights '+
+    'where  s.st_id = ? and cm.cm_name in("icon_geo_location")) '+
+    'Union '+
+    '(SELECT icc_country_id as geoID, icc_country_name as geoName FROM `multiselect_metadata_detail` '+
+    'join icn_country_currency as icc on cmd_entity_detail = icc.icc_country_id '+
+    'LEFT JOIN `icn_store` AS s ON cmd_group_id = s.st_country_distribution_rights '+
+    'where  s.st_id = ?)', [storeId,storeId],
         function ( err, geoLocations ) {
             callback( err, geoLocations )
         }

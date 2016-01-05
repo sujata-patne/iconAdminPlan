@@ -183,7 +183,6 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
     })
     $scope.getOperatorDetails = function(){
         $scope.OperatorDetails = [];
-console.log($scope.AllOperatorDetails)
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
                 if ($scope.SelectedEventId == value.ebe_ai_bgw_id) { //ebe_ef_id&& $scope.SelectedGeoLocation == value.country
@@ -197,7 +196,6 @@ console.log($scope.AllOperatorDetails)
 
                 }
             })
-
         }
     }
     $scope.$watch('SelectedGeoLocation',function() {
