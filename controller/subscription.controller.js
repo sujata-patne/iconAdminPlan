@@ -270,7 +270,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                 });
                             }
                             function AddSubscriptions() {
-                                async.waterfall([, res
+                                async.waterfall([
                                         function(callback){
                                             //Get subscription plan
                                             subscriptionManager.getLastInsertedSubscriPlanIdFromMultiSelectMetaDataDetail(connection_ikon_cms, function (err, group) {
