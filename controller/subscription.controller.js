@@ -168,7 +168,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             if (req.body.OperatorDetails.length > 0) {
                                                 var operator = 0;
                                                 // addEditOperators(operator);
-                                                addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+                                                addEditOperators(connection_ikon_cms, operator,req.body,req.session, res );
                                             }
                                             callback(null,subscription);
                                         },
@@ -281,7 +281,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             if (req.body.OperatorDetails.length > 0) {
                                                 var operator = 0;
                                                 // addEditOperators(operator);subMaxId
-                                                addEditOperators(connection_ikon_cms, operator,req.body,req.session);
+                                                addEditOperators(connection_ikon_cms, operator,req.body,req.session, res );
 
                                             }
                                             callback(null,group);
@@ -450,7 +450,7 @@ function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data) {
         }
     });
 }
-function addEditOperators(connection_ikon_cms, cnt,data,session) {
+function addEditOperators(connection_ikon_cms, cnt,data,session, res) {
     var j = cnt;
     var count = data.OperatorDetails.length;
     subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_id, function( err, disclaimer ) {
@@ -477,7 +477,7 @@ function addEditOperators(connection_ikon_cms, cnt,data,session) {
                     else {
                         cnt++;
                         if (cnt < count) {
-                            addEditOperators(connection_ikon_cms, cnt,data,session);
+                            addEditOperators(connection_ikon_cms, cnt,data,session, res);
                         }
                     }
                 });
@@ -510,7 +510,7 @@ function addEditOperators(connection_ikon_cms, cnt,data,session) {
                             else {
                                 cnt++;
                                 if (cnt < count) {
-                                    addEditOperators(connection_ikon_cms, cnt,data,session);
+                                    addEditOperators(connection_ikon_cms, cnt,data,session, res);
                                     //addEditOperators(cnt);
                                 }
                             }
