@@ -178,7 +178,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             if (distributionChannellength > 0) {
                                                 var distributionChannel = 0;
                                                 subscriptionManager.deleteDistributionChannel( connection_ikon_cms, subscription[0].sp_channel_front, function (err, result) {
-                                                    addDistributionChannel(connection_ikon_cms,distributionChannel, subscription[0].sp_channel_front,req.body);
+                                                    addDistributionChannel(connection_ikon_cms,distributionChannel, subscription[0].sp_channel_front,req.body, res);
                                                 });
                                             }
                                             callback(err,subscription);
@@ -188,7 +188,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             if (plans > 0 && req.body.atCostFreePaid === 1) {
                                                 var contentType = 0;
                                                 subscriptionManager.deleteSubscriptionPlanFromSubscriptionContentType( connection_ikon_cms, req.body.subplanId, function (err, result) {
-                                                    addEditPlans(connection_ikon_cms,contentType,req.body.subplanId,contentTypesList,req.body);
+                                                    addEditPlans(connection_ikon_cms,contentType,req.body.subplanId,contentTypesList,req.body, res );
                                                 });
                                             }
                                             callback(err,subscription);
@@ -241,7 +241,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                             /*subscriptionManager.updatePackageDate(connection_ikon_cms, req.body.subplanId, function (err, updated) {
                                                                 console.log("### "+ req.body.subplanId)
                                                             })*/
-                                                            updatePackageDate(connection_ikon_cms,0,result);
+                                                            updatePackageDate(connection_ikon_cms,0,result, res );
 
                                                         }
                                                     })
@@ -252,7 +252,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                         }
                                     });
                             }
-                            function updatePackageDate(connection_ikon_cms, cnt, data) {
+                            function updatePackageDate(connection_ikon_cms, cnt, data, res) {
                                 var j = cnt;
                                 var count = data.length;
                                 alacartaManager.updatePackageDate(connection_ikon_cms, data[j].pss_sp_pkg_id, function (err, updated) {
@@ -264,13 +264,13 @@ exports.addeditsubscriptions = function (req, res, next) {
                                     else {
                                         cnt++;
                                         if (cnt < count) {
-                                            updatePackageDate(connection_ikon_cms, cnt,data);
+                                            updatePackageDate(connection_ikon_cms, cnt,data, res);
                                         }
                                     }
                                 });
                             }
                             function AddSubscriptions() {
-                                async.waterfall([
+                                async.waterfall([, res
                                         function(callback){
                                             //Get subscription plan
                                             subscriptionManager.getLastInsertedSubscriPlanIdFromMultiSelectMetaDataDetail(connection_ikon_cms, function (err, group) {
@@ -294,7 +294,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                 }
                                                 var distributionChannel = 0;
 
-                                                addDistributionChannel(connection_ikon_cms,distributionChannel,groupID,req.body);
+                                                addDistributionChannel(connection_ikon_cms,distributionChannel,groupID,req.body, res);
                                             }
                                             callback(null,groupID);
                                         },
@@ -310,7 +310,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                 var contentType = 0;
                                                 var sp_id = subMaxId[0].sp_id != null ?  parseInt(subMaxId[0].sp_id + 1) : 1;
                                                 // addEditPlans(contentType, sp_id);
-                                                addEditPlans(connection_ikon_cms,contentType,sp_id,contentTypesList,req.body);
+                                                addEditPlans(connection_ikon_cms,contentType,sp_id,contentTypesList,req.body, res);
 
                                             }
                                             callback(null,{'group_id':group,'sp_id':subMaxId[0].sp_id});
@@ -380,7 +380,7 @@ exports.addeditsubscriptions = function (req, res, next) {
     }
 }
 
-function addDistributionChannel(connection_ikon_cms,cnt,groupID,data) {
+function addDistributionChannel(connection_ikon_cms,cnt,groupID,data, res) {
     // function addDistributionChannel(cnt,groupID) {
     var distributionChannellength = data.DistributionChannels.length;
 
@@ -411,7 +411,7 @@ function addDistributionChannel(connection_ikon_cms,cnt,groupID,data) {
                 else {
                     cnt++;
                     if (cnt < distributionChannellength) {
-                        addDistributionChannel(connection_ikon_cms,cnt,groupID,data)
+                        addDistributionChannel(connection_ikon_cms,cnt,groupID,data, res)
                         //addDistributionChannel(cnt, groupID);
                     }
                 }
@@ -421,7 +421,7 @@ function addDistributionChannel(connection_ikon_cms,cnt,groupID,data) {
     //}
 }
 
-function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data) {
+function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data, res) {
     var j = cnt;
     var ContentTypeId = contentTypes[j];
     var downloadId = (data.alacartPlansList[ContentTypeId].download) ? data.alacartPlansList[ContentTypeId].download : '';
@@ -444,7 +444,7 @@ function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data) {
         else {
             cnt++;
             if (cnt < plans) {
-                addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data);
+                addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data, res);
                 //addEditPlans(cnt,subPlanId);
             }
         }
