@@ -182,18 +182,18 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
         $scope.getOperatorDetails();
     })
     $scope.getOperatorDetails = function(){
-        $scope.OperatorDetails = [];
+         $scope.OperatorDetails = [];
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
                 if ($scope.SelectedEventId == value.ebe_ai_bgw_id) { //ebe_ef_id&& $scope.SelectedGeoLocation == value.country
-                    _.filter($scope.AllOperatorDetails, function (operator) {
-                        if(value.ebe_ai_bgw_id == operator.dcl_ref_jed_id && value.partner_id == operator.dcl_partner_id){ //ebe_ef_id
-//if(value.ebe_ai_bgw_id == operator.dcl_ref_jed_id){ //ebe_ef_id
+                    //_.filter($scope.AllOperatorDetails, function (operator) {
+                    $scope.AllOperatorDetails.forEach(function (operator) {
+                         if(value.ebe_ai_bgw_id == operator.dcl_ref_jed_id && value.partner_id == operator.dcl_partner_id){
+                            //ebe_ef_id  //if(value.ebe_ai_bgw_id == operator.dcl_ref_jed_id){ //ebe_ef_id
                             value.dcl_disclaimer = operator.dcl_disclaimer;
                         }
                     })
                     $scope.OperatorDetails.push(value);
-
                 }
             })
         }
@@ -327,10 +327,10 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                 toastr.error('T&B  Streaming Duration must be lesser than Single Day limit.');
             }else if ($scope.sld_full_sub_cnt_limit * $scope.Fullmultiplier  <= $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier) {
                 toastr.error('Full Subscription Streaming Duration must be greater than Single Day limit.');
-       }
+        }
 
             else {
-                var subscription = {
+                 var subscription = {
                     planid: $stateParams.id,
                     subplanId: $scope.PlanId,
                     PlanName: $scope.PlanName,

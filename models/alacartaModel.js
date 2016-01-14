@@ -109,7 +109,7 @@ exports.getOperatorDetail = function( dbConnection, callback ) { // config.db_na
         'JOIN '+config.db_name_ikon_bg+'.billing_partner AS partner ON partner.partner_id = master.tmi_partner_id ' +
         'LEFT JOIN '+config.db_name_ikon_cms+'.icn_disclaimer AS dis ON dis.dcl_ref_jed_id = bge.ebe_ef_id AND dis.dcl_partner_id = master.tmi_partner_id ' +
         'GROUP BY master.tmi_parent_id ',*/
-    dbConnection.query('SELECT dis.* FROM icn_disclaimer AS dis group by dcl_partner_id ',
+    dbConnection.query('SELECT dis.* FROM icn_disclaimer AS dis order by dcl_partner_id ',
         function ( err, operatorDetails ) {
             callback( err, operatorDetails );
         }

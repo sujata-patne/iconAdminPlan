@@ -88,19 +88,19 @@ myApp.controller('valuePackPlanCtrl', function ($scope, $state, ngProgress, $sta
     }
     $scope.getOperatorDetails = function(){
         $scope.OperatorDetails = [];
-
         if ($scope.jetPayDetials && $scope.jetPayDetials.length > 0) {
             $scope.jetPayDetials.forEach(function (value) {
                 if ($scope.SelectedEventId == value.ebe_ai_bgw_id) { //ebe_ef_id&& $scope.SelectedGeoLocation == value.country
-                    _.filter($scope.AllOperatorDetails, function (operator) {
-                        if(value.ebe_ai_bgw_id == operator.dcl_ref_jed_id && value.partner_id == operator.dcl_partner_id){ //ebe_ef_id
+                    //_.filter($scope.AllOperatorDetails, function (operator) {
+                    $scope.AllOperatorDetails.forEach(function (operator) {
+                        if(value.ebe_ai_bgw_id == operator.dcl_ref_jed_id && value.partner_id == operator.dcl_partner_id){
+                            //ebe_ef_id  //if(value.ebe_ai_bgw_id == operator.dcl_ref_jed_id){ //ebe_ef_id
                             value.dcl_disclaimer = operator.dcl_disclaimer;
                         }
                     })
                     $scope.OperatorDetails.push(value);
                 }
             })
-
         }
     }
     /*$scope.geoLocationChange = function () {

@@ -307,6 +307,7 @@ function userAuthDetails(dbConnection, username,password,req,res){
  * @description get list of pages allowed as per user-role
  */
 function getPages(role, selectedPaymentType) {
+    console.log(selectedPaymentType)
     if (role == "Super Admin" || role == "Store Manager") {
         var pagesjson = [];
         pagesjson.push( { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] } );
@@ -322,7 +323,7 @@ function getPages(role, selectedPaymentType) {
                         'sub': []
                     });
                 }
-                if (paymentType.en_description === 'Subscription') {
+                if (paymentType.en_description === 'Subscriptions') {
                     pagesjson.push({
                         'pagename': 'Subscriptions Plan',
                         'href': 'subscriptions',

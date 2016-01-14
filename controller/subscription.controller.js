@@ -321,10 +321,12 @@ exports.addeditsubscriptions = function (req, res, next) {
                                             connection_ikon_cms.release();
                                             res.status(500).json(err.message);
                                         } else {
+
                                             var data = {
                                                 sp_id: results.sp_id != null ? parseInt(results.sp_id + 1) : 1,
                                                 sp_ld_id: req.session.Plan_UserId,
                                                 sp_st_id: req.session.Plan_StoreId,
+
                                                 sp_plan_name: req.body.PlanName,
                                                 sp_caption: req.body.Caption,
                                                 sp_description: req.body.Description,
@@ -334,8 +336,6 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                 sp_tnb_free_cnt_limit: req.body.numContentOffer,
                                                 sp_single_day_cnt_limit: req.body.limitSingleDay,
                                                 sp_full_sub_cnt_limit: req.body.fullSubDuration,
-
-                                                sp_channel_front : results.group_id,
                                                 sp_tnb_stream_cnt_limit: req.body.slc_tnb_free_cnt_limit,
                                                 sp_single_day_steam_limit: req.body.slc_single_day_cnt_limit,
                                                 sp_single_day_stream_dur: req.body.sld_single_day_cnt_limit,
@@ -343,12 +343,18 @@ exports.addeditsubscriptions = function (req, res, next) {
 
                                                 sp_tnb_stream_duration: req.body.sld_tnb_free_cnt_limit,
                                                 sp_tnb_stream_dur_type: req.body.sld_tnb_free_cnt_duration,
-                                                sp_is_cnt_free: req.body.atCostFreePaid,
 
+                                                sp_full_sub_stream_limit: req.body.slc_full_sub_cnt_limit,
+                                                sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
+                                                sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
+                                                sp_stream_setting: req.body.streamingLimitType,
+                                                sp_is_cnt_free: req.body.atCostFreePaid,
                                                 sp_cty_id: req.body.geoLocationId,
                                                 sp_is_active: 1,
                                                 sp_plan_duration: req.body.planDuration,
                                                 sp_plan_dur_type: req.body.planDurationOption,
+
+                                                sp_channel_front : results.group_id,
 
                                                 sp_created_on: new Date(),
                                                 sp_created_by: req.session.Plan_UserName,
