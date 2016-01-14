@@ -1,6 +1,11 @@
 var target_admin = function () {
   "use strict"
 
+  $(document).ready(function () {
+    $(".navbar-nav li a").click(function(event) {
+      $(".mainbar-collapse").collapse('hide');
+    });
+  });
   var layoutColors = ['#16a085', '#e74c3c', '#428bca', '#333333', '#6685a4', '#E68E8E']
   
   return { init: init, layoutColors: layoutColors, debounce: debounce }

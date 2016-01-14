@@ -5,6 +5,9 @@ var mysql = require('../config/db').pool;
 var nodeExcel = require('excel-export');
 var async = require("async");
 var planListManager = require("../models/planListModel");
+var userManager = require("../models/userModel");
+var _ = require('underscore');
+
 /**
  * @function getplanlist
  * @param req
@@ -42,13 +45,43 @@ exports.getplanlist = function (req, res, next) {
                             callback(err, Offers);
                         });
                     },
+                    allowedPlans: function (callback) {
+                        userManager.getSelectedPaymentTypeByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, selectedPaymentType) {
+                            var paymentTypes = req.cookies.paymentTypes;
+                            if (paymentTypes !== undefined && paymentTypes !== '' && paymentTypes.length > 0) {
+                                var pricePointTypes = [];
+                                _.each(JSON.parse(paymentTypes), function (paymentType1) {
+                                    _.filter(selectedPaymentType, function (paymentType2) {
+                                        if (paymentType2.cmd_entity_detail == paymentType1.en_id) {
+                                            pricePointTypes.push(paymentType1);
+                                        }
+                                    });
+                                })
+                            } else {
+                                var pricePointTypes = paymentTypes;
+                            }
+                            var data = [];
+                            pricePointTypes.forEach(function (paymentType) {
+                                if (paymentType.en_description === 'One Time') {
+                                    data.push('OneTime');
+                                }
+                                if (paymentType.en_description === 'Subscriptions') {
+                                    data.push('Subscriptions');
+                                }
+                            })
+                            console.log(data)
+                            callback(null, data);
+                        })
+
+
+                    },
                     RoleUser: function (callback) {
                         //Get User Role
                         callback(null, req.session.Plan_UserRole);
                     }
                 },
                 function (err, results) {
-                    if (err) {
+                     if (err) {
                         connection_ikon_cms.release();
                         res.status(500).json(err.message);
                         console.log(err.message)

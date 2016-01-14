@@ -7,6 +7,8 @@ var config = require('../config')();
 var nodemailer = require('nodemailer');
 var userManager = require('../models/userModel');
 var crypto = require('crypto');
+var _ = require('underscore');
+
 algorithm = 'aes-256-ctr', //Algorithm used for encrytion
     password = 'd6F3Efeq'; //Encryption password
 
@@ -24,7 +26,6 @@ function decrypt(text){
     return dec;
 }
 
-var _ = require('underscore');
 
 function getDate(val) {
     var d = new Date(val);
@@ -81,6 +82,7 @@ exports.pages = function (req, res, next) {
                 }
                 //partner_payment_type
                 var pageData = getPages(role,pricePointTypes);
+
                 res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
             })
         })
@@ -202,6 +204,8 @@ exports.logout = function (req, res, next) {
                     req.session.Plan_StoreId = null;
 
                     res.clearCookie('plan_remember');
+                    res.clearCookie('allowedPlans');
+                    res.clearCookie('paymentTypes');
                     res.clearCookie('plan_username');
                     res.clearCookie('plan_password');
 
@@ -234,6 +238,7 @@ exports.authenticate = function (req, res, next) {
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
             if(req.body.rememberMe){
                 var minute = 10080 * 60 * 1000;
+
                 res.cookie('plan_remember', 1, { maxAge: minute });
                 res.cookie('plan_username', encrypt(req.body.username), { maxAge: minute });
                 res.cookie('plan_password', encrypt(req.body.password), { maxAge: minute });
@@ -307,7 +312,6 @@ function userAuthDetails(dbConnection, username,password,req,res){
  * @description get list of pages allowed as per user-role
  */
 function getPages(role, selectedPaymentType) {
-    console.log(selectedPaymentType)
     if (role == "Super Admin" || role == "Store Manager") {
         var pagesjson = [];
         pagesjson.push( { 'pagename': 'Plan List', 'href': 'plan-list', 'id': 'plan-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] } );
@@ -322,6 +326,7 @@ function getPages(role, selectedPaymentType) {
                         'submenuflag': '0',
                         'sub': []
                     });
+                    pagesjson.push({ 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] });
                 }
                 if (paymentType.en_description === 'Subscriptions') {
                     pagesjson.push({
@@ -337,7 +342,6 @@ function getPages(role, selectedPaymentType) {
             })
         }
         pagesjson.push(
-            { 'pagename': 'Value Pack Plan', 'href': 'value-pack', 'id': 'value-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
         );
