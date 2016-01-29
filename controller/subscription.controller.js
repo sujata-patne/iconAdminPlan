@@ -348,7 +348,7 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                 sp_full_sub_stream_duration: req.body.sld_full_sub_cnt_limit,
                                                 sp_full_sub_stream_dur_type: req.body.sld_full_sub_cnt_duration,
                                                 sp_stream_setting: req.body.streamingLimitType,
-                                                sp_is_cnt_free: req.body.atCostFreePaid,
+                                                sp_is_cnt_free: parseInt(req.body.atCostFreePaid),
                                                 sp_cty_id: req.body.geoLocationId,
                                                 sp_is_active: 1,
                                                 sp_plan_duration: req.body.planDuration,
@@ -361,12 +361,16 @@ exports.addeditsubscriptions = function (req, res, next) {
                                                 sp_modified_on: new Date(),
                                                 sp_modified_by: req.session.Plan_UserName
                                             }
+                                            console.log(data);
+
                                             subscriptionManager.createIcnSubscriptionPlan( connection_ikon_cms, data, function(err, result ) {
                                                 if (err) {
+                                                    console.log('in errorrrrrrrr');
                                                     connection_ikon_cms.release();
                                                     res.status(500).json(err.message);
                                                 }
                                                 else {
+                                                    console.log('no errrorrrrrrrrrrrrrrrrrrrr');
                                                     connection_ikon_cms.release();
                                                     res.send({ success: true, message: 'Subscription Plan added successfully.' });
                                                 }
@@ -459,7 +463,7 @@ function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data, res) 
 function addEditOperators(connection_ikon_cms, cnt,data,session, res) {
     var j = cnt;
     var count = data.OperatorDetails.length;
-    subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_id, function( err, disclaimer ) {
+    subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_name, function( err, disclaimer ) {
         if (err) {
             connection_ikon_cms.release();
             res.status(500).json(err.message);
@@ -469,7 +473,7 @@ function addEditOperators(connection_ikon_cms, cnt,data,session, res) {
             if (disclaimer.length > 0) {
                 var disclaimerData = {
                     dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
-                    dcl_partner_id: data.OperatorDetails[j].partner_id,
+                    dcl_partner_id: data.OperatorDetails[j].partner_name,
                     dcl_st_id: session.Plan_StoreId,
                     dcl_modified_on: new Date(),
                     dcl_modified_by:  session.Plan_UserName
@@ -503,7 +507,7 @@ function addEditOperators(connection_ikon_cms, cnt,data,session, res) {
                             dcl_id: dclID,
                             dcl_ref_jed_id: data.JetId,
                             dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
-                            dcl_partner_id: data.OperatorDetails[j].partner_id,
+                            dcl_partner_id: data.OperatorDetails[j].partner_name,
                             dcl_st_id: session.Plan_StoreId,
                             dcl_created_by: session.Plan_UserName,
                             dcl_created_on: new Date()

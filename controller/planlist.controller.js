@@ -47,6 +47,7 @@ exports.getplanlist = function (req, res, next) {
                     },
                     allowedPlans: function (callback) {
                         userManager.getSelectedPaymentTypeByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, selectedPaymentType) {
+                            //console.log(selectedPaymentType);
                             var paymentTypes = req.cookies.paymentTypes;
                             if (paymentTypes !== undefined && paymentTypes !== '' && paymentTypes.length > 0) {
                                 var pricePointTypes = [];
@@ -60,6 +61,7 @@ exports.getplanlist = function (req, res, next) {
                             } else {
                                 var pricePointTypes = paymentTypes;
                             }
+                            //console.log(pricePointTypes);                            process.exit();
                             var data = [];
                             pricePointTypes.forEach(function (paymentType) {
                                 if (paymentType.en_description === 'One Time') {

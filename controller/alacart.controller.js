@@ -327,7 +327,7 @@ exports.addeditalacart = function (req, res, next) {
 function addEditOperators(connection_ikon_cms, cnt,data,session) {
     var j = cnt;
     var count = data.OperatorDetails.length;
-    subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_id, function( err, disclaimer ) {
+    subscriptionManager.getOperatorDetails( connection_ikon_cms, data.JetId, data.OperatorDetails[j].partner_name, function( err, disclaimer ) {
         if (err) {
             connection_ikon_cms.release();
             res.status(500).json(err.message);
@@ -337,14 +337,11 @@ function addEditOperators(connection_ikon_cms, cnt,data,session) {
             if (disclaimer.length > 0) {
                 var disclaimerData = {
                     dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
-                    dcl_partner_id: data.OperatorDetails[j].partner_id,
+                    dcl_partner_id: data.OperatorDetails[j].partner_name,
                     dcl_st_id: session.Plan_StoreId,
                     dcl_modified_on: new Date(),
                     dcl_modified_by:  session.Plan_UserName
                 }
-                console.log('update')
-                console.log(disclaimerData)
-
                 subscriptionManager.updateOperatorDetails( connection_ikon_cms, disclaimerData, disclaimer[0].dcl_id, function( err, result ) {
                     if (err) {
                         connection_ikon_cms.release();
@@ -376,7 +373,7 @@ function addEditOperators(connection_ikon_cms, cnt,data,session) {
                             dcl_id: dclID,
                             dcl_ref_jed_id: data.JetId,
                             dcl_disclaimer: data.OperatorDetails[j].dcl_disclaimer,
-                            dcl_partner_id: data.OperatorDetails[j].partner_id,
+                            dcl_partner_id: data.OperatorDetails[j].partner_name,
                             dcl_st_id: session.Plan_StoreId,
                             dcl_created_by: session.Plan_UserName,
                             dcl_created_on: new Date()
