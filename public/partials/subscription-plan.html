@@ -61,7 +61,7 @@
                             <label for="jetPayEventId" class="col-md-3 control-label"><span class="asterisk padding-right-5">*</span>JetPay Event Id</label>
                             <div class="col-md-9">
                                 <span class="ui-select">
-                                    <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.ebe_ai_bgw_id as item.ebe_bgw_id_desc for item in JetPayEvent | unique:'ebe_ai_bgw_id'" required> <!-- data-ng-change="displayOperators()"-->
+                                    <select name="jetPayEventId" class="form-control" data-ng-model="SelectedEventId" data-ng-options="item.ebe_ai_bgw_id as item.ebe_ai_bgw_id for item in JetPayEvent | unique:'ebe_ai_bgw_id'" required> <!-- data-ng-change="displayOperators()"-->
                                         <option value="">-- Select JetPay Event --</option>
                                     </select>
                                 </span>

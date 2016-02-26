@@ -444,7 +444,6 @@ function addEditPlans(connection_ikon_cms,cnt,subPlanId,contentTypes,data, res) 
         sctp_download_id: downloadId,
         sctp_stream_id: streamingId == '' ? null : streamingId
     }
-    console.log(ContentTypePlanData);
     subscriptionManager.createSubscriptionContentType( connection_ikon_cms, ContentTypePlanData, function( err, result ) {
         if (err) {
             connection_ikon_cms.release();
