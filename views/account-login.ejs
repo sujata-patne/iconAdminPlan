@@ -90,7 +90,7 @@
         <!-- /.account-wrapper -->
         <script src="assets/scripts/jquery-1.10.1.min.js"></script>
         <script src="assets/scripts/jquery-ui-1.9.2.custom.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+        <script src="assets/scripts/jquery.cookie.js"></script>
         <script src="assets/scripts/bootstrap.min.js"></script>
                     <!--[if lt IE 9]>
         <script src="assets/scripts/excanvas.compiled.js"></script>
@@ -102,17 +102,25 @@
     </body>
 </html>
 <script>
-    $.ajax({
-        method: "POST",
-        dataType: "json",
-        data: {Type : 'payment_type'},
-        url: 'http://192.168.1.168:8060/BillingUtilService/GetEnumDetails',
-        //url: 'http://103.43.2.5/BillingUtilService/GetEnumDetails',
-        success: function(paymentTypes){
-            if(paymentTypes && paymentTypes.length > 0){
-                $.cookie("paymentTypes", null);
-                $.cookie("paymentTypes", JSON.stringify(paymentTypes));
-            }
+    $( document ).ready(function() {
+        if ($.cookie('paymentTypes') && $.cookie('paymentTypes').length > 0) {
+            console.log('if')
+            console.log($.cookie('paymentTypes'))
+        }else{
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                //url: 'http://192.168.1.168:8060/BillingUtilService/GetEnumDetails?Type=payment_type',
+                url: 'http://103.43.2.5/BillingUtilService/GetEnumDetails?Type=payment_type',
+                success: function(paymentTypes){
+                    if(paymentTypes && paymentTypes.length > 0){
+                        $.cookie("paymentTypes", JSON.stringify(paymentTypes));
+                        console.log('else')
+                        console.log($.cookie("paymentTypes"))
+                    }
+                }
+            });
         }
     });
+   /**/
 </script>

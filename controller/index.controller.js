@@ -8,6 +8,7 @@ var nodemailer = require('nodemailer');
 var userManager = require('../models/userModel');
 var crypto = require('crypto');
 var _ = require('underscore');
+var logger = require("../controller/logger.controller");
 
 algorithm = 'aes-256-ctr', //Algorithm used for encrytion
     password = 'd6F3Efeq'; //Encryption password
@@ -64,30 +65,39 @@ exports.pages = function (req, res, next) {
     var paymentTypes = [];
     if (req.session && req.session.Plan_UserName && req.session.Plan_StoreId) {
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-           // mysql.getConnection('BG', function (err, connection_ikon_bg) {
-            userManager.getSelectedPaymentTypeByStoreId( connection_ikon_cms, req.session.Plan_StoreId, function (err, selectedPaymentType) {
-                role = req.session.Plan_UserRole;
-                paymentTypes = req.cookies.paymentTypes;
-                if(paymentTypes !== undefined && paymentTypes !== '' && paymentTypes.length > 0) {
-                    var pricePointTypes = [];
-                    _.each(JSON.parse(paymentTypes), function (paymentType1) {
-                        _.filter(selectedPaymentType, function (paymentType2) {
-                            if(paymentType2.cmd_entity_detail == paymentType1.en_id){
-                                pricePointTypes.push(paymentType1);
-                            }
-                        });
-                    })
-                }else{
-                   var pricePointTypes = paymentTypes;
-                }
-                //partner_payment_type
-                var pageData = getPages(role,pricePointTypes);
-
-                res.render('index', { title: 'Express', username: req.session.Plan_FullName, Pages: pageData, userrole: req.session.Plan_UserType, lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin) });
-            })
+            if (err) {
+                logger.writeLog('pages : '+ JSON.stringify(err));
+                console.log(err.message)
+            } else {
+                userManager.getSelectedPaymentTypeByStoreId(connection_ikon_cms, req.session.Plan_StoreId, function (err, selectedPaymentType) {
+                    role = req.session.Plan_UserRole;
+                    paymentTypes = req.cookies.paymentTypes;
+                    if (paymentTypes !== undefined && paymentTypes !== '' && paymentTypes.length > 0) {
+                        var pricePointTypes = [];
+                        _.each(JSON.parse(paymentTypes), function (paymentType1) {
+                            _.filter(selectedPaymentType, function (paymentType2) {
+                                if (paymentType2.cmd_entity_detail == paymentType1.en_id) {
+                                    pricePointTypes.push(paymentType1);
+                                }
+                            });
+                        })
+                    } else {
+                        var pricePointTypes = paymentTypes;
+                    }
+                    //partner_payment_type
+                    var pageData = getPages(role, pricePointTypes);
+                    logger.writeLog('pages : ' + JSON.stringify(pageData));
+                    res.render('index', {
+                        title: 'Express',
+                        username: req.session.Plan_FullName,
+                        Pages: pageData,
+                        userrole: req.session.Plan_UserType,
+                        lastlogin: " " + getDate(req.session.Plan_lastlogin) + " " + getTime(req.session.Plan_lastlogin)
+                    });
+                })
+            }
         })
-    // })
-}
+    }
     else {
         res.redirect('/accountlogin');
     }
@@ -103,45 +113,50 @@ exports.pages = function (req, res, next) {
 exports.login = function (req, res, next) {
     if(req.cookies.plan_remember == 1 && req.cookies.plan_username != '' ){
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-            userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.plan_username), decrypt(req.cookies.plan_password), function( err, row ){
-                if (err) {
-                    res.render('account-login', { error: 'Error in database connection' });
-                } else {
-                    if (row.length > 0) {
-                        if (row[0].ld_active == 1) {
-                            if(row[0].ld_role == 'Store Manager') {
-                                connection_ikon_cms.release();
-                                var session = req.session;
-                                session.Plan_UserId = row[0].ld_id;
-                                session.Plan_UserRole = row[0].ld_role;
-                                session.Plan_UserName = row[0].ld_user_name;
-                                session.Plan_Password = row[0].ld_user_pwd;
-                                session.Plan_Email = row[0].ld_email_id;
-                                session.Plan_FullName = row[0].ld_display_name;
-                                session.Plan_lastlogin = row[0].ld_last_login;
-                                session.Plan_UserType = row[0].ld_user_type;
-                                session.Plan_StoreId = row[0].su_st_id;
-                                if (req.session) {
-                                    if (req.session.Plan_UserName) {
-                                        if (req.session.Plan_StoreId) {
-                                            res.redirect("/");
+            if (err) {
+                logger.writeLog('login : '+ JSON.stringify(err));
+            }else {
+                userManager.getUserDetails(connection_ikon_cms, decrypt(req.cookies.plan_username), decrypt(req.cookies.plan_password), function (err, row) {
+                    if (err) {
+                        logger.writeLog('login : ' + JSON.stringify(err));
+                        res.render('account-login', {error: 'Error in database connection'});
+                    } else {
+                        if (row.length > 0) {
+                            if (row[0].ld_active == 1) {
+                                if (row[0].ld_role == 'Store Manager') {
+                                    connection_ikon_cms.release();
+                                    var session = req.session;
+                                    session.Plan_UserId = row[0].ld_id;
+                                    session.Plan_UserRole = row[0].ld_role;
+                                    session.Plan_UserName = row[0].ld_user_name;
+                                    session.Plan_Password = row[0].ld_user_pwd;
+                                    session.Plan_Email = row[0].ld_email_id;
+                                    session.Plan_FullName = row[0].ld_display_name;
+                                    session.Plan_lastlogin = row[0].ld_last_login;
+                                    session.Plan_UserType = row[0].ld_user_type;
+                                    session.Plan_StoreId = row[0].su_st_id;
+                                    if (req.session) {
+                                        if (req.session.Plan_UserName) {
+                                            if (req.session.Plan_StoreId) {
+                                                res.redirect("/");
+                                            }
+                                            else {
+                                                res.redirect("/accountlogin");
+                                            }
                                         }
                                         else {
-                                            res.redirect("/accountlogin");
+                                            res.render('account-login', {error: ''});
                                         }
                                     }
                                     else {
-                                        res.render('account-login', { error: '' });
+                                        res.render('account-login', {error: ''});
                                     }
-                                }
-                                else {
-                                    res.render('account-login', { error: '' });
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
         });
     }else if (req.session) {
         if (req.session.Plan_UserName) {
@@ -149,7 +164,6 @@ exports.login = function (req, res, next) {
                 res.redirect("/#/planlist");
             }
             else {
-
                 res.redirect("/accountlogin");
 
             }
@@ -236,14 +250,17 @@ exports.logout = function (req, res, next) {
 exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-            if(req.body.rememberMe){
-                var minute = 10080 * 60 * 1000;
-
-                res.cookie('plan_remember', 1, { maxAge: minute });
-                res.cookie('plan_username', encrypt(req.body.username), { maxAge: minute });
-                res.cookie('plan_password', encrypt(req.body.password), { maxAge: minute });
+            if (err) {
+                logger.writeLog('authenticate : '+ JSON.stringify(err));
+            }else {
+                if (req.body.rememberMe) {
+                    var minute = 10080 * 60 * 1000;
+                    res.cookie('plan_remember', 1, {maxAge: minute});
+                    res.cookie('plan_username', encrypt(req.body.username), {maxAge: minute});
+                    res.cookie('plan_password', encrypt(req.body.password), {maxAge: minute});
+                }
+                userAuthDetails(connection_ikon_cms, req.body.username, req.body.password, req, res);
             }
-            userAuthDetails(connection_ikon_cms,req.body.username,req.body.password,req,res);
         });
     }
     catch (error) {
@@ -255,6 +272,7 @@ exports.authenticate = function (req, res, next) {
 function userAuthDetails(dbConnection, username,password,req,res){
     userManager.getUserDetails( dbConnection, username, password, function( err, row ){
         if (err) {
+            logger.writeLog('userAuthDetails : '+ JSON.stringify(err));
             res.render('account-login', { error: 'Error in database connection' });
         } else {
             if (row.length > 0) {
@@ -280,24 +298,30 @@ function userAuthDetails(dbConnection, username,password,req,res){
                         })
                     } else {
                         dbConnection.release();
+                        logger.writeLog('userAuthDetails : '+ JSON.stringify('Only Store Admin/Manager are allowed to login'));
                         res.render('account-login', { error: 'Only Store Admin/Manager are allowed to login' });
                     }
                 }
                 else {
                     dbConnection.release();
+                    logger.writeLog('userAuthDetails : '+ JSON.stringify('Your account has been disable'));
                     res.render('account-login', { error: 'Your account has been disable' });
                 }
             } else {
                 dbConnection.release();
                 if( req.body.username != undefined && req.body.username.length == 0  &&  req.body.password.length == 0 ) {
+                    logger.writeLog('userAuthDetails : '+ JSON.stringify( 'Please enter username and password'));
                     res.render('account-login', {error: 'Please enter username and password'});
                 }else if(req.body.username != undefined && req.body.username.length != 0  &&  req.body.password.length == 0 ){
+                    logger.writeLog('userAuthDetails : '+ JSON.stringify( 'Please enter password'));
                     res.render('account-login', {error: 'Please enter password'});
                 }
                 else if(req.body.username != undefined && req.body.username.length == 0  &&  req.body.password.length != 0){
+                    logger.writeLog('userAuthDetails : '+ JSON.stringify( 'Please enter username'));
                     res.render('account-login', {error: 'Please enter username'});
                 }
                 else {
+                    logger.writeLog('userAuthDetails : '+ JSON.stringify( 'Invalid Username / Password'));
                     res.render('account-login', {error: 'Invalid Username / Password'});
                 }
             }
@@ -338,13 +362,14 @@ function getPages(role, selectedPaymentType) {
                         'sub': []
                     });
                 }
-
             })
         }
         pagesjson.push(
             { 'pagename': 'Offer Plan', 'href': 'offer-plan', 'id': 'offer-plan', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
         );
+        logger.writeLog('getPages : '+ JSON.stringify( pagesjson));
+
         return pagesjson;
     }
 }
@@ -378,47 +403,56 @@ exports.viewForgotPassword = function (req, res, next) {
 exports.forgotPassword = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
-            userManager.getUserDetailsByUserIdByEmail( connection_central, req.body.userid, req.body.emailid, function( err, row, fields ) {
-                if (err) {
-                    res.render('account-forgot', { error: 'Error in database connection.', msg: '' });
-                }
-                else {
-                    if (row.length > 0) {
-
-                        var smtpTransport = nodemailer.createTransport({
-                            service: "Gmail",
-                            auth: {
-                                user: "jetsynthesis@gmail.com",
-                                pass: "j3tsynthes1s"
-                            }
-                        });
-                        var mailOptions = {
-                            to: session.Plan_Email,//'sujata.patne@jetsynthesys.com',
-                            subject: 'Forgot Password',
-                            html: "<p>Hi, " + row[0].ld_user_id + " <br />This is your password: " + row[0].ld_user_pwd + "</p>"
-                        }
-                        smtpTransport.sendMail(mailOptions, function (error, response) {
-                            if (error) {
-                                console.log(error);
-                                res.end("error");
-                            } else {
-                                connection_central.release();
-                                res.render('account-forgot', { error: '', msg: 'Please check your mail. Password successfully sent to your email' });
-                                res.end("sent");
-                            }
-                        });
+            if(err){
+                logger.writeLog('changePassword : '+ JSON.stringify( 'Invalid UserId / EmailId.'));
+            }else {
+                userManager.getUserDetailsByUserIdByEmail(connection_central, req.body.userid, req.body.emailid, function (err, row, fields) {
+                    if (err) {
+                        logger.writeLog('forgotPassword : ' + JSON.stringify(err));
+                        res.render('account-forgot', {error: 'Error in database connection.', msg: ''});
                     }
                     else {
-                        connection_central.release();
-                        res.render('account-forgot', { error: 'Invalid UserId / EmailId.', msg: '' });
+                        if (row.length > 0) {
+                            var smtpTransport = nodemailer.createTransport({
+                                service: "Gmail",
+                                auth: {
+                                    user: "jetsynthesis@gmail.com",
+                                    pass: "j3tsynthes1s"
+                                }
+                            });
+                            var mailOptions = {
+                                to: session.Plan_Email,//'sujata.patne@jetsynthesys.com',
+                                subject: 'Forgot Password',
+                                html: "<p>Hi, " + row[0].ld_user_id + " <br />This is your password: " + row[0].ld_user_pwd + "</p>"
+                            }
+                            smtpTransport.sendMail(mailOptions, function (error, response) {
+                                if (error) {
+                                    console.log(error);
+                                    logger.writeLog('sendMail : ' + JSON.stringify(error));
+                                    res.end("error");
+                                } else {
+                                    connection_central.release();
+                                    logger.writeLog('sendMail : ' + JSON.stringify('Please check your mail. Password successfully sent to your email'));
+                                    res.render('account-forgot', {
+                                        error: '',
+                                        msg: 'Please check your mail. Password successfully sent to your email'
+                                    });
+                                    res.end("sent");
+                                }
+                            });
+                        }
+                        else {
+                            connection_central.release();
+                            logger.writeLog('forgotPassword : ' + JSON.stringify('Invalid UserId / EmailId.'));
+                            res.render('account-forgot', {error: 'Invalid UserId / EmailId.', msg: ''});
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     }
     catch (err) {
-        connection_central.end();
-        res.render('account-forgot', { error: 'Error in database connection.' });
+         res.render('account-forgot', { error: 'Error in database connection.' });
     }
 }
 /**
@@ -453,45 +487,53 @@ exports.changePassword = function (req, res) {
             if (req.session.Plan_UserName) {
                 var session = req.session;
                 mysql.getConnection('CMS', function (err, connection_central) {
-                    if (req.body.oldpassword == req.session.Plan_Password) {
-                        userManager.updateIcnUserDetails( connection_central, req.body.newpassword, new Date(), req.session.Plan_UserId, function( err, result ) {
-                            if (err) {
-                                connection_central.release();
-                                res.status(500).json(err.message);
-                            }
-                            else {
-                                req.session.Plan_Password = req.body.newpassword;
-                                var smtpTransport = nodemailer.createTransport({
-                                    service: "Gmail",
-                                    auth: {
-                                        user: "jetsynthesis@gmail.com",
-                                        pass: "j3tsynthes1s"
-                                    }
-                                });
-                                var mailOptions = {
-                                    to: req.session.Plan_Email,
-                                    subject: 'Change Password',
-                                    html: "<p>Hi, " + req.session.Plan_UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
+                    if(err){
+                        logger.writeLog('changePassword : '+ JSON.stringify( 'Invalid UserId / EmailId.'));
+                    }else {
+                        if (req.body.oldpassword == req.session.Plan_Password) {
+                            userManager.updateIcnUserDetails(connection_central, req.body.newpassword, new Date(), req.session.Plan_UserId, function (err, result) {
+                                if (err) {
+                                    connection_central.release();
+                                    res.status(500).json(err.message);
                                 }
-                                smtpTransport.sendMail(mailOptions, function (error, response) {
-                                    if (error) {
-                                        connection_central.release();
-                                        console.log(error);
-                                        res.end("error");
-                                    } else {
-                                        connection_central.release();
-                                        res.send({ success: true, message: 'Password updated successfully. Please check your mail.' });
-
-                                        //res.render('changepassword', { success: true, message: 'Password updated successfully. Please check your mail.' });
-                                        //res.end("sent");
+                                else {
+                                    req.session.Plan_Password = req.body.newpassword;
+                                    var smtpTransport = nodemailer.createTransport({
+                                        service: "Gmail",
+                                        auth: {
+                                            user: "jetsynthesis@gmail.com",
+                                            pass: "j3tsynthes1s"
+                                        }
+                                    });
+                                    var mailOptions = {
+                                        to: req.session.Plan_Email,
+                                        subject: 'Change Password',
+                                        html: "<p>Hi, " + req.session.Plan_UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
                                     }
-                                });
-                            }
-                        });
-                    }
-                    else {
-                        connection_central.release();
-                        res.send({ success: false, message: 'Old Password does not match.' });
+                                    smtpTransport.sendMail(mailOptions, function (error, response) {
+                                        if (error) {
+                                            connection_central.release();
+                                            console.log(error);
+                                            res.end("error");
+                                        } else {
+                                            connection_central.release();
+                                            res.send({
+                                                success: true,
+                                                message: 'Password updated successfully. Please check your mail.'
+                                            });
+
+                                            //res.render('changepassword', { success: true, message: 'Password updated successfully. Please check your mail.' });
+                                            //res.end("sent");
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            connection_central.release();
+                            logger.writeLog('changePassword : '+ JSON.stringify( 'Old Password does not match.'));
+                            res.send({success: false, message: 'Old Password does not match.'});
+                        }
                     }
                 })
             }

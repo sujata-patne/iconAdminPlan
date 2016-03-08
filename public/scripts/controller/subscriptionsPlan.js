@@ -256,9 +256,8 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                 }
             })
         }, function(newvalue, oldvalue){},true);
-
         if (isValid) {
-            if($scope.streamingLimitType == 2){
+            if($scope.streamingLimitType == 2 && $scope.sld_tnb_free_cnt_duration){
                 var durationTB= _.findWhere($scope.durationOptions, {cd_id:$scope.sld_tnb_free_cnt_duration}).cd_name;
                 switch (durationTB.toLowerCase()) {
                     case 'min':
@@ -323,13 +322,11 @@ myApp.controller('subscriptionsPlanCtrl', function ($scope, $state, ngProgress, 
                         break;
                 }
             }
-
-            if($scope.sld_tnb_free_cnt_limit*$scope.TBmultiplier >= $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier){
-                toastr.error('T&B  Streaming Duration must be lesser than Single Day limit.');
-            }else if ($scope.sld_full_sub_cnt_limit * $scope.Fullmultiplier  <= $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier) {
+            if($scope.sld_single_day_cnt_limit > 0 && $scope.sld_tnb_free_cnt_limit * $scope.TBmultiplier > $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier){
+                toastr.error(' Single Day limit greater than T&B Streaming Duration.');
+            }else if ($scope.sld_full_sub_cnt_limit > 0 && $scope.sld_full_sub_cnt_limit * $scope.Fullmultiplier  < $scope.sld_single_day_cnt_limit * $scope.Singlemultiplier) {
                 toastr.error('Full Subscription Streaming Duration must be greater than Single Day limit.');
-        }
-
+            }
             else {
                  var subscription = {
                     planid: $stateParams.id,
